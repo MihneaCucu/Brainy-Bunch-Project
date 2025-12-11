@@ -10,10 +10,10 @@ module.exports = (sequelize, DataTypes) => {
   Rating.init({
     score: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
     userId: DataTypes.INTEGER,
-    movieId: DataTypes.INTEGER
+    movieId: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'Rating',
