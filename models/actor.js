@@ -1,6 +1,7 @@
 'use strict';
-const { Model } = require('sequelize');
-
+const {
+  Model
+} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Actor extends Model {
     static associate(models) {
@@ -8,63 +9,29 @@ module.exports = (sequelize, DataTypes) => {
         through: models.MovieActor,
         foreignKey: 'actorId',
         otherKey: 'movieId',
-        as: 'movies'
-      });
+        as: 'movies',
+      })
     }
   }
-
   Actor.init({
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false
-    },
     name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-        len: [1, 255]
-      }
+        type: DataTypes.STRING,
+        allowNull: false,
     },
     birthDate: {
-      type: DataTypes.DATEONLY,
-      allowNull: true,
-      field: 'birth_date'
+        type: DataTypes.DATEONLY,
+        allowNull: true,
     },
     nationality: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      validate: {
-        len: [0, 100]
-      }
+        type: DataTypes.STRING,
+        allowNull: true,
     },
-    biography: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
-    imageUrl: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      field: 'image_url',
-      validate: {
-        isUrl: true
-      }
-    }
   }, {
     sequelize,
     modelName: 'Actor',
-    tableName: 'actors',
-    timestamps: true,
-    underscored: true,
-    indexes: [
-      {
-        fields: ['name']
-      }
-    ]
   });
-
   return Actor;
 };
+
+
 
