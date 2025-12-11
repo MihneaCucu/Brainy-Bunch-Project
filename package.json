@@ -7,7 +7,13 @@
     "dev": "npx nodemon index.js",
     "lint": "eslint .",
     "test": "jest",
-    "test:watch": "NODE_ENV=test jest --watch"
+    "test:watch": "NODE_ENV=test jest --watch",
+    "db:push": "sequelize-cli db:migrate",
+    "db:migrate:new": "sequelize-cli migration:generate --name",
+    "db:seed": "sequelize-cli db:seed:all",
+    "db:drop": "sequelize-cli db:drop",
+    "db:create": "sequelize-cli db:create",
+    "db:reset": "sequelize-cli db:drop && sequelize-cli db:create && sequelize-cli db:migrate && sequelize-cli db:seed:all"
   },
   "author": "",
   "license": "ISC",
