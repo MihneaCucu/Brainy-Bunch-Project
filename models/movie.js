@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       Movie.belongsToMany(models.Watchlist, {
-        through: models.WatchlistMovies,
+        through: models.WatchlistMovie,
         foreignKey: 'movieId',
         otherKey: 'watchlistId',
         as: 'watchlistBy',

@@ -11,12 +11,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Movie.init({
+  MovieActor.init({
     movieId: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         allowNull: false,
-        refereceses: {
+        references: {
             model: 'Movies',
             key: 'id',
         },
@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         primaryKey: true,
         allowNull: false,
-        refferences: {
+        references: {
             model: 'Actors',
             key: 'id',
         },
