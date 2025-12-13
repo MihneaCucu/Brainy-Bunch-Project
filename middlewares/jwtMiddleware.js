@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken");
-
-
 const db = require('../models');
+require('dotenv').config();
 
 const { JWT_SECRET_KEY } = require('../constants');
 
