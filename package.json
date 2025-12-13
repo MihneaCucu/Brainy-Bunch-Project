@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=test node index.js",
+    "start": "node index.js",
     "dev": "npx nodemon index.js",
     "lint": "eslint .",
     "test": "jest",
@@ -21,14 +21,15 @@
   "description": "",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "dotenv": "^16.3.1",
     "express": "^5.1.0",
     "graphql": "^16.11.0",
     "graphql-http": "^1.22.4",
     "jsonwebtoken": "^9.0.2",
+    "process": "^0.11.10",
     "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7",
-    "supertest": "^7.1.4",
-    "dotenv": "^16.3.1"
+    "supertest": "^7.1.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.38.0",

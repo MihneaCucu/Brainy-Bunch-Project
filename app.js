@@ -10,25 +10,25 @@ const {
 } = require('graphql');
 
 
-// const QueryType = require('./graphql/rootType/queryType');
-// const MutationType = require('./graphql/rootType/MutationType');
+const QueryType = require('./graphql/rootType/queryType');
+const MutationType = require('./graphql/rootType/MutationType');
 const jwtMiddleware = require("./middlewares/jwtMiddleware");
 
-// const schema = new GraphQLSchema({
-//   query: QueryType,
-//   mutation: MutationType,
-// });
+const schema = new GraphQLSchema({
+  query: QueryType,
+  mutation: MutationType,
+});
 
-// const graphQLHandler = createHandler({
-//     schema,
-//     context: (request) => {
-//         return {
-//             user: request.raw.userData,
-//         }
-//     }
-// });
+const graphQLHandler = createHandler({
+    schema,
+    context: (request) => {
+        return {
+            user: request.raw.userData,
+        }
+    }
+});
 
-app.post('/graphql', jwtMiddleware, /*graphQLHandler*/);
+app.post('/graphql', jwtMiddleware, graphQLHandler);
 
 module.exports = {
     app,
