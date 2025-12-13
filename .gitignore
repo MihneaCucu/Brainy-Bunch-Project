@@ -1,3 +1,4 @@
 .idea
 node_modules/
 GHID_INITIALIZARE_BAZA_DE_DATE.md
+database.sqlite
