@@ -1,7 +1,7 @@
 const { GraphQLInt, GraphQLString, GraphQLNonNull } = require('graphql');
 const UserType = require('../types/UserType');
 const db = require('../../models');
-const { checkAuth } = require('../utils/auth');
+const { checkAuth } = require('../../utils/auth');
 
 const UpdateUserMutation = {
     type: UserType,
@@ -30,7 +30,7 @@ const UpdateUserMutation = {
 
 
         // Find the user
-        const userToUpdate = await db.Users.findByPk(targetUserId);
+        const userToUpdate = await db.User.findByPk(targetUserId);
         if(!userToUpdate){
             throw new Error("User not found");
         }
@@ -52,3 +52,5 @@ const UpdateUserMutation = {
     }
 
 };
+
+module.exports = UpdateUserMutation;

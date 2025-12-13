@@ -1,6 +1,6 @@
 const { GraphQLInt, GraphQLString, GraphQLNonNull } = require('graphql');
 const db = require('../../models');
-const { checkRole } = require('../utils/auth');
+const { checkRole } = require('../../utils/auth');
 
 const DeleteUserMutation = {
     type: GraphQLString,    // Returns a success message
@@ -10,7 +10,7 @@ const DeleteUserMutation = {
     resolve: async (_, args, context) => {
         checkRole(context, ['admin']);
 
-        const userToDelete = await db.User.findBypK(args.id);
+        const userToDelete = await db.User.findByPk(args.id);
 
         if(!userToDelete){
             throw new Error("User not found");
@@ -26,3 +26,5 @@ const DeleteUserMutation = {
         return "User deleted successfully";
     }
 };
+
+module.exports = DeleteUserMutation;

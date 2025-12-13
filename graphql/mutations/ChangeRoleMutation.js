@@ -1,7 +1,7 @@
 const { GraphQLInt, GraphQLNonNull } = require('graphql');
 const UserType = require('../types/UserType');
 const db = require('../../models');
-const { checkRole } = require('../utils/auth');
+const { checkRole } = require('../../utils/auth');
 
 const ChangeRoleMutation = {
     type: UserType,
@@ -24,3 +24,5 @@ const ChangeRoleMutation = {
         return user.reload({include: ['userRole']});
     }
 };
+
+module.exports = ChangeRoleMutation;

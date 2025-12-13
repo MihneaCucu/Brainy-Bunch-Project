@@ -1,7 +1,7 @@
 const { GraphQLList } = require('graphql');
 const UserType = require('../types/UserType');
 const db = require('../../models');
-const { checkRole } = require('../utils/auth');
+const { checkRole } = require('../../utils/auth');
 
 const GetAllUsersQuery = {
     type: new GraphQLList(UserType),
@@ -13,3 +13,5 @@ const GetAllUsersQuery = {
         });
     }
 };
+
+module.exports = GetAllUsersQuery;

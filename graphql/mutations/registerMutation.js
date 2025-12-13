@@ -2,7 +2,7 @@ const { GraphQLString, GraphQLNonNull } = require('graphql');
 const UserType = require('../types/UserType');
 const db = require('../../models');
 
-const RegisterMutation = {
+const registerMutation = {
     type: UserType,
     args: {
         username: {type: new GraphQLNonNull(GraphQLString)},
@@ -36,6 +36,8 @@ const RegisterMutation = {
             https://sequelize.org/docs/v6/other-topics/hooks/
         */
 
-        return nrewUser.reload({include: ['userRole']});
+        return newUser.reload({include: ['userRole']});
     }
 }
+
+module.exports = registerMutation;
