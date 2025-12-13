@@ -18,11 +18,15 @@ const jwtMiddleware = async (req, res, next) => {
     try {
         const payload = jwt.verify(token, JWT_SECRET_KEY);
         const subjectId = payload.sub;
-        const user = await db.User.findByPk(subjectId);
+
+        // Include the role
+        const user = await db.User.findByPk(subjectId, {
+            include: [{model: db.Role, as: 'userRole'}]
+        });
 
         if(!user){
             console.error('No user found for the given token');
-            nwxt();
+            next();
             return;
         }
 

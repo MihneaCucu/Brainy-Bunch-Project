@@ -21,9 +21,10 @@ const schema = new GraphQLSchema({
 
 const graphQLHandler = createHandler({
     schema,
-    context: (request) => {
+    context: (req) => {
         return {
-            user: request.raw.userData,
+            // the user data might be on 'req.userData' or 'req.raw.userData'
+            user: req.raw && req.raw.userData ? req.raw.userData : req.userData,
         }
     }
 });
