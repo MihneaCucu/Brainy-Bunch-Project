@@ -7,6 +7,8 @@ const DeleteUserMutation = require('../mutations/DeleteUserMutation');
 const ChangeRoleMutation = require('../mutations/ChangeRoleMutation');
 const AddMovieMutation = require('../mutations/AddMovieMutation');
 const DeleteMovieMutation = require('../mutations/DeleteMovieMutation');
+const UpdateMovieMutation = require('../mutations/updateMovieMutation');
+const AddDirectorMutation = require('../mutations/AddDirectorMutation');
 
 
 const MutationType = new GraphQLObjectType({
@@ -18,7 +20,9 @@ const MutationType = new GraphQLObjectType({
         deleteUser: DeleteUserMutation,
         changeRole: ChangeRoleMutation,
         addMovie: AddMovieMutation,
+        updateMovie: UpdateMovieMutation,
         deleteMovie: DeleteMovieMutation,
+        addDirector: AddDirectorMutation,
     }
 });
 

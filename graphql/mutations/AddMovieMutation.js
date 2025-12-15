@@ -14,13 +14,21 @@ const AddMovieMutation = {
         releaseYear: {
             type: new GraphQLNonNull(GraphQLInt)
         },
+        directorId: {
+            type: GraphQLInt
+        },
     },
 
     resolve: async (_, args) => {
-        return await db.Movie.create({
+        const movie = await db.Movie.create({
             title: args.title,
             description: args.description,
             releaseYear: args.releaseYear,
+            directorId: args.directorId,
+        });
+
+        return await db.Movie.findByPk(movie.id, {
+            include: [{ model: db.Director, as: 'director' }]
         });
     }
 }

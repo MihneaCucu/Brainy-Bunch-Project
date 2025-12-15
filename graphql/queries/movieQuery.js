@@ -15,7 +15,9 @@ const movieQuery = {
     resolve: async (_, args) => {
         const { id } = args;
 
-        const movie = await db.Movie.findByPk(id);
+        const movie = await db.Movie.findByPk(id, {
+            include: [{ model: db.Director, as: 'director' }]
+        });
 
         if(!movie) {
           throw new GraphQLError("Not found");
