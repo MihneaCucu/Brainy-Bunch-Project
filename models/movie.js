@@ -34,6 +34,13 @@ module.exports = (sequelize, DataTypes) => {
         otherKey: 'watchlistId',
         as: 'watchlistBy',
       });
+
+      Movie.belongsToMany(models.MovieList, {
+        through: models.MovieListMovie,
+        foreignKey: 'movieId',
+        otherKey: 'movieListId',
+        as: 'inLists',
+      });
     }
   }
 

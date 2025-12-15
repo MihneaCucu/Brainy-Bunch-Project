@@ -7,6 +7,9 @@ const movieQuery = require('../queries/movieQuery');
 const GetAllMoviesQuery = require('../queries/getAllMoviesQuery');
 const directorQuery = require('../queries/directorQuery');
 const GetAllDirectorsQuery = require('../queries/GetAllDirectorsQuery');
+const movieListQuery = require('../queries/movieListQuery');
+const getAllMovieListsQuery = require('../queries/getAllMovieListsQuery');
+const getMyMovieListsQuery = require('../queries/getMyMovieListsQuery');
 
 
 const QueryType = new GraphQLObjectType({
@@ -18,6 +21,9 @@ const QueryType = new GraphQLObjectType({
         getAllMovies: GetAllMoviesQuery,
         director: directorQuery,
         getAllDirectors: GetAllDirectorsQuery,
+        movieList: movieListQuery,
+        getAllMovieLists: getAllMovieListsQuery,
+        getMyMovieLists: getMyMovieListsQuery,
     },
 });
 
