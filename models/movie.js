@@ -6,6 +6,11 @@ module.exports = (sequelize, DataTypes) => {
   class Movie extends Model {
     static associate(models) {
 
+      Movie.belongsTo(models.Director, {
+        foreignKey: 'directorId',
+        as: 'director',
+      });
+
       Movie.hasMany(models.Review, {foreignKey: 'movieId', as: 'reviews'});
       Movie.hasMany(models.Rating, {foreignKey: 'movieId', as: 'ratings'});
 
@@ -29,6 +34,13 @@ module.exports = (sequelize, DataTypes) => {
         otherKey: 'watchlistId',
         as: 'watchlistBy',
       });
+
+      Movie.belongsToMany(models.MovieList, {
+        through: models.MovieListMovie,
+        foreignKey: 'movieId',
+        otherKey: 'movieListId',
+        as: 'inLists',
+      });
     }
   }
 
@@ -44,6 +56,14 @@ module.exports = (sequelize, DataTypes) => {
     releaseYear: {
         type: DataTypes.INTEGER,
         allowNull: false,
+    },
+    directorId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: 'Directors',
+            key: 'id',
+        },
     },
   }, {
     sequelize,
