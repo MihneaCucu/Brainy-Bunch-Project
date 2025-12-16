@@ -8,6 +8,8 @@ const GenreType = new GraphQLObjectType({
         name: {
             type: GraphQLString,
         }
+
+        // TODO: Update genre type to include createdAt and updatedAt
     }
 });
 module.exports = GenreType;
