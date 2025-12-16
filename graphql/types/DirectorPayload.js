@@ -3,7 +3,7 @@ const { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLList } = require('gr
 const DirectorType = new GraphQLObjectType({
     name: 'Director',
     fields: () => {
-        const MovieType = require('./MovieType');
+        const MoviePayload = require('./MoviePayload');
         return {
             id: {
                 type: GraphQLID,
@@ -18,7 +18,7 @@ const DirectorType = new GraphQLObjectType({
                 type: GraphQLString,
             },
             movies: {
-                type: new GraphQLList(MovieType),
+                type: new GraphQLList(MoviePayload),
             },
         };
     }

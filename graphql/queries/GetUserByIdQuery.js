@@ -1,10 +1,10 @@
 const { GraphQLInt } = require('graphql');
-const UserType = require('../types/UserType');
+const UserPayload = require('../types/UserPayload');
 const db = require('../../models');
 const { checkRole } = require('../../utils/auth');
 
 const GetUserByIdQuery = {
-    type: UserType,
+    type: UserPayload,
     args: {
         id: { type: GraphQLInt }
     },

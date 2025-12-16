@@ -1,9 +1,9 @@
 const graphql = require('graphql');
 const { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList, GraphQLBoolean } = graphql;
-const MovieType = require('./MovieType');
-const UserType = require('./UserType');
+const MoviePayload = require('./MoviePayload');
+const UserPayload = require('./UserPayload');
 
-const MovieListType = new GraphQLObjectType({
+const MovieListPayload = new GraphQLObjectType({
     name: 'MovieList',
     fields: () => ({
         id: { type: GraphQLInt },
@@ -12,13 +12,13 @@ const MovieListType = new GraphQLObjectType({
         isPublic: { type: GraphQLBoolean },
         userId: { type: GraphQLInt },
         user: {
-            type: UserType,
+            type: UserPayload,
             resolve(parent) {
                 return parent.getUser();
             }
         },
         movies: {
-            type: new GraphQLList(MovieType),
+            type: new GraphQLList(MoviePayload),
             resolve(parent) {
                 return parent.getMovies();
             }
@@ -28,5 +28,5 @@ const MovieListType = new GraphQLObjectType({
     })
 });
 
-module.exports = MovieListType;
+module.exports = MovieListPayload;
 

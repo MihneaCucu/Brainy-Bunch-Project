@@ -1,9 +1,9 @@
 const { GraphQLString, GraphQLNonNull } = require('graphql');
-const UserType = require('../types/UserType');
+const UserPayload = require('../types/UserPayload');
 const db = require('../../models');
 
 const registerMutation = {
-    type: UserType,
+    type: UserPayload,
     args: {
         username: {type: new GraphQLNonNull(GraphQLString)},
         email: {type: new GraphQLNonNull(GraphQLString)},

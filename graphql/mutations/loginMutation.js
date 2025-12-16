@@ -1,16 +1,16 @@
-const LoggedInUserType = require("../types/LoggedInUserType");
+const LoggedInUserResponse = require("../types/LoggedInUserResponse");
 const LoginCredentialsInputType = require("../inputTypes/LoginCredentialsInputType");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET_KEY } = require("../../constants");
 const db = require("../../models");
 const bcrypt = require("bcrypt");
 const { GraphQLUnionType } = require("graphql");
-const FailedAuthenticationType = require("../types/FailedAuthenticationType");
+const FailedAuthenticationResponse = require("../types/FailedAuthenticationResponse");
 
 const loginMutation = {
     type: new GraphQLUnionType({
         name: 'LoginMutationUnion',
-        types: [LoggedInUserType, FailedAuthenticationType],
+        types: [LoggedInUserResponse, FailedAuthenticationResponse],
         resolveType: (value) => {
             if(value.token) {
                 return 'LoggedInUser';

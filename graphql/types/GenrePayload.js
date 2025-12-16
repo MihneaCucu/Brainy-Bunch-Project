@@ -1,5 +1,5 @@
 const { GraphQLObjectType, GraphQLID, GraphQLString } = require('graphql');
-const GenreType = new GraphQLObjectType({
+const GenrePayload = new GraphQLObjectType({
     name: 'Genre',
     fields: {
         id: {
@@ -12,4 +12,4 @@ const GenreType = new GraphQLObjectType({
         // TODO: Update genre type to include createdAt and updatedAt
     }
 });
-module.exports = GenreType;
+module.exports = GenrePayload;

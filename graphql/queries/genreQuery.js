@@ -2,11 +2,11 @@ const {
     GraphQLInt,
     GraphQLError,
 } = require('graphql');
-const GenreType = require('../types/GenreType');
+const GenrePayload = require('../types/GenrePayload');
 const db = require('../../models');
 
 const genreQuery = {
-    type: GenreType,
+    type: GenrePayload,
     args: {
         id: {
             type: GraphQLInt,

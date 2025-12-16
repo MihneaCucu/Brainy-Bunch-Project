@@ -1,6 +1,6 @@
 const { GraphQLObjectType, GraphQLString } = require('graphql');
 
-const FailedAuthenticationType = new GraphQLObjectType({
+const FailedAuthenticationResponse = new GraphQLObjectType({
     name: 'FailedAuthentication',
     fields: {
         reason: {
@@ -9,4 +9,4 @@ const FailedAuthenticationType = new GraphQLObjectType({
     }
 });
 
-module.exports = FailedAuthenticationType;
+module.exports = FailedAuthenticationResponse;

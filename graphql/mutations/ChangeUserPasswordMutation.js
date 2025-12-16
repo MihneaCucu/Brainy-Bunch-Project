@@ -1,11 +1,11 @@
 const { GraphQLInt, GraphQLString, GraphQLNonNull } = require('graphql');
 const bcrypt = require('bcrypt');
-const UserType = require('../types/UserType');
+const UserPayload = require('../types/UserPayload');
 const db = require('../../models');
 const { checkAuth } = require('../../utils/auth');
 
 const ChangeUserPasswordMutation = {
-    type: UserType,
+    type: UserPayload,
     args: {
         userId: {type: new GraphQLNonNull(GraphQLInt)},
         oldPassword: { type: GraphQLString },

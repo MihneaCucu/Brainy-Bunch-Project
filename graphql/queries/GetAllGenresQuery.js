@@ -1,10 +1,10 @@
 const { GraphQLList } = require('graphql');
-const GenreType = require('../types/GenreType');
+const GenrePayload = require('../types/GenrePayload');
 const db = require('../../models');
 const { checkRole } = require('../../utils/auth');
 
 const GetAllGenresQuery = {
-    type: new GraphQLList(GenreType),
+    type: new GraphQLList(GenrePayload),
     resolve: async (_, args, context) => {
         checkRole(context);
 

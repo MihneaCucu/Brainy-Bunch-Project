@@ -1,10 +1,10 @@
 const graphql = require('graphql');
 const { GraphQLInt, GraphQLNonNull } = graphql;
-const MovieListType = require('../types/MovieListType');
+const MovieListPayload = require('../types/MovieListPayload');
 const db = require('../../models');
 
 const movieListQuery = {
-    type: MovieListType,
+    type: MovieListPayload,
     args: { id: { type: new GraphQLNonNull(GraphQLInt) } },
     async resolve(parent, args, context) {
         const movieList = await db.MovieList.findByPk(args.id, {

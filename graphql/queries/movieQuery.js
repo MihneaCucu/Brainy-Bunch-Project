@@ -2,11 +2,11 @@ const {
     GraphQLInt,
     GraphQLError,
 } = require('graphql');
-const MovieType = require('../types/MovieType');
+const MoviePayload = require('../types/MoviePayload');
 const db = require('../../models');
 
 const movieQuery = {
-    type: MovieType,
+    type: MoviePayload,
     args: {
         id: {
             type: GraphQLInt,

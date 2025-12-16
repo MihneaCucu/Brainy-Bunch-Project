@@ -1,9 +1,9 @@
 const { GraphQLList } = require('graphql');
-const MovieType = require('../types/MovieType');
+const MoviePayload = require('../types/MoviePayload');
 const db = require('../../models');
 
 const GetAllMoviesQuery = {
-    type: new GraphQLList(MovieType),
+    type: new GraphQLList(MoviePayload),
     resolve: async () => {
         return await db.Movie.findAll({
             include: [{ model: db.Director, as: 'director' }]

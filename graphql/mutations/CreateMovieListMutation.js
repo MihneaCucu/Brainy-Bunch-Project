@@ -1,10 +1,10 @@
 const graphql = require('graphql');
 const { GraphQLString, GraphQLBoolean, GraphQLNonNull } = graphql;
-const MovieListType = require('../types/MovieListType');
+const MovieListPayload = require('../types/MovieListPayload');
 const db = require('../../models');
 
 const CreateMovieListMutation = {
-    type: MovieListType,
+    type: MovieListPayload,
     args: {
         name: { type: new GraphQLNonNull(GraphQLString) },
         description: { type: GraphQLString },

@@ -1,10 +1,10 @@
 const { GraphQLInt, GraphQLString, GraphQLNonNull } = require('graphql');
-const MovieType = require('../types/MovieType');
+const MoviePayload = require('../types/MoviePayload');
 const db = require('../../models');
 const { checkAuth } = require('../../utils/auth');
 
 const UpdateMovieMutation = {
-    type: MovieType,
+    type: MoviePayload,
     args: {
         id: {type: new GraphQLNonNull(GraphQLInt)},
         title: { type: GraphQLString },

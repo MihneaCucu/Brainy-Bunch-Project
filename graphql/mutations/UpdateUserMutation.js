@@ -1,10 +1,10 @@
 const { GraphQLInt, GraphQLString, GraphQLNonNull } = require('graphql');
-const UserType = require('../types/UserType');
+const UserPayload = require('../types/UserPayload');
 const db = require('../../models');
 const { checkAuth } = require('../../utils/auth');
 
 const UpdateUserMutation = {
-    type: UserType,
+    type: UserPayload,
     args: {
         id: {type: new GraphQLNonNull(GraphQLInt)},
         username: { type: GraphQLString },

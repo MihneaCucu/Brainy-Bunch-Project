@@ -1,10 +1,10 @@
 const graphql = require('graphql');
 const { GraphQLList, GraphQLInt } = graphql;
-const MovieListType = require('../types/MovieListType');
+const MovieListPayload = require('../types/MovieListPayload');
 const db = require('../../models');
 
 const getAllMovieListsQuery = {
-    type: new GraphQLList(MovieListType),
+    type: new GraphQLList(MovieListPayload),
     args: {
         userId: { type: GraphQLInt },
     },

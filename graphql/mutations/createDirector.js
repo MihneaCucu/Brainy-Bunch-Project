@@ -1,9 +1,9 @@
 const { GraphQLString, GraphQLNonNull } = require('graphql');
-const DirectorType = require('../types/DirectorType');
+const DirectorType = require('../types/DirectorPayload');
 const db = require('../../models');
 const { checkAuth } = require('../../utils/auth');
 
-const AddDirectorMutation = {
+const CreateDirector = {
     type: DirectorType,
     args: {
         name: {
@@ -28,5 +28,5 @@ const AddDirectorMutation = {
     }
 };
 
-module.exports = AddDirectorMutation;
+module.exports = CreateDirector;
 

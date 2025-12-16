@@ -1,9 +1,9 @@
 const { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLInt } = require('graphql');
 
-const MovieType = new GraphQLObjectType({
+const MoviePayload = new GraphQLObjectType({
     name: 'Movie',
     fields: () => {
-        const DirectorType = require('./DirectorType');
+        const DirectorPayload = require('./DirectorPayload');
         return {
             id: {
                 type: GraphQLID,
@@ -18,10 +18,10 @@ const MovieType = new GraphQLObjectType({
                 type: GraphQLInt,
             },
             director: {
-                type: DirectorType,
+                type: DirectorPayload,
             },
         };
     }
 });
 
-module.exports = MovieType;
+module.exports = MoviePayload;

@@ -1,10 +1,10 @@
 const graphql = require('graphql');
 const { GraphQLList } = graphql;
-const MovieListType = require('../types/MovieListType');
+const MovieListPayload = require('../types/MovieListPayload');
 const db = require('../../models');
 
 const getMyMovieListsQuery = {
-    type: new GraphQLList(MovieListType),
+    type: new GraphQLList(MovieListPayload),
     async resolve(parent, args, context) {
         if (!context.user) {
             throw new Error('You must be logged in to view your movie lists');

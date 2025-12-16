@@ -1,6 +1,6 @@
 const { GraphQLObjectType, GraphQLInt, GraphQLString } = require('graphql');
 
-const LoggedInUserType = new GraphQLObjectType({
+const LoggedInUserResponse = new GraphQLObjectType({
     name: "LoggedInUser",
     fields: {
         id: {
@@ -12,4 +12,4 @@ const LoggedInUserType = new GraphQLObjectType({
     }
 });
 
-module.exports = LoggedInUserType;
+module.exports = LoggedInUserResponse;
