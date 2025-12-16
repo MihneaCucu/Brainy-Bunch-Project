@@ -1,6 +1,7 @@
 const { GraphQLString, GraphQLNonNull, GraphQLInt } = require("graphql");
-const MoviePayload = require("../types/MoviePayload");
-const db = require("../../models");
+const MoviePayload = require("../../types/MoviePayload");
+const db = require("../../../models");
+const { checkRole } = require("../../../utils/auth");
 
 const CreateMovie = {
   type: MoviePayload,
@@ -19,7 +20,8 @@ const CreateMovie = {
     },
   },
 
-  resolve: async (_, args) => {
+  resolve: async (_, args, context) => {
+    checkRole(context, ['moderator', 'admin']);
     const movie = await db.Movie.create({
       title: args.title,
       description: args.description,
