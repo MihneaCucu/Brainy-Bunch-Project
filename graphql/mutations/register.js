@@ -2,7 +2,7 @@ const { GraphQLString, GraphQLNonNull } = require('graphql');
 const UserPayload = require('../types/UserPayload');
 const db = require('../../models');
 
-const registerMutation = {
+const Register = {
     type: UserPayload,
     args: {
         username: {type: new GraphQLNonNull(GraphQLString)},
@@ -40,4 +40,4 @@ const registerMutation = {
     }
 }
 
-module.exports = registerMutation;
+module.exports = Register;

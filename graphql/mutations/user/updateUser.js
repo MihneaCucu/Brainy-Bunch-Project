@@ -3,7 +3,7 @@ const UserPayload = require('../types/UserPayload');
 const db = require('../../models');
 const { checkAuth } = require('../../utils/auth');
 
-const UpdateUserMutation = {
+const UpdateUser = {
     type: UserPayload,
     args: {
         id: {type: new GraphQLNonNull(GraphQLInt)},
@@ -53,4 +53,4 @@ const UpdateUserMutation = {
 
 };
 
-module.exports = UpdateUserMutation;
+module.exports = UpdateUser;

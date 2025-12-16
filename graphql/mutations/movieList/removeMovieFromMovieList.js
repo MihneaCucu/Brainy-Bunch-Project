@@ -1,9 +1,9 @@
 const graphql = require('graphql');
 const { GraphQLInt, GraphQLNonNull } = graphql;
-const MovieListPayload = require('../types/MovieListPayload');
-const db = require('../../models');
+const MovieListPayload = require('../../types/MovieListPayload');
+const db = require('../../../models');
 
-const RemoveMovieFromListMutation = {
+const RemoveMovieFromMovieList = {
     type: MovieListPayload,
     args: {
         movieListId: { type: new GraphQLNonNull(GraphQLInt) },
@@ -43,5 +43,5 @@ const RemoveMovieFromListMutation = {
     }
 };
 
-module.exports = RemoveMovieFromListMutation;
+module.exports = RemoveMovieFromMovieList;
 

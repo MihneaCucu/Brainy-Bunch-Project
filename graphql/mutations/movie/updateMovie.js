@@ -3,7 +3,7 @@ const MoviePayload = require('../types/MoviePayload');
 const db = require('../../models');
 const { checkAuth } = require('../../utils/auth');
 
-const UpdateMovieMutation = {
+const UpdateMovie = {
     type: MoviePayload,
     args: {
         id: {type: new GraphQLNonNull(GraphQLInt)},
@@ -33,6 +33,6 @@ const UpdateMovieMutation = {
     }
 };
 
-module.exports = UpdateMovieMutation;
+module.exports = UpdateMovie;
 
 

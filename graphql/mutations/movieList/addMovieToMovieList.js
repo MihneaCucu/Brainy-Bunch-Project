@@ -1,9 +1,9 @@
 const graphql = require('graphql');
 const { GraphQLInt, GraphQLNonNull, GraphQLString } = graphql;
-const MovieListPayload = require('../types/MovieListPayload');
-const db = require('../../models');
+const MovieListPayload = require('../../types/MovieListPayload');
+const db = require('../../../models');
 
-const AddMovieToListMutation = {
+const AddMovieToMovieList = {
     type: MovieListPayload,
     args: {
         movieListId: { type: new GraphQLNonNull(GraphQLInt) },
@@ -56,5 +56,5 @@ const AddMovieToListMutation = {
     }
 };
 
-module.exports = AddMovieToListMutation;
+module.exports = AddMovieToMovieList;
 

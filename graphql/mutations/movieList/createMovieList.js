@@ -3,7 +3,7 @@ const { GraphQLString, GraphQLBoolean, GraphQLNonNull } = graphql;
 const MovieListPayload = require('../types/MovieListPayload');
 const db = require('../../models');
 
-const CreateMovieListMutation = {
+const createMovieList = {
     type: MovieListPayload,
     args: {
         name: { type: new GraphQLNonNull(GraphQLString) },
@@ -24,5 +24,5 @@ const CreateMovieListMutation = {
     }
 };
 
-module.exports = CreateMovieListMutation;
+module.exports = createMovieList;
 

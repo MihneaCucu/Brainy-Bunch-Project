@@ -1,8 +1,8 @@
 const { GraphQLInt, GraphQLString, GraphQLNonNull } = require('graphql');
-const db = require('../../models');
-const { checkRole } = require('../../utils/auth');
+const db = require('../../../models');
+const { checkRole } = require('../../../utils/auth');
 
-const DeleteMovieMutation = {
+const DeleteMovie = {
     type: GraphQLString,    // Returns a success message
     args: {
         id: {type: new GraphQLNonNull(GraphQLInt)}
@@ -23,4 +23,4 @@ const DeleteMovieMutation = {
     }
 };
 
-module.exports = DeleteMovieMutation;
+module.exports = DeleteMovie;

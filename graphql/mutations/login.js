@@ -7,9 +7,9 @@ const bcrypt = require("bcrypt");
 const { GraphQLUnionType } = require("graphql");
 const FailedAuthenticationResponse = require("../types/FailedAuthenticationResponse");
 
-const loginMutation = {
+const Login = {
     type: new GraphQLUnionType({
-        name: 'LoginMutationUnion',
+        name: 'LoginUnion',
         types: [LoggedInUserResponse, FailedAuthenticationResponse],
         resolveType: (value) => {
             if(value.token) {
@@ -64,4 +64,4 @@ const loginMutation = {
     }
 }
 
-module.exports = loginMutation;
+module.exports = Login;

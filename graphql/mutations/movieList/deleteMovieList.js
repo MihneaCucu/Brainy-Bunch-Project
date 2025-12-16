@@ -2,7 +2,7 @@ const graphql = require('graphql');
 const { GraphQLInt, GraphQLNonNull, GraphQLString } = graphql;
 const db = require('../../models');
 
-const DeleteMovieListMutation = {
+const DeleteMovieList = {
     type: GraphQLString,
     args: {
         id: { type: new GraphQLNonNull(GraphQLInt) },
@@ -28,5 +28,5 @@ const DeleteMovieListMutation = {
     }
 };
 
-module.exports = DeleteMovieListMutation;
+module.exports = DeleteMovieList;
 

@@ -1,40 +1,44 @@
 const { GraphQLObjectType } = require("graphql");
 
-const loginMutation = require("../mutations/loginMutation");
-const RegisterMutation = require('../mutations/registerMutation');
-const UpdateUserMutation = require('../mutations/UpdateUserMutation');
-const DeleteUserMutation = require('../mutations/DeleteUserMutation');
-const ChangeRoleMutation = require('../mutations/ChangeRoleMutation');
-const AddMovieMutation = require('../mutations/AddMovieMutation');
-const DeleteMovieMutation = require('../mutations/DeleteMovieMutation');
-const UpdateMovieMutation = require('../mutations/updateMovieMutation');
-const AddDirectorMutation = require('../mutations/AddDirectorMutation');
-const CreateMovieListMutation = require('../mutations/CreateMovieListMutation');
-const UpdateMovieListMutation = require('../mutations/UpdateMovieListMutation');
-const DeleteMovieListMutation = require('../mutations/DeleteMovieListMutation');
-const AddMovieToListMutation = require('../mutations/AddMovieToListMutation');
-const RemoveMovieFromListMutation = require('../mutations/RemoveMovieFromListMutation');
+const Login                     =   require("../mutations/login");
+const Register                  =   require('../mutations/register');
 
-const ChangeUserPasswordMutation = require('../mutations/ChangeUserPasswordMutation')
+const UpdateUser                =   require('../mutations/user/updateUser');
+const DeleteUser                =   require('../mutations/user/deleteUser');
+const UpdateUserRole            =   require('../mutations/user/updateUserRole');
+const UpdateUserPassword        =   require('../mutations/user/updateUserPassword')
+
+const CreateMovie               =   require('../mutations/movie/createMovie');
+const UpdateMovie               =   require('../mutations/movie/updateMovie');
+const DeleteMovie               =   require('../mutations/movie/deleteMovie');
+
+const CreateDirector            =   require('../mutations/director/createDirector');
+
+const CreateMovieList           =   require('../mutations/movieList/createMovieList');
+const UpdateMovieList           =   require('../mutations/movieList/updateMovieList');
+const DeleteMovieList           =   require('../mutations/movieList/deleteMovieList');
+const AddMovieToMovieList       =   require('../mutations/movieList/addMovieToMovieList');
+const RemoveMovieFromMovieList  =   require('../mutations/movieList/removeMovieFromMovieList');
+
 
 const MutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: {
-        login: loginMutation,
-        register: RegisterMutation,
-        updateUser: UpdateUserMutation,
-        deleteUser: DeleteUserMutation,
-        changeRole: ChangeRoleMutation,
-        addMovie: AddMovieMutation,
-        updateMovie: UpdateMovieMutation,
-        deleteMovie: DeleteMovieMutation,
-        addDirector: AddDirectorMutation,
-        createMovieList: CreateMovieListMutation,
-        updateMovieList: UpdateMovieListMutation,
-        deleteMovieList: DeleteMovieListMutation,
-        addMovieToList: AddMovieToListMutation,
-        removeMovieFromList: RemoveMovieFromListMutation,
-        changePassword: ChangeUserPasswordMutation,
+        login: Login,
+        register: Register,
+        updateUser: UpdateUser,
+        deleteUser: DeleteUser,
+        updateUserRole: UpdateUserRole,
+        createMovie: CreateMovie,
+        updateMovie: UpdateMovie,
+        deleteMovie: DeleteMovie,
+        createDirector: CreateDirector,
+        createMovieList: CreateMovieList,
+        updateMovieList: UpdateMovieList,
+        deleteMovieList: DeleteMovieList,
+        addMovieToMovieList: AddMovieToMovieList,
+        removeMovieFromMovieList: RemoveMovieFromMovieList,
+        changeUserPassword: UpdateUserPassword,
     }
 });
 

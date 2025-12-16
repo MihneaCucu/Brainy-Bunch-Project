@@ -1,9 +1,9 @@
 const { GraphQLInt, GraphQLNonNull } = require('graphql');
-const UserPayload = require('../types/UserPayload');
-const db = require('../../models');
-const { checkRole } = require('../../utils/auth');
+const UserPayload = require('../../types/UserPayload');
+const db = require('../../../models');
+const { checkRole } = require('../../../utils/auth');
 
-const ChangeRoleMutation = {
+const UpdateUserRole = {
     type: UserPayload,
     args: {
         userId: {type: new GraphQLNonNull(GraphQLInt)},
@@ -25,4 +25,4 @@ const ChangeRoleMutation = {
     }
 };
 
-module.exports = ChangeRoleMutation;
+module.exports = UpdateUserRole;

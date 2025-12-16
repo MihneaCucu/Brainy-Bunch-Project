@@ -1,8 +1,8 @@
 const { GraphQLInt, GraphQLString, GraphQLNonNull } = require('graphql');
-const db = require('../../models');
-const { checkRole } = require('../../utils/auth');
+const db = require('../../../models');
+const { checkRole } = require('../../../utils/auth');
 
-const DeleteUserMutation = {
+const DeleteUser = {
     type: GraphQLString,    // Returns a success message
     args: {
         id: {type: new GraphQLNonNull(GraphQLInt)}
@@ -27,4 +27,4 @@ const DeleteUserMutation = {
     }
 };
 
-module.exports = DeleteUserMutation;
+module.exports = DeleteUser;
