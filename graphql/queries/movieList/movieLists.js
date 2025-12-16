@@ -1,9 +1,9 @@
 const graphql = require('graphql');
 const { GraphQLList, GraphQLInt } = graphql;
-const MovieListPayload = require('../types/MovieListPayload');
-const db = require('../../models');
+const MovieListPayload = require('../../types/MovieListPayload');
+const db = require('../../../models');
 
-const getAllMovieListsQuery = {
+const MovieLists = {
     type: new GraphQLList(MovieListPayload),
     args: {
         userId: { type: GraphQLInt },
@@ -32,5 +32,5 @@ const getAllMovieListsQuery = {
     }
 };
 
-module.exports = getAllMovieListsQuery;
+module.exports = MovieLists;
 

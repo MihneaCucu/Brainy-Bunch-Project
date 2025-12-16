@@ -1,9 +1,9 @@
 const { GraphQLInt } = require('graphql');
-const UserPayload = require('../types/UserPayload');
-const db = require('../../models');
-const { checkRole } = require('../../utils/auth');
+const UserPayload = require('../../types/UserPayload');
+const db = require('../../../models');
+const { checkRole } = require('../../../utils/auth');
 
-const GetUserByIdQuery = {
+const User = {
     type: UserPayload,
     args: {
         id: { type: GraphQLInt }
@@ -18,4 +18,4 @@ const GetUserByIdQuery = {
     }
 };
 
-module.exports = GetUserByIdQuery;
+module.exports = User;

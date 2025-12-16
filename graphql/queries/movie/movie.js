@@ -2,10 +2,10 @@ const {
     GraphQLInt,
     GraphQLError,
 } = require('graphql');
-const MoviePayload = require('../types/MoviePayload');
-const db = require('../../models');
+const MoviePayload = require('../../types/MoviePayload');
+const db = require('../../../models');
 
-const movieQuery = {
+const Movie = {
     type: MoviePayload,
     args: {
         id: {
@@ -27,4 +27,4 @@ const movieQuery = {
     }
 }
 
-module.exports = movieQuery;
+module.exports = Movie;

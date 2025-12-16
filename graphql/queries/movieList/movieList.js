@@ -1,9 +1,9 @@
 const graphql = require('graphql');
 const { GraphQLInt, GraphQLNonNull } = graphql;
-const MovieListPayload = require('../types/MovieListPayload');
-const db = require('../../models');
+const MovieListPayload = require('../../types/MovieListPayload');
+const db = require('../../../models');
 
-const movieListQuery = {
+const MovieList = {
     type: MovieListPayload,
     args: { id: { type: new GraphQLNonNull(GraphQLInt) } },
     async resolve(parent, args, context) {
@@ -26,4 +26,4 @@ const movieListQuery = {
     }
 };
 
-module.exports = movieListQuery;
+module.exports = MovieList;

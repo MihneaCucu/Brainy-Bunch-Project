@@ -1,8 +1,8 @@
 const { GraphQLInt, GraphQLError } = require('graphql');
-const DirectorType = require('../types/DirectorType');
-const db = require('../../models');
+const DirectorType = require('../../types/DirectorPayload');
+const db = require('../../../models');
 
-const directorQuery = {
+const Director = {
     type: DirectorType,
     args: {
         id: {
@@ -24,5 +24,5 @@ const directorQuery = {
     }
 };
 
-module.exports = directorQuery;
+module.exports = Director;
 

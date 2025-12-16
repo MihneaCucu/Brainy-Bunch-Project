@@ -1,9 +1,9 @@
 const { GraphQLList } = require('graphql');
-const UserPayload = require('../types/UserPayload');
-const db = require('../../models');
-const { checkRole } = require('../../utils/auth');
+const UserPayload = require('../../types/UserPayload');
+const db = require('../../../models');
+const { checkRole } = require('../../../utils/auth');
 
-const GetAllUsersQuery = {
+const Users = {
     type: new GraphQLList(UserPayload),
     resolve: async (_, args, context) => {
         checkRole(context, ['admin']);      // just the admin can see all users
@@ -14,4 +14,4 @@ const GetAllUsersQuery = {
     }
 };
 
-module.exports = GetAllUsersQuery;
+module.exports = Users;

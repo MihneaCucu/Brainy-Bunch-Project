@@ -1,8 +1,8 @@
 const { GraphQLList } = require('graphql');
-const MoviePayload = require('../types/MoviePayload');
-const db = require('../../models');
+const MoviePayload = require('../../types/MoviePayload');
+const db = require('../../../models');
 
-const GetAllMoviesQuery = {
+const Movies = {
     type: new GraphQLList(MoviePayload),
     resolve: async () => {
         return await db.Movie.findAll({
@@ -11,4 +11,4 @@ const GetAllMoviesQuery = {
     }
 }
 
-module.exports = GetAllMoviesQuery;
+module.exports = Movies;

@@ -1,8 +1,8 @@
 const { GraphQLList } = require('graphql');
-const DirectorType = require('../types/DirectorType');
-const db = require('../../models');
+const DirectorType = require('../../types/DirectorPayload');
+const db = require('../../../models');
 
-const GetAllDirectorsQuery = {
+const Directors = {
     type: new GraphQLList(DirectorType),
     resolve: async () => {
         return await db.Director.findAll({
@@ -11,5 +11,5 @@ const GetAllDirectorsQuery = {
     }
 };
 
-module.exports = GetAllDirectorsQuery;
+module.exports = Directors;
 

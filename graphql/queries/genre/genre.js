@@ -2,10 +2,10 @@ const {
     GraphQLInt,
     GraphQLError,
 } = require('graphql');
-const GenrePayload = require('../types/GenrePayload');
-const db = require('../../models');
+const GenrePayload = require('../../types/GenrePayload');
+const db = require('../../../models');
 
-const genreQuery = {
+const Genre = {
     type: GenrePayload,
     args: {
         id: {
@@ -25,4 +25,4 @@ const genreQuery = {
     }
 }
 
-module.exports = genreQuery;
+module.exports = Genre;
