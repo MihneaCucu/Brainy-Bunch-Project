@@ -1,16 +1,16 @@
-const {GraphQLString, GraphQLNonNull} = require('graphql');
+const {GraphQLString, GraphQLInt, GraphQLNonNull} = require('graphql');
 const db = require('../../../models');
-const {checkRole} = require('../../../utils/auth');
+const {checkAuth} = require('../../../utils/auth');
 
 const DeleteReview = {
     type: GraphQLString,
     args: {
         id: {
-            type: new GraphQLNonNull(GraphQLString),
+            type: new GraphQLNonNull(GraphQLInt),
         },
     },
     resolve: async (_, args, context) => {
-        checkRole(context, ['user', 'moderator', 'admin']);
+        checkAuth(context, ['user', 'moderator', 'admin']);
 
         const reviewToDelete = await db.Review.findByPk(args.id);
 
@@ -18,7 +18,7 @@ const DeleteReview = {
             throw new Error("Review not found");
         }
 
-        if(reviewToDelete.userId !== context.user.id && !['moderator', 'admin'].includes(context.user.role)){
+        if(reviewToDelete.userId !== context.user.id && !['moderator', 'admin'].includes(context.user.userRole.name)){
             throw new Error("Not authorized to delete this review");
         }
 

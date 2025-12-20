@@ -27,8 +27,8 @@ const CommentPayload = new GraphQLObjectType({
             },
             review: {
                 type: ReviewPayload,
-                resolve: (parent, args, context) => {
-                    return context.db.Review.findByPk(parent.reviewId);
+                resolve: (parent) => {
+                    return parent.review;
                 }
             }
         };

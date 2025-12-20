@@ -1,9 +1,10 @@
-const { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLInt } = require('graphql');
+const { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLInt, GraphQLList } = require('graphql');
 
 const MoviePayload = new GraphQLObjectType({
     name: 'Movie',
     fields: () => {
         const DirectorPayload = require('./DirectorPayload');
+        const ReviewPayload = require('./ReviewPayload');
         return {
             id: {
                 type: GraphQLID,
@@ -19,6 +20,12 @@ const MoviePayload = new GraphQLObjectType({
             },
             director: {
                 type: DirectorPayload,
+            },
+            reviews: {
+                type: new GraphQLList(ReviewPayload),
+                resolve: (parent) => {
+                    return parent.reviews || [];
+                }
             },
         };
     }

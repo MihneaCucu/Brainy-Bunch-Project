@@ -15,7 +15,7 @@ const review = {
         const review = await db.Review.findByPk(id, {
             include: [
                 { model: db.Movie, as: 'movie' },
-                { model: db.Comment, as: 'comment' },
+                { model: db.Comment, as: 'comments' },
                 { model: db.User, as: 'user' }
             ]
         });

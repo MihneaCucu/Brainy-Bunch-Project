@@ -31,22 +31,20 @@ const ReviewPayload = new GraphQLObjectType({
             },
             movie: {
                 type: MoviePayload,
-                resolve: (parent, args, context) => {
-                    return context.db.Movie.findByPk(parent.movieId);
+                resolve: (parent) => {
+                    return parent.movie;
                 }
             },
             user: {
                 type: require('./UserPayload'),
-                resolve: (parent, args, context) => {
-                    return context.db.User.findByPk(parent.userId);
+                resolve: (parent) => {
+                    return parent.user;
                 }
             },
             comments: {
                 type: new GraphQLList(CommentPayload),
-                resolve: (parent, args, context) => {
-                    return context.db.Comment.findAll({
-                        where: { reviewId: parent.id }
-                    });
+                resolve: (parent) => {
+                    return parent.comments || [];
                 }
             }
         };
