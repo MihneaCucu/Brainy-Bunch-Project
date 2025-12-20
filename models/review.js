@@ -5,10 +5,24 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class Review extends Model {
     static associate(models) {
-      Review.belongsTo(models.User, {foreignKey: 'userId', as: 'user'});
-      Review.belongsTo(models.Movie, {foreignKey: 'movieId', as: 'movie'});
+
+      Review.belongsTo(models.User, {
+        foreignKey: 'userId',
+        as: 'user'
+      });
+
+      Review.belongsTo(models.Movie, {
+        foreignKey: 'movieId',
+        as: 'movie'
+      });
+
+      Review.hasMany(models.Comment, {
+        foreignKey: 'reviewId',
+        as: 'comments'
+      });
     }
   }
+
   Review.init({
     userId: {
       type: DataTypes.INTEGER,
@@ -18,13 +32,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    rating: {
-      type: DataTypes.DECIMAL(3, 1),
+    score: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-    },
-    title: {
-      type: DataTypes.STRING,
-      allowNull: true,
     },
     content: {
       type: DataTypes.TEXT,

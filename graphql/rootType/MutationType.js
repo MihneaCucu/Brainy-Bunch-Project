@@ -1,11 +1,11 @@
 const { GraphQLObjectType } = require("graphql");
 
 const Login                     =   require("../mutations/login");
-const Register                  =   require('../mutations/register');
+const Register                      =   require('../mutations/register');
 
-const UpdateUser                =   require('../mutations/user/updateUser');
+const UpdateUser                    =   require('../mutations/user/updateUser');
 const DeleteUser                =   require('../mutations/user/deleteUser');
-const UpdateUserRole            =   require('../mutations/user/updateUserRole');
+const UpdateUserRole               =   require('../mutations/user/updateUserRole');
 const UpdateUserPassword        =   require('../mutations/user/updateUserPassword')
 
 const CreateMovie               =   require('../mutations/movie/createMovie');
@@ -14,13 +14,21 @@ const DeleteMovie               =   require('../mutations/movie/deleteMovie');
 
 const CreateDirector            =   require('../mutations/director/createDirector');
 const UpdateDirector            =   require('../mutations/director/updateDirector');
-const DeleteDirector            =   require('../mutations/director/deleteDirector');
+const DeleteDirector             =   require('../mutations/director/deleteDirector');
 
 const CreateMovieList           =   require('../mutations/movieList/createMovieList');
 const UpdateMovieList           =   require('../mutations/movieList/updateMovieList');
 const DeleteMovieList           =   require('../mutations/movieList/deleteMovieList');
 const AddMovieToMovieList       =   require('../mutations/movieList/addMovieToMovieList');
 const RemoveMovieFromMovieList  =   require('../mutations/movieList/removeMovieFromMovieList');
+
+const CreateReview              =   require('../mutations/review/createReview');
+const UpdateReview              =   require('../mutations/review/updateReview');
+const DeleteReview              =   require('../mutations/review/deleteReview');
+
+const CreateComment             =   require('../mutations/comment/createComment');
+const UpdateComment             =   require('../mutations/comment/updateComment');
+const DeleteComment             =   require('../mutations/comment/deleteComment');
 
 
 const MutationType = new GraphQLObjectType({
@@ -46,6 +54,14 @@ const MutationType = new GraphQLObjectType({
         deleteMovieList: DeleteMovieList,
         addMovieToMovieList: AddMovieToMovieList,
         removeMovieFromMovieList: RemoveMovieFromMovieList,
+
+        createReview: CreateReview,
+        updateReview: UpdateReview,
+        deleteReview: DeleteReview,
+
+        createComment: CreateComment,
+        updateComment: UpdateComment,
+        deleteComment: DeleteComment,
     }
 });
 
