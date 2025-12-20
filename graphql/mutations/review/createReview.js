@@ -46,6 +46,10 @@ const CreateReview = {
 
         const now = new Date();
 
+        checkRole(context, ['user', 'moderator', 'admin']);
+
+        // addMovieToDiary - apel
+
         const review = await db.Review.create({
             movieId: args.movieId,
             score: args.score,
