@@ -12,7 +12,6 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       Movie.hasMany(models.Review, {foreignKey: 'movieId', as: 'reviews'});
-      Movie.hasMany(models.Rating, {foreignKey: 'movieId', as: 'ratings'});
 
       Movie.belongsToMany(models.Genre, {
         through: models.MovieGenre,

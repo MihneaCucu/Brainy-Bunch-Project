@@ -1,7 +1,7 @@
 const { GraphQLString, GraphQLNonNull } = require('graphql');
 const DirectorType = require('../../types/DirectorPayload');
 const db = require('../../../models');
-const { checkAuth } = require('../../../utils/auth');
+const { checkRole } = require('../../../utils/auth');
 
 const CreateDirector = {
     type: DirectorType,
@@ -18,7 +18,7 @@ const CreateDirector = {
     },
 
     resolve: async (_, args, context) => {
-        checkAuth(context);
+        checkRole(context, ['moderator', 'admin']);
 
         return await db.Director.create({
             name: args.name,

@@ -1,7 +1,7 @@
 const { GraphQLInt, GraphQLString, GraphQLNonNull } = require('graphql');
 const MoviePayload = require('../../types/MoviePayload');
 const db = require('../../../models');
-const { checkAuth } = require('../../../utils/auth');
+const { checkRole } = require('../../../utils/auth');
 
 const UpdateMovie = {
     type: MoviePayload,
@@ -13,7 +13,7 @@ const UpdateMovie = {
         directorId: { type: GraphQLInt },
     },
     resolve: async (_, args, context) => {
-        checkAuth(context);
+        checkRole(context, ['moderator', 'admin']);
 
         const movie = await db.Movie.findByPk(args.id);
         if (!movie) {

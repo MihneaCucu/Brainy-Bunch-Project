@@ -14,6 +14,9 @@ const Movies     = require('../queries/movie/movies');
 const MovieList  = require('../queries/movieList/movieList');
 const MovieLists = require('../queries/movieList/movieLists');
 
+const Review     = require('../queries/review/review');
+const Reviews    = require('../queries/review/reviews');
+
 const User       = require('../queries/user/user');
 const Users      = require('../queries/user/users');
 
@@ -29,6 +32,8 @@ const QueryType = new GraphQLObjectType({
         movies: Movies,
         movieList: MovieList,
         movieLists: MovieLists,
+        review: Review,
+        reviews: Reviews,
         user: User,
         users: Users,
     },

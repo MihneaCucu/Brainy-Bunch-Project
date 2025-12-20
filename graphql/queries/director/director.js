@@ -1,9 +1,9 @@
 const { GraphQLInt, GraphQLError } = require('graphql');
-const DirectorType = require('../../types/DirectorPayload');
+const DirectorPayload = require('../../types/DirectorPayload');
 const db = require('../../../models');
 
 const Director = {
-    type: DirectorType,
+    type: DirectorPayload,
     args: {
         id: {
             type: GraphQLInt,
