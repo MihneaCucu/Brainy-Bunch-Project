@@ -1,5 +1,5 @@
 const LoggedInUserResponse = require("../types/LoggedInUserResponse");
-const LoginCredentialsInputType = require("../inputTypes/LoginCredentialsInputType");
+const LoginCredentialsInput = require("../inputTypes/LoginCredentialsInput");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET_KEY } = require("../../constants");
 const db = require("../../models");
@@ -21,7 +21,7 @@ const Login = {
     }),
     args: {
         input: {
-            type: LoginCredentialsInputType
+            type: LoginCredentialsInput
         }
     },
     resolve: async (_, args) => {

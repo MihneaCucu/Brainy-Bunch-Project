@@ -1,7 +1,7 @@
 const { GraphQLInt, GraphQLString, GraphQLNonNull } = require('graphql');
-const UserPayload = require('../types/UserPayload');
-const db = require('../../models');
-const { checkAuth } = require('../../utils/auth');
+const UserPayload = require('../../types/UserPayload');
+const db = require('../../../models');
+const { checkAuth } = require('../../../utils/auth');
 
 const UpdateUser = {
     type: UserPayload,

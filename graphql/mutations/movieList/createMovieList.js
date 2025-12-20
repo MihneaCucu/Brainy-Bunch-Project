@@ -1,7 +1,7 @@
 const graphql = require('graphql');
 const { GraphQLString, GraphQLBoolean, GraphQLNonNull } = graphql;
-const MovieListPayload = require('../types/MovieListPayload');
-const db = require('../../models');
+const MovieListPayload = require('../../types/MovieListPayload');
+const db = require('../../../models');
 
 const createMovieList = {
     type: MovieListPayload,

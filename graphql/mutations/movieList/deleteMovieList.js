@@ -1,6 +1,6 @@
 const graphql = require('graphql');
 const { GraphQLInt, GraphQLNonNull, GraphQLString } = graphql;
-const db = require('../../models');
+const db = require('../../../models');
 
 const DeleteMovieList = {
     type: GraphQLString,
