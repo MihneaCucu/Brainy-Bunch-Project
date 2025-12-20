@@ -1,7 +1,7 @@
 const { GraphQLString, GraphQLNonNull } = require('graphql');
-const DirectorType = require('../types/DirectorPayload');
-const db = require('../../models');
-const { checkAuth } = require('../../utils/auth');
+const DirectorType = require('../../types/DirectorPayload');
+const db = require('../../../models');
+const { checkAuth } = require('../../../utils/auth');
 
 const CreateDirector = {
     type: DirectorType,

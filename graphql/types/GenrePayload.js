@@ -7,9 +7,15 @@ const GenrePayload = new GraphQLObjectType({
         },
         name: {
             type: GraphQLString,
-        }
-
-        // TODO: Update genre type to include createdAt and updatedAt
+        },
+        createdAt: {
+            type: GraphQLString,
+            resolve: (parent) => new Date(parent.createdAt).toISOString(),
+        },
+        updatedAt: {
+            type: GraphQLString,
+            resolve: (parent) => new Date(parent.updatedAt).toISOString(),
+        },
     }
 });
 module.exports = GenrePayload;

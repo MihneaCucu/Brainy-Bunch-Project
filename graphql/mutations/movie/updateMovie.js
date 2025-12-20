@@ -1,7 +1,7 @@
 const { GraphQLInt, GraphQLString, GraphQLNonNull } = require('graphql');
-const MoviePayload = require('../types/MoviePayload');
-const db = require('../../models');
-const { checkAuth } = require('../../utils/auth');
+const MoviePayload = require('../../types/MoviePayload');
+const db = require('../../../models');
+const { checkAuth } = require('../../../utils/auth');
 
 const UpdateMovie = {
     type: MoviePayload,
