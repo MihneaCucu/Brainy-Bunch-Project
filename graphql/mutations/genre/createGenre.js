@@ -12,6 +12,7 @@ const CreateGenre = {
   },
 
   resolve: async (_, args) => {
+    checkRole(context, ['admin']);
 
     const now = new Date();
 

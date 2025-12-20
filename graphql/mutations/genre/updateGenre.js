@@ -10,7 +10,7 @@ const UpdateGenre = {
         name: { type: GraphQLString },
     },
     resolve: async (_, args, context) => {
-        checkAuth(context);
+        checkAuth(context, ['admin']);
 
         const genre = await db.Genre.findByPk(args.id);
         if (!genre) {
