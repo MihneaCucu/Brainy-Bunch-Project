@@ -1,20 +1,24 @@
-const {GraphQLString, GraphQLNonNull} = require('graphql');
+const {GraphQLString, GraphQLInt, GraphQLNonNull} = require('graphql');
 const CommentPayload = require('../../types/CommentPayload');
 const db = require('../../../models');
-const {checkRole} = require('../../../utils/auth');
+const {checkAuth} = require('../../../utils/auth');
 
 const UpdateComment = {
     type: CommentPayload,
     args: {
         id: {
-            type: new GraphQLNonNull(GraphQLString),
+            type: new GraphQLNonNull(GraphQLInt),
         },
         content: {
             type: new GraphQLNonNull(GraphQLString),
         },
     },
     resolve: async (_, args, context) => {
-        checkRole(context, ['user']);
+        checkAuth(context, ['user']);
+
+        if (!args.content.trim()) {
+            throw new Error("Content cannot be empty");
+        }
 
         const comment = await db.Comment.findByPk(args.id);
         if (!comment) {
@@ -33,7 +37,10 @@ const UpdateComment = {
         await comment.save();
 
         return await db.Comment.findByPk(comment.id, {
-            include: [{model: db.User, as: 'user'}],
+            include: [
+                {model: db.User, as: 'user'},
+                {model: db.Review, as: 'review'}
+            ],
         });
     },
 };

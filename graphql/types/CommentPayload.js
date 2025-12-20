@@ -4,6 +4,7 @@ const CommentPayload = new GraphQLObjectType({
     name: 'Comment',
     fields: () => {
         const ReviewPayload = require('./ReviewPayload');
+        const UserPayload = require('./UserPayload');
         return {
             id: {
                 type: GraphQLInt,
@@ -24,6 +25,12 @@ const CommentPayload = new GraphQLObjectType({
             updatedAt: {
                 type: GraphQLString,
                 resolve: (parent) => new Date(parent.updatedAt).toISOString(),
+            },
+            user: {
+                type: UserPayload,
+                resolve: (parent) => {
+                    return parent.user;
+                }
             },
             review: {
                 type: ReviewPayload,

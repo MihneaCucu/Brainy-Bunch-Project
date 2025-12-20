@@ -34,12 +34,6 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         sequelize,
         modelName: 'Comment',
-        indexes: [
-            {
-                unique: true,
-                fields: ['userId', 'reviewId']
-            }
-        ]
     });
     return Comment;
 };

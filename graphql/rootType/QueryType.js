@@ -2,6 +2,9 @@ const {
     GraphQLObjectType,
 } = require('graphql');
 
+const Comment    = require('../queries/comment/comment');
+const Comments   = require('../queries/comment/comments');
+
 const Director   = require('../queries/director/director');
 const Directors  = require('../queries/director/directors');
 
@@ -24,6 +27,8 @@ const Users      = require('../queries/user/users');
 const QueryType = new GraphQLObjectType({
     name: 'Query',
     fields: {
+        comment: Comment,
+        comments: Comments,
         director: Director,
         directors: Directors,
         genre: Genre,
