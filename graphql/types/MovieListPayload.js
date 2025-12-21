@@ -20,7 +20,7 @@ const MovieListPayload = new GraphQLObjectType({
         movies: {
             type: new GraphQLList(MoviePayload),
             resolve(parent) {
-                return parent.getMovies();
+                return parent.movies || (parent.getMovies ? parent.getMovies() : []);
             }
         },
         createdAt: { type: GraphQLString },
