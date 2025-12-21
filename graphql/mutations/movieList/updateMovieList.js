@@ -1,15 +1,14 @@
 const graphql = require('graphql');
-const { GraphQLInt, GraphQLString, GraphQLBoolean, GraphQLNonNull } = graphql;
+const { GraphQLInt, GraphQLNonNull } = graphql;
 const MovieListPayload = require('../../types/MovieListPayload');
+const UpdateMovieListInput = require('../../inputTypes/UpdateMovieListInput');
 const db = require('../../../models');
 
 const UpdateMovieList = {
     type: MovieListPayload,
     args: {
         id: { type: new GraphQLNonNull(GraphQLInt) },
-        name: { type: GraphQLString },
-        description: { type: GraphQLString },
-        isPublic: { type: GraphQLBoolean },
+        input: { type: new GraphQLNonNull(UpdateMovieListInput) },
     },
     async resolve(parent, args, context) {
         if (!context.user) {
@@ -26,9 +25,11 @@ const UpdateMovieList = {
             throw new Error('You can only update your own movie lists');
         }
 
-        if (args.name !== undefined) movieList.name = args.name;
-        if (args.description !== undefined) movieList.description = args.description;
-        if (args.isPublic !== undefined) movieList.isPublic = args.isPublic;
+        const { name, description, isPublic } = args.input;
+
+        if (name !== undefined) movieList.name = name;
+        if (description !== undefined) movieList.description = description;
+        if (isPublic !== undefined) movieList.isPublic = isPublic;
 
         await movieList.save();
 

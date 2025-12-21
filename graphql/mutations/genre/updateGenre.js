@@ -1,13 +1,14 @@
-const { GraphQLInt, GraphQLString, GraphQLNonNull } = require('graphql');
+const { GraphQLInt, GraphQLNonNull } = require('graphql');
 const GenrePayload = require('../../types/GenrePayload');
+const UpdateGenreInput = require('../../inputTypes/UpdateGenreInput');
 const db = require('../../../models');
-const { checkAuth } = require('../../../utils/auth');
+const { checkRole } = require('../../../utils/auth');
 
 const UpdateGenre = {
     type: GenrePayload,
     args: {
         id: {type: new GraphQLNonNull(GraphQLInt)},
-        name: { type: GraphQLString },
+        input: { type: new GraphQLNonNull(UpdateGenreInput) },
     },
     resolve: async (_, args, context) => {
         checkRole(context, ['admin']);
@@ -17,7 +18,9 @@ const UpdateGenre = {
             throw new Error("Genre not found");
         }
 
-        if (args.name !== undefined) genre.name = args.name;
+        const { name } = args.input;
+
+        if (name !== undefined) genre.name = name;
 
         genre.updatedAt = new Date();
 

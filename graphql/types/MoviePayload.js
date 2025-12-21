@@ -9,6 +9,9 @@ const MoviePayload = new GraphQLObjectType({
             id: {
                 type: GraphQLID,
             },
+            position: {
+                type: GraphQLInt,
+            },
             title: {
                 type: GraphQLString,
             },

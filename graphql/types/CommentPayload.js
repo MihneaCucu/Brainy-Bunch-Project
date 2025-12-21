@@ -9,12 +9,6 @@ const CommentPayload = new GraphQLObjectType({
             id: {
                 type: GraphQLInt,
             },
-            userId: {
-                type: GraphQLInt,
-            },
-            reviewId: {
-                type: GraphQLInt,
-            },
             content: {
                 type: GraphQLString,
             },

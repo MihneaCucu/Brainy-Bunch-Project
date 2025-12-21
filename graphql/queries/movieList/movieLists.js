@@ -7,6 +7,8 @@ const MovieLists = {
     type: new GraphQLList(MovieListPayload),
     args: {
         userId: { type: GraphQLInt },
+        page: { type: GraphQLInt },
+        limit: { type: GraphQLInt }
     },
     async resolve(parent, args, context) {
         const where = {};
@@ -21,6 +23,11 @@ const MovieLists = {
             where.isPublic = true;
         }
 
+        // Pagination logic
+        const page = args.page || 1;
+        const limit = Math.min(args.limit || 5, 5);
+        const offset = (page - 1) * limit;
+
         return await db.MovieList.findAll({
             where,
             include: [
@@ -28,6 +35,8 @@ const MovieLists = {
                 { model: db.User, as: 'user' }
             ],
             order: [['createdAt', 'DESC']],
+            limit,
+            offset
         });
     }
 };
