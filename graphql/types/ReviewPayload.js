@@ -9,12 +9,6 @@ const ReviewPayload = new GraphQLObjectType({
             id: {
                 type: GraphQLInt,
             },
-            userId: {
-                type: GraphQLInt,
-            },
-            movieId: {
-                type: GraphQLInt,
-            },
             score: {
                 type: GraphQLInt,
             },

@@ -10,7 +10,6 @@ const MovieListPayload = new GraphQLObjectType({
         name: { type: GraphQLString },
         description: { type: GraphQLString },
         isPublic: { type: GraphQLBoolean },
-        userId: { type: GraphQLInt },
         user: {
             type: UserPayload,
             resolve(parent) {
