@@ -21,17 +21,16 @@ module.exports = (sequelize, DataTypes) => {
 
     Diary.init({
         userId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'Users',
-            key: 'id',
-        },
-        watchDate: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
             allowNull: false,
+            unique: true,
+            references: {
+                model: 'Users',
+                key: 'id',
+            },
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE',
         }
-    },
     }, {
         sequelize,
         modelName: 'Diary',

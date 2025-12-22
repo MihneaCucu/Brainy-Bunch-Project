@@ -1,7 +1,7 @@
 const graphql = require('graphql');
 const { GraphQLInt, GraphQLNonNull } = graphql;
 const MovieListPayload = require('../../types/MovieListPayload');
-const UpdateMovieListInput = require('../../inputTypes/UpdateMovieListInput');
+const UpdateMovieListInput = require('../../inputTypes/movieList/UpdateMovieListInput');
 const db = require('../../../models');
 
 const UpdateMovieList = {

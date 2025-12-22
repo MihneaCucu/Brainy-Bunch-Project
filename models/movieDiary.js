@@ -2,7 +2,7 @@
 const {
   Model
 } = require('sequelize');
-const diary = require('./diary');
+
 module.exports = (sequelize, DataTypes) => {
     class MovieDiary extends Model{
         static associate(models){
@@ -34,10 +34,17 @@ module.exports = (sequelize, DataTypes) => {
             onDelete: 'CASCADE',
             onUpdate: 'CASCADE'
         }
+        ,
+        watchedAt: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: DataTypes.NOW,
+        },
+        // no rating column; reviews are stored in `Reviews` table
     }, {
         sequelize,
         modelName: 'MovieDiary',
-        timestamps: false 
+        timestamps: true 
     });
 
     return MovieDiary;

@@ -7,24 +7,25 @@ const Sequelize = require("sequelize");
  * createTable() => "Directors", deps: []
  * createTable() => "Genres", deps: []
  * createTable() => "Roles", deps: []
- * createTable() => "Movies", deps: [Directors]
- * createTable() => "MovieActors", deps: [Movies, Actors]
- * createTable() => "MovieGenres", deps: [Movies, Genres]
  * createTable() => "Users", deps: [Roles]
+ * createTable() => "Movies", deps: [Directors]
+ * createTable() => "Reviews", deps: [Users, Movies]
+ * createTable() => "MovieActors", deps: [Movies, Actors]
+ * createTable() => "Diaries", deps: [Users]
+ * createTable() => "MovieGenres", deps: [Movies, Genres]
+ * createTable() => "MovieDiaries", deps: [Movies, Diaries]
  * createTable() => "MovieLists", deps: [Users]
  * createTable() => "MovieListMovies", deps: [MovieLists, Movies]
- * createTable() => "Ratings", deps: [Users, Movies]
- * createTable() => "Reviews", deps: [Users, Movies]
+ * createTable() => "Comments", deps: [Users, Reviews]
  * createTable() => "Watchlists", deps: [Users]
  * createTable() => "WatchlistMovies", deps: [Watchlists, Movies]
- * addIndex(ratings_user_id_movie_id) => "Ratings"
  *
  */
 
 const info = {
   revision: 1,
   name: "noname",
-  created: "2025-12-16T18:08:25.479Z",
+  created: "2025-12-21T16:29:00.672Z",
   comment: "",
 };
 
@@ -78,7 +79,12 @@ const migrationCommands = (transaction) => [
           primaryKey: true,
           allowNull: false,
         },
-        name: { type: Sequelize.STRING, field: "name", allowNull: false },
+        name: {
+          type: Sequelize.STRING,
+          field: "name",
+          unique: true,
+          allowNull: false,
+        },
         birthDate: {
           type: Sequelize.DATEONLY,
           field: "birthDate",
@@ -160,6 +166,58 @@ const migrationCommands = (transaction) => [
   {
     fn: "createTable",
     params: [
+      "Users",
+      {
+        id: {
+          type: Sequelize.INTEGER,
+          field: "id",
+          autoIncrement: true,
+          primaryKey: true,
+          allowNull: false,
+        },
+        username: {
+          type: Sequelize.STRING,
+          field: "username",
+          unique: true,
+          allowNull: false,
+        },
+        email: {
+          type: Sequelize.STRING,
+          field: "email",
+          unique: true,
+          allowNull: false,
+        },
+        password: {
+          type: Sequelize.STRING,
+          field: "password",
+          allowNull: false,
+        },
+        roleId: {
+          type: Sequelize.INTEGER,
+          onUpdate: "CASCADE",
+          onDelete: "CASCADE",
+          references: { model: "Roles", key: "id" },
+          field: "roleId",
+          defaultValue: 1,
+          allowNull: false,
+        },
+        createdAt: {
+          type: Sequelize.DATE,
+          field: "createdAt",
+          allowNull: false,
+        },
+        updatedAt: {
+          type: Sequelize.DATE,
+          field: "updatedAt",
+          allowNull: false,
+        },
+      },
+      { transaction },
+    ],
+  },
+  {
+    fn: "createTable",
+    params: [
       "Movies",
       {
         id: {
@@ -169,7 +227,12 @@ const migrationCommands = (transaction) => [
           primaryKey: true,
           allowNull: false,
         },
-        title: { type: Sequelize.STRING, field: "title", allowNull: false },
+        title: {
+          type: Sequelize.STRING,
+          field: "title",
+          unique: true,
+          allowNull: false,
+        },
         description: {
           type: Sequelize.TEXT,
           field: "description",
@@ -188,6 +251,50 @@ const migrationCommands = (transaction) => [
           references: { model: "Directors", key: "id" },
           allowNull: true,
         },
+        createdAt: {
+          type: Sequelize.DATE,
+          field: "createdAt",
+          allowNull: false,
+        },
+        updatedAt: {
+          type: Sequelize.DATE,
+          field: "updatedAt",
+          allowNull: false,
+        },
+      },
+      { transaction },
+    ],
+  },
+  {
+    fn: "createTable",
+    params: [
+      "Reviews",
+      {
+        id: {
+          type: Sequelize.INTEGER,
+          field: "id",
+          autoIncrement: true,
+          primaryKey: true,
+          allowNull: false,
+        },
+        userId: {
+          type: Sequelize.INTEGER,
+          onUpdate: "CASCADE",
+          onDelete: "NO ACTION",
+          references: { model: "Users", key: "id" },
+          field: "userId",
+          allowNull: false,
+        },
+        movieId: {
+          type: Sequelize.INTEGER,
+          onUpdate: "CASCADE",
+          onDelete: "CASCADE",
+          references: { model: "Movies", key: "id" },
+          field: "movieId",
+          allowNull: false,
+        },
+        score: { type: Sequelize.INTEGER, field: "score", allowNull: false },
+        content: { type: Sequelize.TEXT, field: "content", allowNull: false },
         createdAt: {
           type: Sequelize.DATE,
           field: "createdAt",
@@ -234,6 +341,41 @@ const migrationCommands = (transaction) => [
   {
     fn: "createTable",
     params: [
+      "Diaries",
+      {
+        id: {
+          type: Sequelize.INTEGER,
+          field: "id",
+          autoIncrement: true,
+          primaryKey: true,
+          allowNull: false,
+        },
+        userId: {
+          type: Sequelize.INTEGER,
+          field: "userId",
+          onUpdate: "CASCADE",
+          onDelete: "CASCADE",
+          references: { model: "Users", key: "id" },
+          unique: true,
+          allowNull: false,
+        },
+        createdAt: {
+          type: Sequelize.DATE,
+          field: "createdAt",
+          allowNull: false,
+        },
+        updatedAt: {
+          type: Sequelize.DATE,
+          field: "updatedAt",
+          allowNull: false,
+        },
+      },
+      { transaction },
+    ],
+  },
+  {
+    fn: "createTable",
+    params: [
       "MovieGenres",
       {
         movieId: {
@@ -263,41 +405,35 @@ const migrationCommands = (transaction) => [
   {
     fn: "createTable",
     params: [
-      "Users",
+      "MovieDiaries",
       {
-        id: {
+        movieId: {
           type: Sequelize.INTEGER,
-          field: "id",
-          autoIncrement: true,
-          primaryKey: true,
-          allowNull: false,
-        },
-        username: {
-          type: Sequelize.STRING,
-          field: "username",
-          unique: true,
-          allowNull: false,
-        },
-        email: {
-          type: Sequelize.STRING,
-          field: "email",
-          unique: true,
-          allowNull: false,
-        },
-        password: {
-          type: Sequelize.STRING,
-          field: "password",
-          allowNull: false,
-        },
-        roleId: {
-          type: Sequelize.INTEGER,
+          unique: "MovieDiaries_movieId_diaryId_unique",
+          field: "movieId",
           onUpdate: "CASCADE",
           onDelete: "CASCADE",
-          references: { model: "Roles", key: "id" },
-          field: "roleId",
-          defaultValue: 1,
+          references: { model: "Movies", key: "id" },
+          allowNull: false,
+          primaryKey: true,
+        },
+        diaryId: {
+          type: Sequelize.INTEGER,
+          unique: "MovieDiaries_movieId_diaryId_unique",
+          field: "diaryId",
+          onUpdate: "CASCADE",
+          onDelete: "CASCADE",
+          references: { model: "Diaries", key: "id" },
+          allowNull: false,
+          primaryKey: true,
+        },
+        watchedAt: {
+          type: Sequelize.DATE,
+          field: "watchedAt",
+          defaultValue: Sequelize.NOW,
           allowNull: false,
         },
+        note: { type: Sequelize.TEXT, field: "note", allowNull: true },
         createdAt: {
           type: Sequelize.DATE,
           field: "createdAt",
@@ -397,50 +533,7 @@ const migrationCommands = (transaction) => [
   {
     fn: "createTable",
     params: [
-      "Ratings",
-      {
-        id: {
-          type: Sequelize.INTEGER,
-          field: "id",
-          autoIncrement: true,
-          primaryKey: true,
-          allowNull: false,
-        },
-        score: { type: Sequelize.INTEGER, field: "score", allowNull: false },
-        userId: {
-          type: Sequelize.INTEGER,
-          onUpdate: "CASCADE",
-          onDelete: "NO ACTION",
-          references: { model: "Users", key: "id" },
-          allowNull: true,
-          field: "userId",
-        },
-        movieId: {
-          type: Sequelize.INTEGER,
-          onUpdate: "CASCADE",
-          onDelete: "CASCADE",
-          references: { model: "Movies", key: "id" },
-          allowNull: true,
-          field: "movieId",
-        },
-        createdAt: {
-          type: Sequelize.DATE,
-          field: "createdAt",
-          allowNull: false,
-        },
-        updatedAt: {
-          type: Sequelize.DATE,
-          field: "updatedAt",
-          allowNull: false,
-        },
-      },
-      { transaction },
-    ],
-  },
-  {
-    fn: "createTable",
-    params: [
-      "Reviews",
+      "Comments",
       {
         id: {
           type: Sequelize.INTEGER,
@@ -457,20 +550,14 @@ const migrationCommands = (transaction) => [
           field: "userId",
           allowNull: false,
         },
-        movieId: {
+        reviewId: {
           type: Sequelize.INTEGER,
           onUpdate: "CASCADE",
-          onDelete: "CASCADE",
-          references: { model: "Movies", key: "id" },
-          field: "movieId",
+          onDelete: "NO ACTION",
+          references: { model: "Reviews", key: "id" },
+          field: "reviewId",
           allowNull: false,
         },
-        rating: {
-          type: Sequelize.DECIMAL(3, 1),
-          field: "rating",
-          allowNull: false,
-        },
-        title: { type: Sequelize.STRING, field: "title", allowNull: true },
         content: { type: Sequelize.TEXT, field: "content", allowNull: false },
         createdAt: {
           type: Sequelize.DATE,
@@ -566,26 +653,20 @@ const migrationCommands = (transaction) => [
       { transaction },
     ],
   },
-  {
-    fn: "addIndex",
-    params: [
-      "Ratings",
-      ["userId", "movieId"],
-      {
-        indexName: "ratings_user_id_movie_id",
-        name: "ratings_user_id_movie_id",
-        indicesType: "UNIQUE",
-        type: "UNIQUE",
-        transaction,
-      },
-    ],
-  },
 ];
 
 const rollbackCommands = (transaction) => [
   {
     fn: "dropTable",
     params: ["Actors", { transaction }],
+  },
+  {
+    fn: "dropTable",
+    params: ["Comments", { transaction }],
+  },
+  {
+    fn: "dropTable",
+    params: ["Diaries", { transaction }],
   },
   {
     fn: "dropTable",
@@ -605,6 +686,10 @@ const rollbackCommands = (transaction) => [
   },
   {
     fn: "dropTable",
+    params: ["MovieDiaries", { transaction }],
+  },
+  {
+    fn: "dropTable",
     params: ["MovieGenres", { transaction }],
   },
   {
@@ -614,10 +699,6 @@ const rollbackCommands = (transaction) => [
   {
     fn: "dropTable",
     params: ["MovieListMovies", { transaction }],
-  },
-  {
-    fn: "dropTable",
-    params: ["Ratings", { transaction }],
   },
   {
     fn: "dropTable",

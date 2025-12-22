@@ -1,6 +1,6 @@
 const { GraphQLInt, GraphQLNonNull } = require('graphql');
 const GenrePayload = require('../../types/GenrePayload');
-const UpdateGenreInput = require('../../inputTypes/UpdateGenreInput');
+const UpdateGenreInput = require('../../inputTypes/genre/UpdateGenreInput');
 const db = require('../../../models');
 const { checkRole } = require('../../../utils/auth');
 
