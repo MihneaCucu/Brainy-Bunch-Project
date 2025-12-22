@@ -13,8 +13,7 @@ const setupTestDB = () => {
   });
   
   afterEach(async () => {
-    await db.User.destroy({ where: {}, truncate: true });
-    await db.Role.destroy({ where: {}, truncate: true });
+    await db.sequelize.truncate({ cascade: true });
   });
 };
 

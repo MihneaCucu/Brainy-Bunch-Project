@@ -4,6 +4,7 @@ const {
 } = require('graphql');
 const GenrePayload = require('../../types/GenrePayload');
 const db = require('../../../models');
+const { checkAuth } = require('../../../utils/auth');
 
 const Genre = {
     type: GenrePayload,
@@ -12,7 +13,9 @@ const Genre = {
             type: GraphQLInt,
         },
     },
-    resolve: async (_, args) => {
+    resolve: async (_, args, context) => {
+        checkAuth(context);
+
         const { id } = args;
 
         const genre = await db.Genre.findByPk(id);

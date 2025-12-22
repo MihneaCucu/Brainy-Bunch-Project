@@ -13,6 +13,8 @@ const Movie = {
         },
     },
     resolve: async (_, args) => {
+        checkAuth(context);
+        
         const { id } = args;
 
         const movie = await db.Movie.findByPk(id, {

@@ -10,6 +10,8 @@ const Director = {
         },
     },
     resolve: async (_, args) => {
+        checkAuth(context);
+        
         const { id } = args;
 
         const director = await db.Director.findByPk(id, {

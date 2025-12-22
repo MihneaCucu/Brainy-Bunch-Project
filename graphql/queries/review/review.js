@@ -10,6 +10,8 @@ const review = {
         }
     },
     resolve: async (_, args) => {
+        checkAuth(context);
+        
         const { id } = args;
 
         const review = await db.Review.findByPk(id, {

@@ -5,6 +5,8 @@ const db = require('../../../models');
 const Reviews = {
     type: new GraphQLList(ReviewPayload),
     resolve: async () => {
+        checkAuth(context);
+        
         return await db.Review.findAll({
             include: [
                 { model: db.Movie, as: 'movie' },

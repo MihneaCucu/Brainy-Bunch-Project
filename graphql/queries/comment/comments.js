@@ -5,6 +5,8 @@ const db = require('../../../models');
 const Comments = {
     type: new GraphQLList(CommentPayload),
     resolve: async () => {
+        checkAuth(context);
+        
         return await db.Comment.findAll({
             include: [
                 { model: db.User, as: 'user' },
