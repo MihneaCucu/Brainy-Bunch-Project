@@ -30,6 +30,19 @@ const MoviePayload = new GraphQLObjectType({
                     return parent.reviews || [];
                 }
             },
+            diaryReview: {
+                type: ReviewPayload,
+                resolve: (parent) => {
+                    // DiaryPayload attaches a `review` property for diary entries
+                    return parent.review || null;
+                }
+            },
+            watchedAt: {
+                type: GraphQLString,
+            },
+            rating: {
+                type: GraphQLInt,
+            },
         };
     }
 });

@@ -22,6 +22,8 @@ const DeleteMovieList           =   require('../mutations/movieList/deleteMovieL
 const AddMovieToMovieList       =   require('../mutations/movieList/addMovieToMovieList');
 const RemoveMovieFromMovieList  =   require('../mutations/movieList/removeMovieFromMovieList');
 
+const MarkMovieWatched          =   require('../mutations/diary/markMovieWatched');
+
 const CreateGenre               =   require('../mutations/genre/createGenre');
 const UpdateGenre               =   require('../mutations/genre/updateGenre');
 const DeleteGenre               =   require('../mutations/genre/deleteGenre');
@@ -58,6 +60,8 @@ const MutationType = new GraphQLObjectType({
         deleteMovieList: DeleteMovieList,
         addMovieToMovieList: AddMovieToMovieList,
         removeMovieFromMovieList: RemoveMovieFromMovieList,
+
+        markMovieWatched: MarkMovieWatched,
       
         changeUserPassword: UpdateUserPassword,
       
