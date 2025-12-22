@@ -6,7 +6,7 @@
     "start": "node index.js",
     "dev": "npx nodemon index.js",
     "lint": "eslint .",
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "test:watch": "NODE_ENV=test jest --watch",
     "db:push": "sequelize-cli db:migrate",
     "db:migrate:make": "sequelize-mig migration:make",
@@ -15,6 +15,10 @@
     "db:drop": "sequelize-cli db:drop",
     "db:create": "sequelize-cli db:create",
     "db:reset": "sequelize-cli db:migrate:undo:all && sequelize-cli db:migrate && sequelize-cli db:seed:all"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "verbose": true
   },
   "author": "",
   "license": "ISC",
@@ -27,7 +31,7 @@
     "graphql-http": "^1.22.4",
     "jsonwebtoken": "^9.0.2",
     "process": "^0.11.10",
-    "sequelize": "^6.37.7",
+    "sequelize": "^6.37.5",
     "sqlite3": "^5.1.7",
     "supertest": "^7.1.4"
   },

@@ -5,3 +5,5 @@ database.sqlite
 .vscode
 .env
 migrations/_current.json
+ROLE_AUTHORIZATION.md
+tokens
