@@ -10,6 +10,8 @@ const comment = {
         }
     },
     resolve: async (_, args) => {
+        checkAuth(context);
+        
         const { id } = args;
 
         const comment = await db.Comment.findByPk(id, {

@@ -11,6 +11,8 @@ const MovieLists = {
         limit: { type: GraphQLInt }
     },
     async resolve(parent, args, context) {
+        checkAuth(context);
+        
         const where = {};
 
         if (args.userId) {

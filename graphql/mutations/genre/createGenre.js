@@ -1,7 +1,7 @@
 const { GraphQLString, GraphQLNonNull } = require("graphql");
 const GenrePayload = require("../../types/GenrePayload");
 const db = require("../../../models");
-
+const { checkRole } = require('../../../utils/auth');
 
 const CreateGenre = {
   type: GenrePayload,
@@ -11,7 +11,7 @@ const CreateGenre = {
     },
   },
 
-  resolve: async (_, args) => {
+  resolve: async (_, args, context) => {
     checkRole(context, ['admin']);
 
     const now = new Date();

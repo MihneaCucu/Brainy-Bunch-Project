@@ -5,6 +5,8 @@ const db = require('../../../models');
 const Movies = {
     type: new GraphQLList(MoviePayload),
     resolve: async () => {
+        checkAuth(context);
+
         return await db.Movie.findAll({
             include: [
                 { model: db.Director, as: 'director' },

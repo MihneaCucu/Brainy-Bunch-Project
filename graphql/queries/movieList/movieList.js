@@ -11,6 +11,8 @@ const MovieList = {
         limit: { type: GraphQLInt }
     },
     async resolve(parent, args, context) {
+        checkAuth(context);
+        
         const page = args.page || 1;
         const limit = Math.min(args.limit || 5, 5);
         const offset = (page - 1) * limit;
