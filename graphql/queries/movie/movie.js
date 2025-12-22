@@ -4,6 +4,7 @@ const {
 } = require('graphql');
 const MoviePayload = require('../../types/MoviePayload');
 const db = require('../../../models');
+const { checkAuth } = require('../../../utils/auth');
 
 const Movie = {
     type: MoviePayload,
@@ -12,7 +13,7 @@ const Movie = {
             type: GraphQLInt,
         },
     },
-    resolve: async (_, args) => {
+    resolve: async (_, args, context) => {
         checkAuth(context);
         
         const { id } = args;

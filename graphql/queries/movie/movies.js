@@ -1,10 +1,12 @@
 const { GraphQLList } = require('graphql');
 const MoviePayload = require('../../types/MoviePayload');
 const db = require('../../../models');
+const { checkAuth } = require('../../../utils/auth');
+
 
 const Movies = {
     type: new GraphQLList(MoviePayload),
-    resolve: async () => {
+    resolve: async (_, args, context) => {
         checkAuth(context);
 
         return await db.Movie.findAll({
