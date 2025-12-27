@@ -1,6 +1,7 @@
 const {GraphQLInt, GraphQLError } = require('graphql');
 const CommentPayload = require('../../types/CommentPayload');
 const db = require('../../../models');
+const { checkAuth } = require('../../../utils/auth');
 
 const comment = {
     type: CommentPayload,
@@ -9,7 +10,7 @@ const comment = {
             type: GraphQLInt
         }
     },
-    resolve: async (_, args) => {
+    resolve: async (_, args, context) => {
         checkAuth(context);
         
         const { id } = args;
