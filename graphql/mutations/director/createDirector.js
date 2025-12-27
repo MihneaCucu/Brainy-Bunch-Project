@@ -19,6 +19,13 @@ const CreateDirector = {
 
     resolve: async (_, args, context) => {
         checkRole(context, ['moderator', 'admin']);
+        const existingDirector = await db.Director.findOne({
+            where: { name: args.name }
+        });
+
+        if (existingDirector) {
+            throw new Error(`A director with the name "${args.name}" already exists.`);
+        }
 
         return await db.Director.create({
             name: args.name,

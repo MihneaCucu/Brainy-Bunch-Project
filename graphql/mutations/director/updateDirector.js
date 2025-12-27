@@ -20,6 +20,16 @@ const UpdateDirector = {
             throw new Error('Director not found');
         }
 
+        if (args.name !== undefined && args.name !== director.name) {
+            const existingDirector = await db.Director.findOne({
+                where: { name: args.name }
+            });
+
+            if (existingDirector) {
+                throw new Error(`A director with the name "${args.name}" already exists.`);
+            }
+        }
+
         if (args.name !== undefined) director.name = args.name;
         if (args.birthDate !== undefined) director.birthDate = args.birthDate;
         if (args.nationality !== undefined) director.nationality = args.nationality;
