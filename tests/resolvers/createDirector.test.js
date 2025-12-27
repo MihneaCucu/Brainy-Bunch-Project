@@ -58,7 +58,7 @@ describe('Mutation: createDirector', () => {
         expect(result.nationality).toBe('British-American');
     });
 
-    it('should create director when moderator', async () => {
+    it('should FAIL when moderator tries to create director', async () => {
         const context = {
             user: {
                 id: moderator.id,
@@ -72,12 +72,9 @@ describe('Mutation: createDirector', () => {
             nationality: 'American'
         };
 
-        const result = await CreateDirector.resolve(null, args, context);
-
-        expect(result).toBeDefined();
-        expect(result.name).toBe('Quentin Tarantino');
-        expect(result.birthDate).toBe('1963-03-27');
-        expect(result.nationality).toBe('American');
+        await expect(CreateDirector.resolve(null, args, context)).rejects.toThrow(
+            'Unauthorized: You need to be a admin to perform this action.'
+        );
     });
 
     it('should create director with only name (optional fields)', async () => {

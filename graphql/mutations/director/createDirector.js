@@ -18,7 +18,7 @@ const CreateDirector = {
     },
 
     resolve: async (_, args, context) => {
-        checkRole(context, ['moderator', 'admin']);
+        checkRole(context, ['admin']);
         const existingDirector = await db.Director.findOne({
             where: { name: args.name }
         });

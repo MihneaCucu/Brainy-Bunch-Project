@@ -71,7 +71,7 @@ describe('Mutation: updateDirector', () => {
         expect(result.nationality).toBe('British-American'); // unchanged
     });
 
-    it('should update director when moderator', async () => {
+    it('should FAIL when moderator tries to update director', async () => {
         const context = {
             user: {
                 id: moderator.id,
@@ -84,10 +84,9 @@ describe('Mutation: updateDirector', () => {
             nationality: 'British'
         };
 
-        const result = await UpdateDirector.resolve(null, args, context);
-
-        expect(result.nationality).toBe('British');
-        expect(result.name).toBe('Christopher Nolan'); // unchanged
+        await expect(UpdateDirector.resolve(null, args, context)).rejects.toThrow(
+            'Unauthorized: You need to be a admin to perform this action.'
+        );
     });
 
     it('should update multiple fields at once', async () => {

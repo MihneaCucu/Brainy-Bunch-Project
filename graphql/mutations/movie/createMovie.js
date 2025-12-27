@@ -21,7 +21,7 @@ const CreateMovie = {
   },
 
   resolve: async (_, args, context) => {
-    checkRole(context, ['moderator', 'admin']);
+    checkRole(context, ['admin']);
     const movie = await db.Movie.create({
       title: args.title,
       description: args.description,

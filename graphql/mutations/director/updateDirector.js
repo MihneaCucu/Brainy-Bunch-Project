@@ -12,7 +12,7 @@ const UpdateDirector = {
         nationality: { type: GraphQLString }
     },
     resolve: async (_, args, context) => {
-        checkRole(context, ['moderator', 'admin']);
+        checkRole(context, ['admin']);
 
         const director = await db.Director.findByPk(args.id);
 

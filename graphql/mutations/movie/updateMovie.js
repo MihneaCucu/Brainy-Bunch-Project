@@ -13,7 +13,7 @@ const UpdateMovie = {
         directorId: { type: GraphQLInt },
     },
     resolve: async (_, args, context) => {
-        checkRole(context, ['moderator', 'admin']);
+        checkRole(context, ['admin']);
 
         const movie = await db.Movie.findByPk(args.id);
         if (!movie) {
