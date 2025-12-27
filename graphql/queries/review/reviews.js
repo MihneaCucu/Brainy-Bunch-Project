@@ -1,10 +1,11 @@
 const { GraphQLList } = require('graphql');
 const ReviewPayload = require('../../types/ReviewPayload');
 const db = require('../../../models');
+const { checkAuth } = require('../../../utils/auth');
 
 const Reviews = {
     type: new GraphQLList(ReviewPayload),
-    resolve: async () => {
+    resolve: async (_, args, context) => {
         checkAuth(context);
         
         return await db.Review.findAll({
