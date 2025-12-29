@@ -27,6 +27,12 @@ const Reviews    = require('../queries/review/reviews');
 const User       = require('../queries/user/user');
 const Users      = require('../queries/user/users');
 
+const Actor     = require('../queries/actor/actor');
+const Actors     = require('../queries/actor/actors');
+
+const WatchList = require('../queries/watchList/watchList');
+const WatchLists = require('../queries/watchList/watchLists');
+
 
 const QueryType = new GraphQLObjectType({
     name: 'Query',
@@ -48,6 +54,10 @@ const QueryType = new GraphQLObjectType({
         reviews: Reviews,
         user: User,
         users: Users,
+        actor:Actor,
+        actors: Actors,
+        watchList: WatchList,
+        watchLists: WatchLists,
     },
 });
 

@@ -7,19 +7,28 @@ const {GraphQLList} = require("graphql/type");
 
 const Watchlists = {
     type: new GraphQLList(WatchListPayload),
-    args: {},
-    resolve: async (parent, { id }) => {
+    args: {
+        page: { type: GraphQLInt },
+        limit: { type: GraphQLInt }
+    },
+    resolve: async (_, args, context) => {
         checkAuth(context);
 
-        return await db.WatchList.findAll({
+        const page = args.page || 1;
+        const limit = Math.min(args.limit || 5, 5);
+        const offset = (page - 1) * limit;
+
+        return await db.Watchlist.findAll({
             where: {
-                id: id,
+                userId: context.user.id,
             },
             include: [
                 { model: db.Movie, as: 'movies' },
                 { model: db.User, as: 'user' }
             ],
             order: [['createdAt', 'DESC']],
+            limit: limit,
+            offset: offset,
         });
     }
 };

@@ -11,12 +11,13 @@ const WatchList = {
     },
 
     resolve: async (parent, args, context) => {
+        console.log('Import fisierul bun ');
         checkAuth(context);
 
-        const watchList = await db.WatchList.findByPk(args.id, {
+        const watchList = await db.Watchlist.findByPk(args.id, {
             include: [
                 { model: db.User, as: 'user' },
-                { model: db.Movie, as: 'Movie' },
+                { model: db.Movie, as: 'movies' },
             ]
         });
 
@@ -24,7 +25,7 @@ const WatchList = {
             throw new Error('Watch list not found');
         }
 
-        if (!context.user || !context.user.id !== watchList.userId) {
+        if (!context.user || context.user.id !== watchList.userId) {
             throw new Error('You do not have permission to view this list');
         }
 
