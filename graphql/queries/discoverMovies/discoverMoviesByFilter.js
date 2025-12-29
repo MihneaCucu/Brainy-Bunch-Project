@@ -6,12 +6,12 @@ const { checkAuth } = require('../../../utils/auth');
 const DiscoverMoviesByFilter = {
     type: new GraphQLList(MoviePayload),
     args: {
-        // genreId: {
-        //     type: GraphQLInt,
-        // },
-        // actorId:{
-        //     type: GraphQLInt,
-        // },
+        genreId: {
+            type: GraphQLInt,
+        },
+        actorId:{
+            type: GraphQLInt,
+        },
         year: {
             type: GraphQLInt,
         },
@@ -30,21 +30,21 @@ const DiscoverMoviesByFilter = {
         const page = args.page || 1;
         const offset = (page - 1) * limit;
 
-        // if (args.genreId) {
-        //     include.push({
-        //         model: db.Genre,
-        //         as: 'genres',
-        //         where: {id: args.genreId},
-        //     });
-        // }
-        //
-        // if(args.actorId) {
-        //     include.push({
-        //         model:db.Actor,
-        //         as: 'actors',
-        //         where: {id: args.actorId},
-        //     })
-        // }
+        if (args.genreId) {
+            include.push({
+                model: db.Genre,
+                as: 'genres',
+                where: {id: args.genreId},
+            });
+        }
+
+        if(args.actorId) {
+            include.push({
+                model:db.Actor,
+                as: 'actors',
+                where: {id: args.actorId},
+            })
+        }
 
         if (args.year) {
             where.releaseYear = args.year;
