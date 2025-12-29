@@ -36,6 +36,16 @@ const CreateComment             =   require('../mutations/comment/createComment'
 const UpdateComment             =   require('../mutations/comment/updateComment');
 const DeleteComment             =   require('../mutations/comment/deleteComment');
 
+const CreateActor              =   require('../mutations/actor/createActor');
+const UpdateActor              =   require('../mutations/actor/updateActor');
+const DeleteActor              =   require('../mutations/actor/deleteActor');
+
+const CreateWatchList = require("../mutations/watchList/createWatchList");
+const UpdateWatchList         =   require('../mutations/watchList/updateWatchList');
+const DeleteWatchList       =   require('../mutations/watchList/deleteWatchList');
+const AddMovieToWatchList = require("../mutations/watchList/addMovieToWatchList.js");
+const RemoveMovieFromWatchList = require("../mutations/watchList/removeMovieFromWatchList");
+
 
 const MutationType = new GraphQLObjectType({
     name: 'Mutation',
@@ -76,6 +86,17 @@ const MutationType = new GraphQLObjectType({
         createComment: CreateComment,
         updateComment: UpdateComment,
         deleteComment: DeleteComment,
+
+        createActor: CreateActor,
+        updateActor: UpdateActor,
+        deleteActor: DeleteActor,
+
+        createWatchList: CreateWatchList,
+        updateWatchList: UpdateWatchList,
+        deleteWatchList: DeleteWatchList,
+        addMovieToWatchList: AddMovieToWatchList,
+        removeMovieFromWatchList: RemoveMovieFromWatchList,
+
     }
 });
 
