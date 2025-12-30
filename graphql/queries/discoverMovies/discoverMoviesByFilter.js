@@ -35,6 +35,7 @@ const DiscoverMoviesByFilter = {
                 model: db.Genre,
                 as: 'genres',
                 where: {id: args.genreId},
+                required: true,
             });
         }
 
