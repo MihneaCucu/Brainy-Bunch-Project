@@ -18,7 +18,7 @@ const DeleteActor = {
 
         await actorToDelete.destroy();
 
-        return "Genre deleted successfully";
+        return "Actor deleted successfully";
     }
 };
 

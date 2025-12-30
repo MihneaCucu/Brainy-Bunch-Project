@@ -1,9 +1,8 @@
-const { GraphQLString, GraphQLNonNull } = require("graphql");
+const { GraphQLNonNull } = require("graphql");
 const ActorPayload = require('../../types/ActorPayload');
 const CreateActorInput = require("../../inputTypes/actor/CreateActorInput");
 const db = require("../../../models");
 const { checkRole } = require('../../../utils/auth');
-const {GraphQLObjectType} = require("graphql/type");
 
 const CreateActor = {
     type: ActorPayload,
@@ -12,7 +11,7 @@ const CreateActor = {
     },
 
     resolve: async (_, args, context) => {
-        checkRole(context, ['admin', 'moderator']);
+        checkRole(context, ['admin']);
 
         const actor = await db.Actor.create({
             name: args.input.name,
