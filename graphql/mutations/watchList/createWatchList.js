@@ -11,7 +11,7 @@ const createWatchList = {
            type: new GraphQLNonNull(CreateWatchListInput),
        }
     },
-    resolve: (parent, args, context) => {
+    resolve: async (parent, args, context) => {
         const user = context.user;
         if (!user) {
             throw new Error('You must be logged in to create a watch list');

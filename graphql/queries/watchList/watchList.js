@@ -11,7 +11,6 @@ const WatchList = {
     },
 
     resolve: async (parent, args, context) => {
-        console.log('Import fisierul bun ');
         checkAuth(context);
 
         const watchList = await db.Watchlist.findByPk(args.id, {

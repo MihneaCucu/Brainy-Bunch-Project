@@ -24,7 +24,6 @@ const AddMovieToWatchList = {
         }
 
         const watchList = await db.Watchlist.findByPk(args.watchListId);
-        console.log(watchList);
 
         if (!watchList) {
             throw new Error('Watch list not found');

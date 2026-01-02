@@ -3,7 +3,6 @@ const { GraphQLInt, GraphQLNonNull } = graphql;
 const WatchListPayload = require('../../types/WatchListPayload');
 const UpdateWatchListInput = require('../../inputTypes/watchlist/UpdateWatchListInput');
 const db = require('../../../models');
-const {ar} = require("@faker-js/faker");
 
 const UpdateWatchList = {
     type: WatchListPayload,

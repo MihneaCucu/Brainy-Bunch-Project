@@ -35,7 +35,7 @@ const RemoveMovieFromWatchList = {
         });
 
         if (!existingEntry) {
-            throw new Error('Movie already exists in this list');
+            throw new Error('Movie not found in this list');
         }
 
         await existingEntry.destroy();
