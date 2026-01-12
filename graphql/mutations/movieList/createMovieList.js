@@ -8,7 +8,7 @@ const { checkAuth } = require('../../../utils/auth');
 const createMovieList = {
     type: MovieListPayload,
     args: {
-        input: {type: GraphQLNonNull(CreateMovieListInput), }
+        input: {type: new GraphQLNonNull(CreateMovieListInput), }
     },
     async resolve(parent, args, context) {
         checkAuth(context);
