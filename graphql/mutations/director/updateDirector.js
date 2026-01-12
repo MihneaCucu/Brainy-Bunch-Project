@@ -12,12 +12,22 @@ const UpdateDirector = {
         nationality: { type: GraphQLString }
     },
     resolve: async (_, args, context) => {
-        checkRole(context, ['moderator', 'admin']);
+        checkRole(context, ['admin']);
 
         const director = await db.Director.findByPk(args.id);
 
         if (!director) {
             throw new Error('Director not found');
+        }
+
+        if (args.name !== undefined && args.name !== director.name) {
+            const existingDirector = await db.Director.findOne({
+                where: { name: args.name }
+            });
+
+            if (existingDirector) {
+                throw new Error(`A director with the name "${args.name}" already exists.`);
+            }
         }
 
         if (args.name !== undefined) director.name = args.name;

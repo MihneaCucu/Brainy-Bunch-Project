@@ -2,6 +2,7 @@ const graphql = require('graphql');
 const { GraphQLInt, GraphQLNonNull } = graphql;
 const MovieListPayload = require('../../types/MovieListPayload');
 const db = require('../../../models');
+const { checkAuth } = require('../../../utils/auth');
 
 const MovieList = {
     type: MovieListPayload,
