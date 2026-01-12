@@ -1,4 +1,4 @@
-const { GraphQLInputObjectType, GraphQLNonNull } = require('graphql');
+const { GraphQLInputObjectType, GraphQLNonNull, GraphQLInt } = require('graphql');
 
 const RemoveMovieFromMovieListInput = new GraphQLInputObjectType({
     name: 'RemoveMovieFromMovieListInput',

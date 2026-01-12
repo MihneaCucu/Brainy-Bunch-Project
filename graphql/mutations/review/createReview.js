@@ -2,7 +2,7 @@ const {GraphQLString, GraphQLInt, GraphQLNonNull} = require('graphql');
 const ReviewPayload = require('../../types/ReviewPayload');
 const CreateReviewInput = require("../../inputTypes/review/CreateReviewInput");
 const db = require('../../../models');
-const {checkAuth} = require('../../../utils/auth');
+const {checkRole} = require('../../../utils/auth');
 
 const CreateReview = {
     type: ReviewPayload,
