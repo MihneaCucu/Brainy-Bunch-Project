@@ -24,7 +24,7 @@ describe('Mutation: updateMovie', () => {
     it('should update when admin', async () => {
         const context = { user: { id: 2, userRole: { name: 'admin' } } };
 
-        const res = await UpdateMovie.resolve(null, { id: movie.id, title: 'NewTitle' }, context);
+        const res = await UpdateMovie.resolve(null, { id: movie.id, input: {title: 'NewTitle'} }, context);
 
         expect(res.title).toBe('NewTitle');
     });

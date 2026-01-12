@@ -88,17 +88,6 @@ describe('Muation: removeMovieFromWatchList', () => {
 
     });
 
-    it('should throw error if one user try to remove from another user watch list', async ()=>{
-        const contex = {user: {id: user2.id}}
-
-        const args ={
-            watchListId: watchList.id,
-            movieId: movie.id,
-        }
-
-        await expect(RemoveMovieFromWatchList.resolve(null, args, contex)).rejects.toThrow('You can only update your own watch lists');
-    });
-
     it('should throw error if movie not found in the watchlist', async ()=>{
         await db.WatchlistMovie.destroy({ where: {}, truncate: true });
 

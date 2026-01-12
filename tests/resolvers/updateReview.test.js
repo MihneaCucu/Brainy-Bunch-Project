@@ -64,7 +64,9 @@ describe('Mutation: updateReview', () => {
 
         const args = {
             id: review1.id,
-            score: 5
+            input : {
+                score: 5
+            }
         };
 
         const result = await UpdateReview.resolve(null, args, context);
@@ -84,7 +86,9 @@ describe('Mutation: updateReview', () => {
 
         const args = {
             id: review1.id,
-            content: 'Updated review content'
+            input: {
+                content: 'Updated review content'
+            }
         };
 
         const result = await UpdateReview.resolve(null, args, context);
@@ -103,8 +107,10 @@ describe('Mutation: updateReview', () => {
 
         const args = {
             id: review1.id,
-            score: 5,
-            content: 'Completely updated review'
+            input : {
+                score: 5,
+                content: 'Completely updated review'
+            }
         };
 
         const result = await UpdateReview.resolve(null, args, context);
@@ -128,7 +134,9 @@ describe('Mutation: updateReview', () => {
 
         const args = {
             id: review1.id,
-            score: 5
+            input : {
+                score: 5
+            }
         };
 
         const result = await UpdateReview.resolve(null, args, context);
@@ -149,7 +157,9 @@ describe('Mutation: updateReview', () => {
 
         const args = {
             id: 99999,
-            score: 5
+            input : {
+                score: 5
+            }
         };
 
         await expect(UpdateReview.resolve(null, args, context))
@@ -167,7 +177,9 @@ describe('Mutation: updateReview', () => {
 
         const args = {
             id: review1.id,
-            score: 5
+            input : {
+                score: 5
+            }
         };
 
         await expect(UpdateReview.resolve(null, args, context))
@@ -180,7 +192,9 @@ describe('Mutation: updateReview', () => {
 
         const args = {
             id: review1.id,
-            score: 5
+            input : {
+                score: 5
+            }
         };
 
         await expect(UpdateReview.resolve(null, args, context))
@@ -199,7 +213,9 @@ describe('Mutation: updateReview', () => {
         // First update
         let args = {
             id: review1.id,
-            score: 4
+            input: {
+                score: 4
+            }
         };
         let result = await UpdateReview.resolve(null, args, context);
         expect(result.score).toBe(4);
@@ -207,7 +223,9 @@ describe('Mutation: updateReview', () => {
         // Second update
         args = {
             id: review1.id,
-            score: 5
+            input: {
+                score: 5
+            }
         };
         result = await UpdateReview.resolve(null, args, context);
         expect(result.score).toBe(5);
@@ -215,7 +233,9 @@ describe('Mutation: updateReview', () => {
         // Third update
         args = {
             id: review1.id,
-            content: 'Final update'
+            input:{
+                content: 'Final update'
+            }
         };
         result = await UpdateReview.resolve(null, args, context);
         expect(result.content).toBe('Final update');

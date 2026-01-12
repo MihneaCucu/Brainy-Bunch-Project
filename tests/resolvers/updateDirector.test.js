@@ -60,7 +60,9 @@ describe('Mutation: updateDirector', () => {
 
         const args = {
             id: director1.id,
-            name: 'Christopher Edward Nolan'
+            input:{
+                name: 'Christopher Edward Nolan'
+            }
         };
 
         const result = await UpdateDirector.resolve(null, args, context);
@@ -81,7 +83,9 @@ describe('Mutation: updateDirector', () => {
 
         const args = {
             id: director1.id,
-            nationality: 'British'
+            input: {
+                nationality: 'British'
+            }
         };
 
         await expect(UpdateDirector.resolve(null, args, context)).rejects.toThrow(
@@ -99,9 +103,11 @@ describe('Mutation: updateDirector', () => {
 
         const args = {
             id: director1.id,
-            name: 'Chris Nolan',
-            birthDate: '1970-07-31',
-            nationality: 'American'
+            input: {
+                name: 'Chris Nolan',
+                birthDate: '1970-07-31',
+                nationality: 'American'
+            }
         };
 
         const result = await UpdateDirector.resolve(null, args, context);
@@ -121,7 +127,9 @@ describe('Mutation: updateDirector', () => {
 
         const args = {
             id: director1.id,
-            birthDate: '1971-08-01'
+            input: {
+                birthDate: '1971-08-01'
+            }
         };
 
         const result = await UpdateDirector.resolve(null, args, context);
@@ -150,7 +158,9 @@ describe('Mutation: updateDirector', () => {
 
         const args = {
             id: director1.id,
-            nationality: 'British'
+            input: {
+                nationality: 'British'
+            }
         };
 
         const result = await UpdateDirector.resolve(null, args, context);
@@ -172,7 +182,9 @@ describe('Mutation: updateDirector', () => {
 
         const args = {
             id: 99999,
-            name: 'Test'
+            input: {
+                name: 'Test'
+            }
         };
 
         await expect(UpdateDirector.resolve(null, args, context))
@@ -190,7 +202,9 @@ describe('Mutation: updateDirector', () => {
 
         const args = {
             id: director1.id,
-            name: 'Test'
+            input: {
+                name: 'Test'
+            }
         };
 
         await expect(UpdateDirector.resolve(null, args, context))
@@ -203,7 +217,9 @@ describe('Mutation: updateDirector', () => {
 
         const args = {
             id: director1.id,
-            name: 'Test'
+            input: {
+                name: 'Test'
+            }
         };
 
         await expect(UpdateDirector.resolve(null, args, context))
@@ -221,7 +237,9 @@ describe('Mutation: updateDirector', () => {
 
         const args = {
             id: director1.id,
-            name: 'Quentin Tarantino' // director2's name
+            input:{
+                name: 'Quentin Tarantino' // director2's name
+            }
         };
 
         await expect(UpdateDirector.resolve(null, args, context))
@@ -239,8 +257,10 @@ describe('Mutation: updateDirector', () => {
 
         const args = {
             id: director1.id,
-            name: 'Christopher Nolan', // same name
-            nationality: 'British'
+            input: {
+                name: 'Christopher Nolan', // same name
+                nationality: 'British'
+            }
         };
 
         const result = await UpdateDirector.resolve(null, args, context);
@@ -260,14 +280,18 @@ describe('Mutation: updateDirector', () => {
         // First update
         let result = await UpdateDirector.resolve(null, {
             id: director1.id,
-            nationality: 'British'
+            input: {
+                nationality: 'British'
+            }
         }, context);
         expect(result.nationality).toBe('British');
 
         // Second update
         result = await UpdateDirector.resolve(null, {
             id: director1.id,
-            birthDate: '1971-01-01'
+            input: {
+                birthDate: '1971-01-01'
+            }
         }, context);
         expect(result.birthDate).toBe('1971-01-01');
         expect(result.nationality).toBe('British'); // preserved
@@ -275,7 +299,9 @@ describe('Mutation: updateDirector', () => {
         // Third update
         result = await UpdateDirector.resolve(null, {
             id: director1.id,
-            name: 'Chris Nolan'
+            input: {
+                name: 'Chris Nolan'
+            }
         }, context);
         expect(result.name).toBe('Chris Nolan');
         expect(result.birthDate).toBe('1971-01-01'); // preserved

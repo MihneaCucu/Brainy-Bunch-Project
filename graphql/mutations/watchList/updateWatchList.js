@@ -20,7 +20,7 @@ const UpdateWatchList = {
             throw new Error('Watch list not found');
         }
 
-        if (watchList.userId !== user.id) {
+        if (watchList.userId !== context.user.id) {
             throw new Error('You can only update your own watch lists');
         }
 

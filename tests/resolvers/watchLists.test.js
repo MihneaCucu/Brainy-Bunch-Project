@@ -36,56 +36,7 @@ describe('Query: watchLists', () => {
             name: 'My list 1',
             description: 'best movies',
             userId: user1.id,
-            createdAt: new Date(Date.now + 1000),
-        });
-
-        watchList2 = await db.Watchlist.create({
-            name: 'My list 2',
-            description: 'best movies',
-            userId: user1.id,
-            createdAt: new Date(Date.now + 2000),
-        });
-
-        watchList3 = await db.Watchlist.create({
-            name: 'My list 3',
-            description: 'best movies',
-            userId: user1.id,
-            createdAt: new Date(Date.now + 3000),
-        });
-
-        watchList4 = await db.Watchlist.create({
-            name: 'My list 4',
-            description: 'best movies',
-            userId: user1.id,
-            createdAt: new Date(Date.now + 4000),
-        });
-
-        watchList5  = await db.Watchlist.create({
-            name: 'My list 5',
-            description: 'best movies',
-            userId: user1.id,
-            createdAt: new Date(Date.now + 5000),
-        });
-
-        watchList6 = await db.Watchlist.create({
-            name: 'My list 6',
-            description: 'best movies',
-            userId: user1.id,
-            createdAt: new Date(Date.now + 6000),
-        });
-
-        watchList7 = await db.Watchlist.create({
-            name: 'My list 7',
-            description: 'best movies',
-            userId: user1.id,
-            createdAt: new Date(Date.now + 7000),
-        });
-
-        watchList8 = await db.Watchlist.create({
-            name: 'My list 8',
-            description: 'best movies',
-            userId: user1.id,
-            createdAt: new Date(Date.now + 8000),
+            createdAt: new Date(Date.now() + 1000),
         });
 
         watchListforUser2 = await db.Watchlist.create({
@@ -95,8 +46,8 @@ describe('Query: watchLists', () => {
         });
     });
 
-    it('it should return 5 list from user 1', async () => {
-        const contex = {user: {id: user1.id}}
+    it('it should return  the list from user 1', async () => {
+        const contex = {user: {id: user1.id, userRole: {name: 'admin'}}};
 
         const args ={
             page:1,
@@ -105,20 +56,14 @@ describe('Query: watchLists', () => {
 
         const res = await WatchLists.resolve(null, args, contex);
 
-        expect(res).toHaveLength(5);
+        expect(res).toHaveLength(1);
         expect(res[0].name).toBe('My list 1');
 
     });
 
-    it('it should not return watchlist what belongs to user 2', async () => {
-        const contex = {user: {id: user1.id}}
+    it('it should throw error if a user tries to acces the lists ', async () => {
+        const contex = {user: {id: user1.id, userRole: {name: 'user'}}};
         const args ={page: 1};
-
-        const res = await WatchLists.resolve(null, args, contex);
-
-        res.forEach(list => {
-            expect(list.name).not.toBe('List for user 2');
-            expect(list.userId).toBe(user1.id);
-        });
+        await expect(WatchLists.resolve(null, args, contex)).rejects.toThrow();
     });
 });

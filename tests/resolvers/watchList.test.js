@@ -53,7 +53,7 @@ describe('Query: watchList', () => {
     });
 
     it('should return watchlist with movies if user is owner', async () => {
-        const contex = {user: {id: user1.id}}
+        const contex = {user: {id: user1.id, userRole: {name: 'user'}}};
 
         const args ={
             id: watchList.id,
@@ -69,7 +69,7 @@ describe('Query: watchList', () => {
     });
 
     it('should throw error if one user try to view another user watch list', async ()=>{
-        const contex = {user: {id: user2.id}}
+        const contex = {user: {id: user2.id, userRole: {name: 'user'}}};
 
         const args ={
             id: watchList.id,

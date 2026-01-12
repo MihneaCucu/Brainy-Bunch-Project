@@ -72,7 +72,9 @@ describe('Mutation: updateComment', () => {
 
         const args = {
             id: comment1.id,
-            content: 'Updated comment content'
+            input: {
+                content: 'Updated comment content'
+            }
         };
 
         const result = await UpdateComment.resolve(null, args, context);
@@ -92,7 +94,9 @@ describe('Mutation: updateComment', () => {
 
         const args = {
             id: comment1.id,
-            content: 'Updated content'
+            input:{
+                content: 'Updated content'
+            }
         };
 
         const result = await UpdateComment.resolve(null, args, context);
@@ -118,7 +122,9 @@ describe('Mutation: updateComment', () => {
 
         const args = {
             id: comment1.id,
-            content: 'New content'
+            input:{
+                content: 'New content'
+            }
         };
 
         const result = await UpdateComment.resolve(null, args, context);
@@ -139,21 +145,27 @@ describe('Mutation: updateComment', () => {
         // First update
         let result = await UpdateComment.resolve(null, {
             id: comment1.id,
-            content: 'First update'
+            input:{
+                content: 'First update'
+            }
         }, context);
         expect(result.content).toBe('First update');
 
         // Second update
         result = await UpdateComment.resolve(null, {
             id: comment1.id,
-            content: 'Second update'
+            input:{
+                content: 'Second update'
+            }
         }, context);
         expect(result.content).toBe('Second update');
 
         // Third update
         result = await UpdateComment.resolve(null, {
             id: comment1.id,
-            content: 'Final update'
+            input:{
+                content: 'Final update'
+            }
         }, context);
         expect(result.content).toBe('Final update');
     });
@@ -169,7 +181,9 @@ describe('Mutation: updateComment', () => {
 
         const args = {
             id: 99999,
-            content: 'Update non-existent comment'
+            input: {
+                content: 'Update non-existent comment'
+            }
         };
 
         await expect(UpdateComment.resolve(null, args, context))
@@ -187,7 +201,9 @@ describe('Mutation: updateComment', () => {
 
         const args = {
             id: comment1.id, // comment1 belongs to user1
-            content: 'Unauthorized update'
+            input: {
+                content: 'Unauthorized update'
+            }
         };
 
         await expect(UpdateComment.resolve(null, args, context))
@@ -205,7 +221,9 @@ describe('Mutation: updateComment', () => {
 
         const args = {
             id: comment1.id,
-            content: '   '
+            input:{
+                content: '   '
+            }
         };
 
         await expect(UpdateComment.resolve(null, args, context))
@@ -218,7 +236,9 @@ describe('Mutation: updateComment', () => {
 
         const args = {
             id: comment1.id,
-            content: 'Update'
+            input:{
+                content: 'Update'
+            }
         };
 
         await expect(UpdateComment.resolve(null, args, context))
@@ -236,7 +256,9 @@ describe('Mutation: updateComment', () => {
 
         const args = {
             id: comment1.id,
-            content: 'Updated comment1'
+            input:{
+                content: 'Updated comment1'
+            }
         };
 
         await UpdateComment.resolve(null, args, context);
@@ -256,7 +278,9 @@ describe('Mutation: updateComment', () => {
 
         const args = {
             id: comment1.id,
-            content: 'New content'
+            input:{
+                content: 'New content'
+            }
         };
 
         const result = await UpdateComment.resolve(null, args, context);

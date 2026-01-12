@@ -259,7 +259,7 @@ describe('Mutation: updateMovieList', () => {
 
         await expect(UpdateMovieList.resolve(null, args, context))
             .rejects
-            .toThrow('You must be logged in to update a movie list');
+            .toThrow('Unauthentificated: Please log in');
     });
 
     it('should not affect other lists when updating one', async () => {
