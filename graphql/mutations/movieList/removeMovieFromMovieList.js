@@ -8,7 +8,7 @@ const { checkAuth } = require('../../../utils/auth');
 const RemoveMovieFromMovieList = {
     type: MovieListPayload,
     args: {
-        input: {type: GraphQLNonNull(RemoveMovieToMovieListInput)}
+        input: {type: new GraphQLNonNull(RemoveMovieToMovieListInput)}
     },
     async resolve(_, args, context) {
         checkAuth(context);
