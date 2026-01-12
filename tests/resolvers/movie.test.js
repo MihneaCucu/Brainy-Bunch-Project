@@ -12,9 +12,9 @@ describe('Query: Movie (Single)', () => {
         const movie = await db.Movie.create({ title: 'Test', releaseYear: 2025, createdAt: new Date(), updatedAt: new Date() });
         const context = { user: { id: 1, userRole: { name: 'user' } } };
 
-        const res = await MovieQuery.resolve(null, { id: movie.id }, context);
+        const res = await MovieQuery.resolve(null, { title: movie.title }, context);
         expect(res).toBeDefined();
-        expect(res.id).toBe(movie.id);
+        expect(res.title).toBe('Test');
     });
 
     it('should FAIL when movie not found', async () => {

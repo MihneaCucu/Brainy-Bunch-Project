@@ -16,7 +16,7 @@ describe('Mutation: markMovieWatched', () => {
     it('requires authentication', async () => {
         await expect(MarkMovieWatched.resolve(null, { movieId: 1 }, {}))
         .rejects
-        .toThrow('You must be logged in to mark a movie as watched');
+        .toThrow('Unauthentificated: Please log in');
     });
 
     it('fails when movie does not exist', async () => {

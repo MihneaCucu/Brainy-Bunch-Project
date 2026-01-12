@@ -5,7 +5,7 @@ setupTestDB();
 
 describe('Query: myDiary', () => {
     it('should require authentication', async () => {
-        await expect(MyDiary.resolve(null, {}, {})).rejects.toThrow('You must be logged in to view your diary');
+        await expect(MyDiary.resolve(null, {}, {})).rejects.toThrow('Unauthentificated: Please log in');
     });
 
     it('should create a diary if none exists and return it', async () => {
