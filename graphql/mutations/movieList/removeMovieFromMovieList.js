@@ -20,7 +20,10 @@ const RemoveMovieFromMovieList = {
             throw new Error('Movie list not found');
         }
 
-        if (movieList.userId !== context.user.id) {
+        const currentUserRole = context.user.userRole.name;
+        const isAdmin = (currentUserRole === 'admin')
+
+        if (movieList.userId !== context.user.id && !isAdmin) {
             throw new Error('You can only remove movies from your own lists');
         }
 

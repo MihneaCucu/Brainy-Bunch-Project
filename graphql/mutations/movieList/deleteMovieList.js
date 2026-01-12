@@ -8,8 +8,8 @@ const DeleteMovieList = {
     args: {
         id: { type: new GraphQLNonNull(GraphQLInt) },
     },
-    async resolve(parent, args, context) {
-        checkAuth(context);
+    async resolve(_, args, context) {
+        checkAuth(context)
 
         const movieList = await db.MovieList.findByPk(args.id);
 
@@ -17,7 +17,10 @@ const DeleteMovieList = {
             throw new Error('Movie list not found');
         }
 
-        if (movieList.userId !== context.user.id) {
+        const currentUserRole = context.user.userRole.name;
+        const isAdmin = (currentUserRole === 'admin');
+
+        if (movieList.userId !== context.user.id && !isAdmin) {
             throw new Error('You can only delete your own movie lists');
         }
 
