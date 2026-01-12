@@ -2,6 +2,7 @@ const graphql = require('graphql');
 const { GraphQLInt, GraphQLNonNull, GraphQLString } = graphql;
 const MovieListPayload = require('../../types/MovieListPayload');
 const db = require('../../../models');
+const { checkAuth } = require('../../../utils/auth');
 
 const AddMovieToMovieList = {
     type: MovieListPayload,
@@ -11,9 +12,7 @@ const AddMovieToMovieList = {
         note: { type: GraphQLString },
     },
     async resolve(parent, args, context) {
-        if (!context.user) {
-            throw new Error('You must be logged in to add movies to a list');
-        }
+        checkAuth(context);
 
         const movieList = await db.MovieList.findByPk(args.movieListId);
 

@@ -2,6 +2,7 @@ const graphql = require('graphql');
 const { GraphQLString, GraphQLBoolean, GraphQLNonNull } = graphql;
 const MovieListPayload = require('../../types/MovieListPayload');
 const db = require('../../../models');
+const { checkAuth } = require('../../../utils/auth');
 
 const createMovieList = {
     type: MovieListPayload,
@@ -11,9 +12,7 @@ const createMovieList = {
         isPublic: { type: GraphQLBoolean },
     },
     async resolve(parent, args, context) {
-        if (!context.user) {
-            throw new Error('You must be logged in to create a movie list');
-        }
+        checkAuth(context);
 
         return await db.MovieList.create({
             userId: context.user.id,

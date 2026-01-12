@@ -2,12 +2,13 @@ const graphql = require('graphql');
 const { GraphQLInt, GraphQLNonNull, GraphQLString } = graphql;
 const WatchListPayload = require('../../types/WatchListPayload');
 const db = require('../../../models');
+const { checkAuth } = require('../../../utils/auth');
 
 
 const AddMovieToWatchList = {
     type: WatchListPayload,
     args: {
-        watchListId: {
+        watchListId: {      // watchListId trebuie luat din context (User)
             type: new GraphQLNonNull(GraphQLInt),
         },
         movieId: {
@@ -17,11 +18,7 @@ const AddMovieToWatchList = {
 
     resolve: async (parent, args, context) => {
 
-        const user = context.user;
-
-        if (!user) {
-            throw new Error('You must be logged in to update a watch list');
-        }
+        checkAuth(context);
 
         const watchList = await db.Watchlist.findByPk(args.watchListId);
 

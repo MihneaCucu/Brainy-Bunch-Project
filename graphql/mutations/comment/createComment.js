@@ -15,7 +15,7 @@ const CreateComment = {
     },
 
     resolve: async (_, args, context) => {
-        checkAuth(context, ['user', 'moderator', 'admin']);
+        checkRole(context, ['user', 'moderator', 'admin']);
 
         if (!args.content.trim()) {
             throw new Error("Content cannot be empty");

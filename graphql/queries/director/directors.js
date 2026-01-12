@@ -1,10 +1,10 @@
 const { GraphQLList } = require('graphql');
-const DirectorType = require('../../types/DirectorPayload');
+const DirectorPayload = require('../../types/DirectorPayload');
 const db = require('../../../models');
 const { checkAuth } = require('../../../utils/auth');
 
 const Directors = {
-    type: new GraphQLList(DirectorType),
+    type: new GraphQLList(DirectorPayload),
     resolve: async (_, args, context) => {
         checkAuth(context);
         

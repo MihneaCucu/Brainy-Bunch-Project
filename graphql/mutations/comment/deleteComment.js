@@ -10,7 +10,7 @@ const DeleteComment = {
         },
     },
     resolve: async (_, args, context) => {
-        checkAuth(context, ['user', 'moderator', 'admin']);
+        checkRole(context, ['user', 'moderator', 'admin']);
 
         const commentToDelete = await db.Comment.findByPk(args.id);
 

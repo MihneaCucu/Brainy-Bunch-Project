@@ -1,6 +1,7 @@
 const graphql = require('graphql');
 const { GraphQLInt, GraphQLNonNull, GraphQLString } = graphql;
 const db = require('../../../models');
+const { checkAuth } = require('../../../utils/auth');
 
 const DeleteMovieList = {
     type: GraphQLString,
@@ -8,9 +9,7 @@ const DeleteMovieList = {
         id: { type: new GraphQLNonNull(GraphQLInt) },
     },
     async resolve(parent, args, context) {
-        if (!context.user) {
-            throw new Error('You must be logged in to delete a movie list');
-        }
+        checkAuth(context);
 
         const movieList = await db.MovieList.findByPk(args.id);
 

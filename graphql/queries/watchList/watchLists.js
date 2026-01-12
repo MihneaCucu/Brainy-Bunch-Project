@@ -12,7 +12,7 @@ const Watchlists = {
         limit: { type: GraphQLInt }
     },
     resolve: async (_, args, context) => {
-        checkAuth(context);
+        checkAuth(context); // + admin
 
         const page = args.page || 1;
         const limit = Math.min(args.limit || 5, 5);

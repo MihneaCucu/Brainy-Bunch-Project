@@ -17,7 +17,7 @@ const UpdateReview = {
         },
     },
     resolve: async (_, args, context) => {
-        checkAuth(context, ['user']);
+        checkAuth(context);
 
         const review = await db.Review.findByPk(args.id);
         if (!review) {

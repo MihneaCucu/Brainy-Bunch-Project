@@ -2,14 +2,13 @@ const graphql = require('graphql');
 const { GraphQLNonNull, GraphQLInt } = graphql;
 const DiaryPayload = require('../../types/DiaryPayload');
 const db = require('../../../models');
+const { checkAuth } = require('../../../utils/auth');
 
 const MyDiary = {
     type: DiaryPayload,
     args: {},
     async resolve(parent, args, context) {
-        if (!context.user) {
-            throw new Error("You must be logged in to view your diary");
-        }
+        checkAuth(context);
 
         let diary = await db.Diary.findOne({ where: { userId: context.user.id } });
         if (!diary) {

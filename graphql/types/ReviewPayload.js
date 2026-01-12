@@ -5,6 +5,7 @@ const ReviewPayload = new GraphQLObjectType({
     fields: () => {
         const MoviePayload = require('./MoviePayload');
         const CommentPayload = require('./CommentPayload');
+        const UserPayload = require('./UserPayload')
         return {
             id: {
                 type: GraphQLInt,
@@ -30,7 +31,7 @@ const ReviewPayload = new GraphQLObjectType({
                 }
             },
             user: {
-                type: require('./UserPayload'),
+                type: UserPayload,
                 resolve: (parent) => {
                     return parent.user;
                 }

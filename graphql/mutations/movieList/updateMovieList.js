@@ -3,6 +3,7 @@ const { GraphQLInt, GraphQLNonNull } = graphql;
 const MovieListPayload = require('../../types/MovieListPayload');
 const UpdateMovieListInput = require('../../inputTypes/movieList/UpdateMovieListInput');
 const db = require('../../../models');
+const { checkAuth } = require('../../../utils/auth');
 
 const UpdateMovieList = {
     type: MovieListPayload,
@@ -11,9 +12,7 @@ const UpdateMovieList = {
         input: { type: new GraphQLNonNull(UpdateMovieListInput) },
     },
     async resolve(parent, args, context) {
-        if (!context.user) {
-            throw new Error('You must be logged in to update a movie list');
-        }
+        checkAuth(context);
 
         const movieList = await db.MovieList.findByPk(args.id);
 

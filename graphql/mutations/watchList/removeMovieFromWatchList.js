@@ -2,6 +2,7 @@ const graphql = require('graphql');
 const { GraphQLInt, GraphQLNonNull, GraphQLString } = graphql;
 const WatchListPayload = require('../../types/WatchListPayload');
 const db = require('../../../models');
+const { checkAuth } = require('../../../utils/auth');
 
 const RemoveMovieFromWatchList = {
     type: WatchListPayload,
@@ -11,11 +12,7 @@ const RemoveMovieFromWatchList = {
     },
 
     resolve: async (parent, args, context) => {
-        const user = context.user;
-
-        if (!user) {
-            throw new Error('You must be logged in to update a watch list');
-        }
+        checkAuth(context);
 
         const watchList = await db.Watchlist.findByPk(args.watchListId);
 

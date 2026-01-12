@@ -10,7 +10,7 @@ const DeleteReview = {
         },
     },
     resolve: async (_, args, context) => {
-        checkAuth(context, ['user', 'moderator', 'admin']);
+        checkRole(context, ['user', 'moderator', 'admin']);
 
         const reviewToDelete = await db.Review.findByPk(args.id);
 

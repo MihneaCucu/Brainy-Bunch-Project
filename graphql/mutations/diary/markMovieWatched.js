@@ -3,6 +3,7 @@ const { GraphQLInt, GraphQLNonNull, GraphQLString } = graphql;
 const DiaryPayload = require('../../types/DiaryPayload');
 const db = require('../../../models');
 const ReviewInput = require('../../inputTypes/review/ReviewInput');
+const { checkAuth } = require('../../../utils/auth');
 
 const MarkMovieWatched = {
     type: DiaryPayload,
@@ -12,9 +13,7 @@ const MarkMovieWatched = {
         review: { type: ReviewInput }
     },
     async resolve(parent, args, context) {
-        if (!context.user) {
-            throw new Error('You must be logged in to mark a movie as watched');
-        }
+        checkAuth(context)
 
         const movie = await db.Movie.findByPk(args.movieId);
         if (!movie){

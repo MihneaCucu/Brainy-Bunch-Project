@@ -3,6 +3,7 @@ const { GraphQLString, GraphQLBoolean, GraphQLNonNull } = graphql;
 const WatchListPayload = require('../../types/WatchListPayload');
 const CreateWatchListInput = require('../../inputTypes/watchList/CreateWatchListInput');
 const db = require('../../../models');
+const { checkAuth } = require('../../../utils/auth');
 
 const createWatchList = {
     type:WatchListPayload,
@@ -12,10 +13,7 @@ const createWatchList = {
        }
     },
     resolve: async (parent, args, context) => {
-        const user = context.user;
-        if (!user) {
-            throw new Error('You must be logged in to create a watch list');
-        }
+        checkAuth(context);
 
         const watchlist = db.Watchlist.create({
             name: args.input.name,

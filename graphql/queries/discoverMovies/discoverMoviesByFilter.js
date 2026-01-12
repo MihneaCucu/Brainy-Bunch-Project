@@ -23,6 +23,8 @@ const DiscoverMoviesByFilter = {
         }
     },
     resolve: async (_, args, context, info) => {
+        checkAuth(context);
+        
         const where = {}
         const include = []
 

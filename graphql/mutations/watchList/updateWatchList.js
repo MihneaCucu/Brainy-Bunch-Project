@@ -3,6 +3,7 @@ const { GraphQLInt, GraphQLNonNull } = graphql;
 const WatchListPayload = require('../../types/WatchListPayload');
 const UpdateWatchListInput = require('../../inputTypes/watchList/UpdateWatchListInput');
 const db = require('../../../models');
+const { checkAuth } = require('../../../utils/auth');
 
 const UpdateWatchList = {
     type: WatchListPayload,
@@ -11,11 +12,7 @@ const UpdateWatchList = {
         input: { type: new GraphQLNonNull(UpdateWatchListInput) },
     },
     resolve: async (parent, args, context) => {
-        const user = context.user;
-
-        if (!user) {
-            throw new Error('You must be logged in to update a watch list');
-        }
+        checkAuth(context);
 
         const watchList = await db.Watchlist.findByPk(args.id);
 

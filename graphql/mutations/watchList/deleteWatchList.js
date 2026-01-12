@@ -1,6 +1,7 @@
 const graphql = require('graphql');
 const { GraphQLInt, GraphQLNonNull, GraphQLString } = graphql;
 const db = require('../../../models');
+const { checkAuth } = require('../../../utils/auth');
 
 const DeleteWatchList = {
     type: GraphQLString,
@@ -8,11 +9,7 @@ const DeleteWatchList = {
         id: { type: new GraphQLNonNull(GraphQLInt) },
     },
     resolve: async (parent, args, context)  => {
-        const user = context.user;
-
-        if (!user) {
-            throw new Error('You must be logged in to update a watch list');
-        }
+        checkAuth(context);
 
         const watchList = await db.Watchlist.findByPk(args.id);
 

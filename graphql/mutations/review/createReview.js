@@ -18,7 +18,7 @@ const CreateReview = {
     },
 
     resolve: async (_, args, context) => {
-        checkAuth(context, ['user', 'moderator', 'admin']);
+        checkRole(context, ['user', 'moderator', 'admin']);
 
         if (args.score < 1 || args.score > 5) {
             throw new Error("Score must be between 1 and 5");

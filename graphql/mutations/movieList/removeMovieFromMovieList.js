@@ -2,6 +2,7 @@ const graphql = require('graphql');
 const { GraphQLInt, GraphQLNonNull } = graphql;
 const MovieListPayload = require('../../types/MovieListPayload');
 const db = require('../../../models');
+const { checkAuth } = require('../../../utils/auth');
 
 const RemoveMovieFromMovieList = {
     type: MovieListPayload,
@@ -10,9 +11,7 @@ const RemoveMovieFromMovieList = {
         movieId: { type: new GraphQLNonNull(GraphQLInt) },
     },
     async resolve(parent, args, context) {
-        if (!context.user) {
-            throw new Error('You must be logged in to remove movies from a list');
-        }
+        checkAuth(context);
 
         const movieList = await db.MovieList.findByPk(args.movieListId);
 
