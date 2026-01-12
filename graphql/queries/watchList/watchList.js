@@ -23,8 +23,10 @@ const WatchList = {
         if (!watchList) {
             throw new Error('Watch list not found');
         }
+        const currentUserRole = context.user.userRole.name;
+        const isAdmin = (currentUserRole === 'admin')
 
-        if (!context.user || context.user.id !== watchList.userId) {
+        if (!context.user || context.user.id !== watchList.userId && !isAdmin) {
             throw new Error('You do not have permission to view this list');
         }
 

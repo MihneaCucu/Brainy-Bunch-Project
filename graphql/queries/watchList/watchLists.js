@@ -2,7 +2,7 @@ const graphql = require('graphql');
 const { GraphQLInt, GraphQLNonNull } = graphql;
 const WatchListPayload = require('../../types/WatchListPayload');
 const db = require('../../../models');
-const { checkAuth } = require('../../../utils/auth');
+const { checkRole } = require('../../../utils/auth');
 const {GraphQLList} = require("graphql/type");
 
 const Watchlists = {
@@ -12,7 +12,7 @@ const Watchlists = {
         limit: { type: GraphQLInt }
     },
     resolve: async (_, args, context) => {
-        checkAuth(context); // + admin
+        checkRole(context, ['admin']);
 
         const page = args.page || 1;
         const limit = Math.min(args.limit || 5, 5);
