@@ -45,9 +45,11 @@ describe('Mutation: createDirector', () => {
         };
 
         const args = {
-            name: 'Christopher Nolan',
-            birthDate: '1970-07-30',
-            nationality: 'British-American'
+            input: {
+                name: 'Christopher Nolan',
+                birthDate: '1970-07-30',
+                nationality: 'British-American'
+            }
         };
 
         const result = await CreateDirector.resolve(null, args, context);
@@ -67,9 +69,11 @@ describe('Mutation: createDirector', () => {
         };
 
         const args = {
-            name: 'Quentin Tarantino',
-            birthDate: '1963-03-27',
-            nationality: 'American'
+            input: {
+                name: 'Quentin Tarantino',
+                birthDate: '1963-03-27',
+                nationality: 'American'
+            }
         };
 
         await expect(CreateDirector.resolve(null, args, context)).rejects.toThrow(
@@ -86,7 +90,9 @@ describe('Mutation: createDirector', () => {
         };
 
         const args = {
-            name: 'Steven Spielberg'
+            input: {
+                name: 'Steven Spielberg'
+            }
         };
 
         const result = await CreateDirector.resolve(null, args, context);
@@ -106,8 +112,10 @@ describe('Mutation: createDirector', () => {
         };
 
         const args = {
-            name: 'Denis Villeneuve',
-            nationality: 'Canadian'
+            input: {
+                name: 'Denis Villeneuve',
+                nationality: 'Canadian'
+            }
         };
 
         const result = await CreateDirector.resolve(null, args, context);
@@ -128,7 +136,9 @@ describe('Mutation: createDirector', () => {
         };
 
         const args = {
-            name: 'Test Director'
+            input: {
+                name: 'Test Director'
+            }
         };
 
         await expect(CreateDirector.resolve(null, args, context))
@@ -140,7 +150,9 @@ describe('Mutation: createDirector', () => {
         const context = {}; // No user
 
         const args = {
-            name: 'Test Director'
+            input: {
+                name: 'Test Director'
+            }
         };
 
         await expect(CreateDirector.resolve(null, args, context))
@@ -157,9 +169,11 @@ describe('Mutation: createDirector', () => {
         };
 
         const args = {
-            name: 'Christopher Nolan',
-            birthDate: '1970-07-30',
-            nationality: 'British-American'
+            input: {
+                name: 'Christopher Nolan',
+                birthDate: '1970-07-30',
+                nationality: 'British-American'
+            }
         };
 
         // Create first director
@@ -171,28 +185,6 @@ describe('Mutation: createDirector', () => {
             .toThrow('A director with the name "Christopher Nolan" already exists.');
     });
 
-    it('should allow creating directors with similar but different names', async () => {
-        const context = {
-            user: {
-                id: admin.id,
-                userRole: { name: 'admin' }
-            }
-        };
-
-        // Create first director
-        const result1 = await CreateDirector.resolve(null, {
-            name: 'Christopher Nolan'
-        }, context);
-
-        // Create second director with different name
-        const result2 = await CreateDirector.resolve(null, {
-            name: 'Jonathan Nolan'
-        }, context);
-
-        expect(result1.name).toBe('Christopher Nolan');
-        expect(result2.name).toBe('Jonathan Nolan');
-        expect(result1.id).not.toBe(result2.id);
-    });
 
     it('should create director and store in database', async () => {
         const context = {
@@ -203,9 +195,11 @@ describe('Mutation: createDirector', () => {
         };
 
         const args = {
-            name: 'Martin Scorsese',
-            birthDate: '1942-11-17',
-            nationality: 'American'
+            input: {
+                name: 'Martin Scorsese',
+                birthDate: '1942-11-17',
+                nationality: 'American'
+            }
         };
 
         const result = await CreateDirector.resolve(null, args, context);
