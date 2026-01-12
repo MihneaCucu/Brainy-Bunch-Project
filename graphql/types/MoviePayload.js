@@ -5,6 +5,8 @@ const MoviePayload = new GraphQLObjectType({
     fields: () => {
         const DirectorPayload = require('./DirectorPayload');
         const ReviewPayload = require('./ReviewPayload');
+        const ActorPayload = require('./ActorPayload');
+        const GenrePayload = require('./GenrePayload');
         return {
             id: {
                 type: GraphQLID,
@@ -35,6 +37,18 @@ const MoviePayload = new GraphQLObjectType({
                 resolve: (parent) => {
                     // DiaryPayload attaches a `review` property for diary entries
                     return parent.review || null;
+                }
+            },
+            actors: {
+                type: new GraphQLList(ActorPayload),
+                resolve: (parent) => {
+                    return parent.actors || [];
+                }
+            },
+            genres: {
+                type: new GraphQLList(GenrePayload),
+                resolve: (parent) => {
+                    return parent.genres || [];
                 }
             },
             watchedAt: {
