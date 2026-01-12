@@ -1,5 +1,5 @@
 const {
-    GraphQLInt,
+    GraphQLString,
     GraphQLError,
 } = require('graphql');
 const MoviePayload = require('../../types/MoviePayload');
@@ -9,16 +9,17 @@ const { checkAuth } = require('../../../utils/auth');
 const Movie = {
     type: MoviePayload,
     args: {
-        id: {
-            type: GraphQLInt,
+        title: {
+            type: GraphQLString,
         },
     },
     resolve: async (_, args, context) => {
         checkAuth(context);
-        
-        const { id } = args;
 
-        const movie = await db.Movie.findByPk(id, {
+        const { title } = args;
+
+        const movie = await db.Movie.findOne({
+            where: { title },
             include: [
                 { model: db.Director, as: 'director' },
                 {
@@ -33,7 +34,7 @@ const Movie = {
         });
 
         if(!movie) {
-          throw new GraphQLError("Not found");
+            throw new GraphQLError("Not found");
         }
 
         return movie;

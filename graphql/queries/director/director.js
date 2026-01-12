@@ -1,4 +1,4 @@
-const { GraphQLInt, GraphQLError } = require('graphql');
+const { GraphQLString, GraphQLError } = require('graphql');
 const DirectorPayload = require('../../types/DirectorPayload');
 const db = require('../../../models');
 const { checkAuth } = require('../../../utils/auth');
@@ -6,16 +6,17 @@ const { checkAuth } = require('../../../utils/auth');
 const Director = {
     type: DirectorPayload,
     args: {
-        id: {
-            type: GraphQLInt,
+        name: {
+            type: GraphQLString,
         },
     },
     resolve: async (_, args, context) => {
         checkAuth(context);
         
-        const { id } = args;
+        const { name } = args;
 
-        const director = await db.Director.findByPk(id, {
+        const director = await db.Director.findOne({
+            where: { name },
             include: [{ model: db.Movie, as: 'movies' }]
         });
 
