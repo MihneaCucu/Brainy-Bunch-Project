@@ -73,8 +73,10 @@ describe('Mutation: addMovieToMovieList', () => {
         };
 
         const args = {
-            movieListId: movieList1.id,
-            movieId: movie1.id
+            input: {
+                movieListId: movieList1.id,
+                movieId: movie1.id
+            }
         };
 
         const result = await AddMovieToMovieList.resolve(null, args, context);
@@ -95,9 +97,11 @@ describe('Mutation: addMovieToMovieList', () => {
         };
 
         const args = {
-            movieListId: movieList1.id,
-            movieId: movie1.id,
-            note: 'Must watch again!'
+            input: {
+                movieListId: movieList1.id,
+                movieId: movie1.id,
+                note: 'Must watch again!'
+            }
         };
 
         await AddMovieToMovieList.resolve(null, args, context);
@@ -123,20 +127,26 @@ describe('Mutation: addMovieToMovieList', () => {
 
         // Add first movie
         await AddMovieToMovieList.resolve(null, {
-            movieListId: movieList1.id,
-            movieId: movie1.id
+            input: {
+                movieListId: movieList1.id,
+                movieId: movie1.id
+            }
         }, context);
 
         // Add second movie
         await AddMovieToMovieList.resolve(null, {
-            movieListId: movieList1.id,
-            movieId: movie2.id
+            input: {
+                movieListId: movieList1.id,
+                movieId: movie2.id
+            }
         }, context);
 
         // Add third movie
         const result = await AddMovieToMovieList.resolve(null, {
-            movieListId: movieList1.id,
-            movieId: movie3.id
+            input: {
+                movieListId: movieList1.id,
+                movieId: movie3.id
+            }
         }, context);
 
         expect(result.movies.length).toBe(3);
@@ -159,14 +169,18 @@ describe('Mutation: addMovieToMovieList', () => {
 
         // Add movie1 to list1
         await AddMovieToMovieList.resolve(null, {
-            movieListId: movieList1.id,
-            movieId: movie1.id
+            input: {
+                movieListId: movieList1.id,
+                movieId: movie1.id
+            }
         }, context1);
 
         // Add movie1 to list2
         await AddMovieToMovieList.resolve(null, {
-            movieListId: movieList2.id,
-            movieId: movie1.id
+            input: {
+                movieListId: movieList2.id,
+                movieId: movie1.id
+            }
         }, context2);
 
         // Verify both lists have the movie
@@ -190,8 +204,10 @@ describe('Mutation: addMovieToMovieList', () => {
         };
 
         const args = {
-            movieListId: movieList1.id,
-            movieId: movie1.id
+            input: {
+                movieListId: movieList1.id,
+                movieId: movie1.id
+            }
         };
 
         await AddMovieToMovieList.resolve(null, args, context);
@@ -217,8 +233,10 @@ describe('Mutation: addMovieToMovieList', () => {
         };
 
         const args = {
-            movieListId: 99999,
-            movieId: movie1.id
+            input: {
+                movieListId: 99999,
+                movieId: movie1.id
+            }
         };
 
         await expect(AddMovieToMovieList.resolve(null, args, context))
@@ -235,8 +253,10 @@ describe('Mutation: addMovieToMovieList', () => {
         };
 
         const args = {
-            movieListId: movieList1.id,
-            movieId: 99999
+            input: {
+                movieListId: movieList1.id,
+                movieId: 99999
+            }
         };
 
         await expect(AddMovieToMovieList.resolve(null, args, context))
@@ -253,8 +273,10 @@ describe('Mutation: addMovieToMovieList', () => {
         };
 
         const args = {
-            movieListId: movieList1.id, // list1 belongs to user1
-            movieId: movie1.id
+            input: {
+                movieListId: movieList1.id, // list1 belongs to user1
+                movieId: movie1.id
+            }
         };
 
         await expect(AddMovieToMovieList.resolve(null, args, context))
@@ -271,8 +293,10 @@ describe('Mutation: addMovieToMovieList', () => {
         };
 
         const args = {
-            movieListId: movieList1.id,
-            movieId: movie1.id
+            input: {
+                movieListId: movieList1.id,
+                movieId: movie1.id
+            }
         };
 
         // Add movie first time
@@ -288,13 +312,15 @@ describe('Mutation: addMovieToMovieList', () => {
         const context = {}; // No user
 
         const args = {
-            movieListId: movieList1.id,
-            movieId: movie1.id
+            input: {
+                movieListId: movieList1.id,
+                movieId: movie1.id
+            }
         };
 
         await expect(AddMovieToMovieList.resolve(null, args, context))
             .rejects
-            .toThrow('You must be logged in to add movies to a list');
+            .toThrow('Unauthentificated: Please log in');
     });
 });
 

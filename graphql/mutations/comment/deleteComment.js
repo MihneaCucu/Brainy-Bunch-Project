@@ -1,6 +1,6 @@
 const {GraphQLString, GraphQLInt, GraphQLNonNull} = require('graphql');
 const db = require('../../../models');
-const {checkAuth} = require('../../../utils/auth');
+const {checkRole} = require('../../../utils/auth');
 
 const DeleteComment = {
     type: GraphQLString,

@@ -63,8 +63,10 @@ describe('Mutation: createComment', () => {
         };
 
         const args = {
-            reviewId: review1.id,
-            content: 'I totally agree with this review!'
+            input: {
+                reviewId: review1.id,
+                content: 'I totally agree with this review!'
+            }
         };
 
         const result = await CreateComment.resolve(null, args, context);
@@ -84,8 +86,10 @@ describe('Mutation: createComment', () => {
         };
 
         const args = {
-            reviewId: review1.id,
-            content: 'Nice review!'
+            input: {
+                reviewId: review1.id,
+                content: 'Nice review!'
+            }
         };
 
         const result = await CreateComment.resolve(null, args, context);
@@ -114,14 +118,18 @@ describe('Mutation: createComment', () => {
 
         // User1 comments
         const comment1 = await CreateComment.resolve(null, {
-            reviewId: review1.id,
-            content: 'Comment from user1'
+            input: {
+                reviewId: review1.id,
+                content: 'Comment from user1'
+            }
         }, context1);
 
         // User2 comments on same review
         const comment2 = await CreateComment.resolve(null, {
-            reviewId: review1.id,
-            content: 'Comment from user2'
+            input: {
+                reviewId: review1.id,
+                content: 'Comment from user2'
+            }
         }, context2);
 
         expect(comment1.userId).toBe(user1.id);
@@ -141,14 +149,18 @@ describe('Mutation: createComment', () => {
 
         // Comment on review1
         const comment1 = await CreateComment.resolve(null, {
-            reviewId: review1.id,
-            content: 'Comment on review 1'
+            input: {
+                reviewId: review1.id,
+                content: 'Comment on review 1'
+            }
         }, context);
 
         // Comment on review2
         const comment2 = await CreateComment.resolve(null, {
-            reviewId: review2.id,
-            content: 'Comment on review 2'
+            input: {
+                reviewId: review2.id,
+                content: 'Comment on review 2'
+            }
         }, context);
 
         expect(comment1.reviewId).toBe(review1.id);
@@ -167,14 +179,18 @@ describe('Mutation: createComment', () => {
 
         // First comment
         const comment1 = await CreateComment.resolve(null, {
-            reviewId: review1.id,
-            content: 'First comment'
+            input: {
+                reviewId: review1.id,
+                content: 'First comment'
+            }
         }, context);
 
         // Second comment
         const comment2 = await CreateComment.resolve(null, {
-            reviewId: review1.id,
-            content: 'Second comment'
+            input: {
+                reviewId: review1.id,
+                content: 'Second comment'
+            }
         }, context);
 
         expect(comment1.reviewId).toBe(review1.id);
@@ -191,8 +207,10 @@ describe('Mutation: createComment', () => {
         };
 
         const args = {
-            reviewId: review1.id,
-            content: 'Test comment'
+            input: {
+                reviewId: review1.id,
+                content: 'Test comment'
+            }
         };
 
         const result = await CreateComment.resolve(null, args, context);
@@ -215,8 +233,10 @@ describe('Mutation: createComment', () => {
         };
 
         const args = {
-            reviewId: review1.id,
-            content: '   '
+            input: {
+                reviewId: review1.id,
+                content: '   '
+            }
         };
 
         await expect(CreateComment.resolve(null, args, context))
@@ -233,8 +253,10 @@ describe('Mutation: createComment', () => {
         };
 
         const args = {
-            reviewId: 99999,
-            content: 'Comment on non-existent review'
+            input: {
+                reviewId: 99999,
+                content: 'Comment on non-existent review'
+            }
         };
 
         await expect(CreateComment.resolve(null, args, context))
@@ -246,8 +268,10 @@ describe('Mutation: createComment', () => {
         const context = {}; // No user
 
         const args = {
-            reviewId: review1.id,
-            content: 'Unauthenticated comment'
+            input: {
+                reviewId: review1.id,
+                content: 'Unauthenticated comment'
+            }
         };
 
         await expect(CreateComment.resolve(null, args, context))
@@ -264,8 +288,10 @@ describe('Mutation: createComment', () => {
         };
 
         const args = {
-            reviewId: review1.id, // review1 belongs to user1
-            content: 'Commenting on my own review'
+            input: {
+                reviewId: review1.id, // review1 belongs to user1
+                content: 'Commenting on my own review'
+            }
         };
 
         const result = await CreateComment.resolve(null, args, context);

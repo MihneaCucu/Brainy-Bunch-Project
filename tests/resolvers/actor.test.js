@@ -4,7 +4,7 @@ const Actor = require('../../graphql/queries/actor/actor');
 
 setupTestDB();
 
-describe('Query: Actor by id', () => {
+describe('Query: Actor by name', () => {
     let actor;
 
     beforeEach(async () => {
@@ -16,10 +16,11 @@ describe('Query: Actor by id', () => {
         });
     });
 
-    it('should return an actor when  id exists', async () => {
+    // HAPPY PATH
+    it('should return an actor when name exists', async () => {
         const context = { user: { id: 1, userRole: { name: 'user' } } };
 
-        const args = {id: actor.id};
+        const args = {name: 'Julia Roberts'};
 
         const res = await Actor.resolve(null, args, context);
 
@@ -30,10 +31,13 @@ describe('Query: Actor by id', () => {
         expect(res.nationality).toBe('American');
     });
 
-    it('should throw when id not found', async () => {
+    // SAD PATH
+    it('should throw when name not found', async () => {
         const context = { user: { id: 1, userRole: { name: 'user' } } };
 
-        await expect(Actor.resolve(null, { id: 99999 }, context)).rejects.toThrow();
+        await expect(Actor.resolve(null, { name: 'Actor Inexistent' }, context))
+            .rejects
+            .toThrow();
     });
 
 });

@@ -1,4 +1,4 @@
-const { GraphQLInputObjectType, GraphQLString, GraphQLNonNull } = require('graphql');
+const { GraphQLInputObjectType, GraphQLString, GraphQLNonNull, GraphQLInt } = require('graphql');
 
 const AddMovieToMovieListInput = new GraphQLInputObjectType({
     name: 'AddMovieToMovieListInput',

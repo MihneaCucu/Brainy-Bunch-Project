@@ -94,15 +94,14 @@ describe('Mutation: addMovieToWatchList', () => {
         await expect(AddMovieToWatchList.resolve(null, args, contex)).rejects.toThrow('Movie already exists in this list');
     });
 
-    it('should throw error if one user try to add to another user watch list', async ()=>{
+    it('should throw error if one when the user does not have a watchlist', async ()=>{
         const contex = {user: {id: user2.id}}
 
         const args ={
-            watchListId: watchList.id,
             movieId: movie.id,
         }
 
-        await expect(AddMovieToWatchList.resolve(null, args, contex)).rejects.toThrow('You can only update your own watch lists');
+        await expect(AddMovieToWatchList.resolve(null, args, contex)).rejects.toThrow('Watch list not found');
     });
 
     it('should throw error if movie not found', async ()=>{
