@@ -10,7 +10,12 @@ describe('Mutation: createMovie', () => {
     });
 
     it('should create movie when admin', async () => {
-        const args = { title: 'Test', releaseYear: 2025 };
+        const args = { 
+            input: { 
+                title: 'Test', 
+                releaseYear: 2025 
+            }
+        };
         const context = { user: { id: 1, userRole: { name: 'admin' } } };
 
         const res = await CreateMovie.resolve(null, args, context);
@@ -20,14 +25,24 @@ describe('Mutation: createMovie', () => {
     });
 
     it('should FAIL to create movie when not admin', async () => {
-        const args = { title: 'Test', releaseYear: 2025 };
+        const args = {
+            input: { 
+                title: 'Test', 
+                releaseYear: 2025 
+            }
+        };
         const context = { user: { id: 1, userRole: { name: 'user' } } };
 
         await expect(CreateMovie.resolve(null, args, context)).rejects.toThrow();
     });
 
     it('should FAIL when duplicate title', async () => {
-        const args = { title: 'Test', releaseYear: 2025 };
+        const args = {
+            input: { 
+                title: 'Test', 
+                releaseYear: 2025 
+            }
+        };
         const context = { user: { id: 1, userRole: { name: 'admin' } } };
 
         // create first time

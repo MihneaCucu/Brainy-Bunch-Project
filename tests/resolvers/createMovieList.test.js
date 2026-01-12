@@ -36,9 +36,11 @@ describe('Mutation: createMovieList', () => {
         };
 
         const args = {
-            name: 'My Top 10',
-            description: 'My top 10 favorite movies',
-            isPublic: true
+            input: {
+                name: 'My Top 10',
+                description: 'My top 10 favorite movies',
+                isPublic: true
+            }
         };
 
         const result = await CreateMovieList.resolve(null, args, context);
@@ -59,7 +61,9 @@ describe('Mutation: createMovieList', () => {
         };
 
         const args = {
-            name: 'Private List'
+            input: {
+                name: 'Private List'
+            }
         };
 
         const result = await CreateMovieList.resolve(null, args, context);
@@ -76,7 +80,9 @@ describe('Mutation: createMovieList', () => {
         };
 
         const args = {
-            name: 'Simple List'
+            input: {
+                name: 'Simple List'
+            }
         };
 
         const result = await CreateMovieList.resolve(null, args, context);
@@ -95,11 +101,11 @@ describe('Mutation: createMovieList', () => {
         };
 
         const list1 = await CreateMovieList.resolve(null, {
-            name: 'Action Movies'
+            input: { name: 'Action Movies' }
         }, context);
 
         const list2 = await CreateMovieList.resolve(null, {
-            name: 'Comedy Movies'
+            input: { name: 'Comedy Movies' }
         }, context);
 
         expect(list1.name).toBe('Action Movies');
@@ -125,11 +131,11 @@ describe('Mutation: createMovieList', () => {
         };
 
         const list1 = await CreateMovieList.resolve(null, {
-            name: 'My Favorites'
+            input: { name: 'My Favorites' }
         }, context1);
 
         const list2 = await CreateMovieList.resolve(null, {
-            name: 'My Favorites'
+            input: { name: 'My Favorites' }
         }, context2);
 
         expect(list1.userId).toBe(user1.id);
@@ -146,9 +152,11 @@ describe('Mutation: createMovieList', () => {
         };
 
         const args = {
-            name: 'Public Top 10',
-            description: 'My public list',
-            isPublic: true
+            input: {
+                name: 'Public Top 10',
+                description: 'My public list',
+                isPublic: true
+            }
         };
 
         const result = await CreateMovieList.resolve(null, args, context);
@@ -165,8 +173,10 @@ describe('Mutation: createMovieList', () => {
         };
 
         const args = {
-            name: 'Test List',
-            description: 'Test description'
+            input: {
+                name: 'Test List',
+                description: 'Test description'
+            }
         };
 
         const result = await CreateMovieList.resolve(null, args, context);
@@ -184,12 +194,14 @@ describe('Mutation: createMovieList', () => {
         const context = {}; // No user
 
         const args = {
-            name: 'Test List'
+            input: {
+                name: 'Test List'
+            }
         };
 
         await expect(CreateMovieList.resolve(null, args, context))
             .rejects
-            .toThrow('You must be logged in to create a movie list');
+            .toThrow('Unauthentificated: Please log in');
     });
 
     it('should allow creating multiple public lists', async () => {
@@ -201,13 +213,17 @@ describe('Mutation: createMovieList', () => {
         };
 
         const list1 = await CreateMovieList.resolve(null, {
-            name: 'Public List 1',
-            isPublic: true
+            input: {
+                name: 'Public List 1',
+                isPublic: true
+            }
         }, context);
 
         const list2 = await CreateMovieList.resolve(null, {
-            name: 'Public List 2',
-            isPublic: true
+            input: {
+                name: 'Public List 2',
+                isPublic: true
+            }
         }, context);
 
         expect(list1.isPublic).toBe(true);
