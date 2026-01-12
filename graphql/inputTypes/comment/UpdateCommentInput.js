@@ -3,7 +3,6 @@ const { GraphQLInputObjectType, GraphQLString, GraphQLInt, GraphQLNonNull } = re
 const UpdateCommentInput = new GraphQLInputObjectType({
     name: 'UpdateCommentInput',
     fields: {
-        id: { type: new GraphQLNonNull(GraphQLInt) },
         content: { type: new GraphQLNonNull(GraphQLString) }
     }
 });

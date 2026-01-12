@@ -1,7 +1,8 @@
 const {GraphQLString, GraphQLInt, GraphQLNonNull} = require('graphql');
 const CommentPayload = require('../../types/CommentPayload');
 const db = require('../../../models');
-const {checkAuth} = require('../../../utils/auth');
+const {checkRole} = require('../../../utils/auth');
+const UpdateCommentInput = require('../../inputTypes/comment/UpdateCommentInput');
 
 const UpdateComment = {
     type: CommentPayload,
@@ -9,14 +10,14 @@ const UpdateComment = {
         id: {
             type: new GraphQLNonNull(GraphQLInt),
         },
-        content: {
-            type: new GraphQLNonNull(GraphQLString),
-        },
+        input: {
+            type: new GraphQLNonNull(UpdateCommentInput),
+        }
     },
     resolve: async (_, args, context) => {
-        checkAuth(context, ['user']);
+        checkRole(context, ['user']);
 
-        if (!args.content.trim()) {
+        if (!args.input.content.trim()) {
             throw new Error("Content cannot be empty");
         }
 
@@ -31,7 +32,7 @@ const UpdateComment = {
             throw new Error("You are not authorized to update this comment.");
         }
 
-        comment.content = args.content;
+        comment.content = args.input.content;
         comment.updatedAt = new Date();
 
         await comment.save();

@@ -1,27 +1,25 @@
-const {GraphQLString, GraphQLInt, GraphQLNonNull} = require('graphql');
+const { GraphQLNonNull} = require('graphql');
 const CommentPayload = require('../../types/CommentPayload');
 const db = require('../../../models');
-const {checkAuth} = require('../../../utils/auth');
+const CreateCommentInput = require("../../inputTypes/comment/CreateCommentInput");
+const {checkRole} = require("../../../utils/auth");
 
 const CreateComment = {
     type: CommentPayload,
     args: {
-        reviewId: {
-            type: new GraphQLNonNull(GraphQLInt),
-        },
-        content: {
-            type: new GraphQLNonNull(GraphQLString),
-        },
+       input:{
+           type: new GraphQLNonNull(CreateCommentInput),
+       }
     },
 
     resolve: async (_, args, context) => {
         checkRole(context, ['user', 'moderator', 'admin']);
 
-        if (!args.content.trim()) {
+        if (!args.input.content.trim()) {
             throw new Error("Content cannot be empty");
         }
 
-        const review = await db.Review.findByPk(args.reviewId);
+        const review = await db.Review.findByPk(args.input.reviewId);
         if (!review) {
             throw new Error("Review not found");
         }
@@ -30,8 +28,8 @@ const CreateComment = {
         const now = new Date();
 
         const comment = await db.Comment.create({
-            reviewId: args.reviewId,
-            content: args.content,
+            reviewId: args.input.reviewId,
+            content: args.input.content,
             userId: context.user.id,
             createdAt: now,
             updatedAt: now,

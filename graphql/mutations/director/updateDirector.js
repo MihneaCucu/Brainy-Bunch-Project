@@ -2,14 +2,15 @@ const { GraphQLInt, GraphQLString, GraphQLNonNull } = require('graphql');
 const DirectorType = require('../../types/DirectorPayload');
 const db = require('../../../models');
 const { checkRole } = require('../../../utils/auth');
+const UpdateDirectorInput = require('../../inputTypes/director/UpdateDirectorInput');
 
 const UpdateDirector = {
     type: DirectorType,
     args: {
         id: { type: new GraphQLNonNull(GraphQLInt) },
-        name: { type: GraphQLString },
-        birthDate: { type: GraphQLString },
-        nationality: { type: GraphQLString }
+        input: {
+            type: new GraphQLNonNull(UpdateDirectorInput),
+        }
     },
     resolve: async (_, args, context) => {
         checkRole(context, ['admin']);
@@ -20,19 +21,19 @@ const UpdateDirector = {
             throw new Error('Director not found');
         }
 
-        if (args.name !== undefined && args.name !== director.name) {
+        if (args.input.name !== undefined && args.input.name !== director.name) {
             const existingDirector = await db.Director.findOne({
-                where: { name: args.name }
+                where: { name: args.input.name }
             });
 
             if (existingDirector) {
-                throw new Error(`A director with the name "${args.name}" already exists.`);
+                throw new Error(`A director with the name "${args.input.name}" already exists.`);
             }
         }
 
-        if (args.name !== undefined) director.name = args.name;
-        if (args.birthDate !== undefined) director.birthDate = args.birthDate;
-        if (args.nationality !== undefined) director.nationality = args.nationality;
+        if (args.input.name !== undefined) director.name = args.input.name;
+        if (args.input.birthDate !== undefined) director.birthDate = args.input.birthDate;
+        if (args.input.nationality !== undefined) director.nationality = args.input.nationality;
 
         await director.save();
 
