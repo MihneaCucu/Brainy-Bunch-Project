@@ -1,20 +1,20 @@
 const graphql = require('graphql');
 const { GraphQLInt, GraphQLNonNull, GraphQLString } = graphql;
 const MovieListPayload = require('../../types/MovieListPayload');
+const AddMovieToMovieInput = require("../../inputTypes/movieList/AddMovieToMovieListInput");
 const db = require('../../../models');
 const { checkAuth } = require('../../../utils/auth');
 
 const AddMovieToMovieList = {
     type: MovieListPayload,
     args: {
-        movieListId: { type: new GraphQLNonNull(GraphQLInt) },
-        movieId: { type: new GraphQLNonNull(GraphQLInt) },
-        note: { type: GraphQLString },
+        input: {type: new GraphQLNonNull(AddMovieToMovieInput)}
     },
     async resolve(parent, args, context) {
         checkAuth(context);
+        const input = args.input;
 
-        const movieList = await db.MovieList.findByPk(args.movieListId);
+        const movieList = await db.MovieList.findByPk(input.movieListId);
 
         if (!movieList) {
             throw new Error('Movie list not found');
@@ -24,7 +24,7 @@ const AddMovieToMovieList = {
             throw new Error('You can only add movies to your own lists');
         }
 
-        const movie = await db.Movie.findByPk(args.movieId);
+        const movie = await db.Movie.findByPk(input.movieId);
 
         if (!movie) {
             throw new Error('Movie not found');
@@ -32,8 +32,8 @@ const AddMovieToMovieList = {
 
         const existingEntry = await db.MovieListMovie.findOne({
             where: {
-                movieListId: args.movieListId,
-                movieId: args.movieId
+                movieListId: input.movieListId,
+                movieId: input.movieId
             }
         });
 
@@ -42,14 +42,14 @@ const AddMovieToMovieList = {
         }
 
         await db.MovieListMovie.create({
-            movieListId: args.movieListId,
-            movieId: args.movieId,
-            note: args.note || null,
+            movieListId: input.movieListId,
+            movieId: input.movieId,
+            note: input.note || null,
             addedAt: new Date(),
         });
 
         // Return the updated movie list with movies
-        return await db.MovieList.findByPk(args.movieListId, {
+        return await db.MovieList.findByPk(input.movieListId, {
             include: [{ model: db.Movie, as: 'movies' }]
         });
     }

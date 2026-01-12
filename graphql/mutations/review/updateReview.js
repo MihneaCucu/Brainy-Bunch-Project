@@ -1,23 +1,18 @@
 const {GraphQLString, GraphQLInt, GraphQLNonNull} = require('graphql');
 const ReviewPayload = require('../../types/ReviewPayload');
+const UpdateReviewInput = require("../../inputTypes/review/UpdateReviewInput");
 const db = require('../../../models');
 const {checkAuth} = require('../../../utils/auth');
 
 const UpdateReview = {
     type: ReviewPayload,
     args: {
-        id: {
-            type: new GraphQLNonNull(GraphQLInt),
-        },
-        score: {
-            type: GraphQLInt,
-        },
-        content: {
-            type: GraphQLString,
-        },
+        id: { type: new GraphQLNonNull(GraphQLInt) },
+        input: { type: new GraphQLNonNull(UpdateReviewInput) },
     },
     resolve: async (_, args, context) => {
         checkAuth(context);
+        const input = args.input;
 
         const review = await db.Review.findByPk(args.id);
         if (!review) {
@@ -30,11 +25,11 @@ const UpdateReview = {
             throw new Error("You are not authorized to update this review.");
         }
 
-        if (args.content !== undefined) {
-            review.content = args.content;
+        if (input.content !== undefined) {
+            review.content = input.content;
         }
-        if (args.score !== undefined) {
-            review.score = args.score;
+        if (input.score !== undefined) {
+            review.score = input.score;
         }
         review.updatedAt = new Date();
 

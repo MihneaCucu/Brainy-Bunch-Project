@@ -12,3 +12,8 @@ const UpdateMovieInput = new GraphQLInputObjectType({
 
 module.exports = UpdateMovieInput;
 
+        // id: {type: new GraphQLNonNull(GraphQLInt)},
+        // title: { type: GraphQLString },
+        // description: { type: GraphQLString },
+        // releaseYear: { type: GraphQLInt },
+        // directorId: { type: GraphQLInt },

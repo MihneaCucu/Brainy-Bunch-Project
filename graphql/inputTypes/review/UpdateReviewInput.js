@@ -3,7 +3,6 @@ const { GraphQLInputObjectType, GraphQLString, GraphQLInt, GraphQLNonNull } = re
 const UpdateReviewInput = new GraphQLInputObjectType({
     name: 'UpdateReviewInput',
     fields: {
-        id: { type: new GraphQLNonNull(GraphQLInt) },
         score: { type: GraphQLInt },
         content: { type: GraphQLString }
     }

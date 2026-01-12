@@ -1,49 +1,34 @@
 const { GraphQLString, GraphQLNonNull, GraphQLInt, GraphQLList } = require("graphql");
 const MoviePayload = require("../../types/MoviePayload");
+const CreateMovieInput = require("../../inputTypes/movie/CreateMovieInput");
 const db = require("../../../models");
 const { checkRole } = require("../../../utils/auth");
 
 const CreateMovie = {
   type: MoviePayload,
   args: {
-    title: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    description: {
-      type: GraphQLString,
-    },
-    releaseYear: {
-      type: new GraphQLNonNull(GraphQLInt),
-    },
-    directorId: {
-      type: GraphQLInt,
-    },
-    genreId: {
-      type: GraphQLInt,
-    },
-    actorIds: {
-      type: new GraphQLList(GraphQLInt),
-    }
+    input: { type: new GraphQLNonNull(CreateMovieInput) },
   },
 
   resolve: async (_, args, context) => {
     checkRole(context, ['admin']);
+    const input = args.input || {};
     const movie = await db.Movie.create({
-      title: args.title,
-      description: args.description,
-      releaseYear: args.releaseYear,
-      directorId: args.directorId,
+      title: input.title,
+      description: input.description,
+      releaseYear: input.releaseYear,
+      directorId: input.directorId,
     });
 
-    if (args.genreId) {
+    if (input.genreId) {
       await db.MovieGenre.create({
         movieId: movie.id,
-        genreId: args.genreId,
+        genreId: input.genreId,
       });
     }
 
-    if (args.actorIds && args.actorIds.length > 0) {
-      const data = args.actorIds.map((actorId) => ({
+    if (input.actorIds && input.actorIds.length > 0) {
+      const data = input.actorIds.map((actorId) => ({
         movieId: movie.id,
         actorId: actorId,
       }));

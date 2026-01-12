@@ -1,4 +1,4 @@
-const { GraphQLInputObjectType, GraphQLString, GraphQLInt, GraphQLNonNull } = require('graphql');
+const { GraphQLInputObjectType, GraphQLString, GraphQLInt, GraphQLNonNull, GraphQLList } = require('graphql');
 
 const CreateMovieInput = new GraphQLInputObjectType({
     name: 'CreateMovieInput',
@@ -6,7 +6,9 @@ const CreateMovieInput = new GraphQLInputObjectType({
         title: { type: new GraphQLNonNull(GraphQLString) },
         description: { type: GraphQLString },
         releaseYear: { type: new GraphQLNonNull(GraphQLInt) },
-        directorId: { type: GraphQLInt }
+        directorId: { type: GraphQLInt },
+        genreId: { type: GraphQLInt },
+        actorIds: { type: new GraphQLList(GraphQLInt) }
     }
 });
 

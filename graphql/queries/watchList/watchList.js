@@ -11,7 +11,7 @@ const WatchList = {
     },
 
     resolve: async (parent, args, context) => {
-        checkAuth(context);
+        checkAuth(context); // + admin
 
         const watchList = await db.Watchlist.findByPk(args.id, {
             include: [

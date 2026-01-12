@@ -1,34 +1,28 @@
 const {GraphQLString, GraphQLInt, GraphQLNonNull} = require('graphql');
 const ReviewPayload = require('../../types/ReviewPayload');
+const CreateReviewInput = require("../../inputTypes/review/CreateReviewInput");
 const db = require('../../../models');
 const {checkAuth} = require('../../../utils/auth');
 
 const CreateReview = {
     type: ReviewPayload,
     args: {
-        movieId: {
-            type: new GraphQLNonNull(GraphQLInt),
-        },
-        score: {
-            type: new GraphQLNonNull(GraphQLInt),
-        },
-        content: {
-            type: new GraphQLNonNull(GraphQLString),
-        },
+        input: {type: new GraphQLNonNull(CreateReviewInput)},
     },
 
     resolve: async (_, args, context) => {
         checkRole(context, ['user', 'moderator', 'admin']);
+        const input = args.input;
 
-        if (args.score < 1 || args.score > 5) {
+        if (input.score < 1 || input.score > 5) {
             throw new Error("Score must be between 1 and 5");
         }
 
-        if (!args.content.trim()) {
+        if (!input.content.trim()) {
             throw new Error("Content cannot be empty");
         }
 
-        const movie = await db.Movie.findByPk(args.movieId);
+        const movie = await db.Movie.findByPk(input.movieId);
         if (!movie) {
             throw new Error("Movie not found");
         }
@@ -36,7 +30,7 @@ const CreateReview = {
         const existingReview = await db.Review.findOne({
             where: {
                 userId: context.user.id,
-                movieId: args.movieId
+                movieId: input.movieId
             }
         });
 
@@ -48,9 +42,9 @@ const CreateReview = {
 
 
         const review = await db.Review.create({
-            movieId: args.movieId,
-            score: args.score,
-            content: args.content,
+            movieId: input.movieId,
+            score: input.score,
+            content: input.content,
             userId: context.user.id,
             createdAt: now,
             updatedAt: now,
@@ -71,7 +65,7 @@ const CreateReview = {
         // Check if movie is already in diary
         const existingEntry = await db.MovieDiary.findOne({
             where: {
-                movieId: args.movieId,
+                movieId: input.movieId,
                 diaryId: diary.id
             }
         });
@@ -79,7 +73,7 @@ const CreateReview = {
         // Add movie to diary if not already there
         if (!existingEntry) {
             await db.MovieDiary.create({
-                movieId: args.movieId,
+                movieId: input.movieId,
                 diaryId: diary.id,
                 watchedAt: now
             });

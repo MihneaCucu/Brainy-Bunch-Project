@@ -1,19 +1,20 @@
 const graphql = require('graphql');
 const { GraphQLInt, GraphQLNonNull } = graphql;
 const MovieListPayload = require('../../types/MovieListPayload');
+const RemoveMovieToMovieListInput = require("../../inputTypes/movieList/RemoveMovieFromMovieListInput");
 const db = require('../../../models');
 const { checkAuth } = require('../../../utils/auth');
 
 const RemoveMovieFromMovieList = {
     type: MovieListPayload,
     args: {
-        movieListId: { type: new GraphQLNonNull(GraphQLInt) },
-        movieId: { type: new GraphQLNonNull(GraphQLInt) },
+        input: {type: GraphQLNonNull(RemoveMovieToMovieListInput)}
     },
-    async resolve(parent, args, context) {
+    async resolve(_, args, context) {
         checkAuth(context);
+        const input = args.input;
 
-        const movieList = await db.MovieList.findByPk(args.movieListId);
+        const movieList = await db.MovieList.findByPk(input.movieListId);
 
         if (!movieList) {
             throw new Error('Movie list not found');
@@ -25,8 +26,8 @@ const RemoveMovieFromMovieList = {
 
         const entry = await db.MovieListMovie.findOne({
             where: {
-                movieListId: args.movieListId,
-                movieId: args.movieId
+                movieListId: input.movieListId,
+                movieId: input.movieId
             }
         });
 
@@ -36,7 +37,7 @@ const RemoveMovieFromMovieList = {
 
         await entry.destroy();
 
-        return await db.MovieList.findByPk(args.movieListId, {
+        return await db.MovieList.findByPk(input.movieListId, {
             include: [{ model: db.Movie, as: 'movies' }]
         });
     }
