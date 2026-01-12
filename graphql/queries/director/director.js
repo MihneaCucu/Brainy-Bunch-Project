@@ -1,6 +1,7 @@
 const { GraphQLInt, GraphQLError } = require('graphql');
 const DirectorPayload = require('../../types/DirectorPayload');
 const db = require('../../../models');
+const { checkAuth } = require('../../../utils/auth');
 
 const Director = {
     type: DirectorPayload,
@@ -9,7 +10,7 @@ const Director = {
             type: GraphQLInt,
         },
     },
-    resolve: async (_, args) => {
+    resolve: async (_, args, context) => {
         checkAuth(context);
         
         const { id } = args;

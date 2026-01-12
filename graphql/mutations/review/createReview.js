@@ -46,9 +46,6 @@ const CreateReview = {
 
         const now = new Date();
 
-        checkRole(context, ['user', 'moderator', 'admin']);
-
-        // addMovieToDiary - apel
 
         const review = await db.Review.create({
             movieId: args.movieId,
@@ -58,6 +55,35 @@ const CreateReview = {
             createdAt: now,
             updatedAt: now,
         });
+
+        // Add movie to user's diary (mark as watched)
+        // Get or create diary for user
+        let diary = await db.Diary.findOne({
+            where: { userId: context.user.id }
+        });
+
+        if (!diary) {
+            diary = await db.Diary.create({
+                userId: context.user.id
+            });
+        }
+
+        // Check if movie is already in diary
+        const existingEntry = await db.MovieDiary.findOne({
+            where: {
+                movieId: args.movieId,
+                diaryId: diary.id
+            }
+        });
+
+        // Add movie to diary if not already there
+        if (!existingEntry) {
+            await db.MovieDiary.create({
+                movieId: args.movieId,
+                diaryId: diary.id,
+                watchedAt: now
+            });
+        }
 
         return await db.Review.findByPk(review.id, {
             include: [
