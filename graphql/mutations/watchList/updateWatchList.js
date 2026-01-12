@@ -1,7 +1,7 @@
 const graphql = require('graphql');
 const { GraphQLInt, GraphQLNonNull } = graphql;
 const WatchListPayload = require('../../types/WatchListPayload');
-const UpdateWatchListInput = require('../../inputTypes/watchlist/UpdateWatchListInput');
+const UpdateWatchListInput = require('../../inputTypes/watchList/UpdateWatchListInput');
 const db = require('../../../models');
 
 const UpdateWatchList = {
