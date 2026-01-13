@@ -9,39 +9,55 @@ describe('Query: Actors list', () => {
         await db.Actor.destroy({ where: {}, truncate: true });
     });
 
-    it('should return any actors', async () => {
-        const context = { user: { id: 1, userRole: { name: 'user' } } };
+    describe('Happy Path', () => {
+        it('should return an empty list when no actors exist', async () => {
+            const context = { user: { id: 1, userRole: { name: 'user' } } };
+            
+            const res = await Actors.resolve(null, {}, context);
 
-        const res = await Actors.resolve(null, {}, context);
+            expect(Array.isArray(res)).toBe(true);
+            expect(res).toHaveLength(0);
+        });
 
-        expect(Array.isArray(res)).toBe(true);
-        expect(res.length).toBe(0);
+        it('should return a list of actors when data exists', async () => {
+            await db.Actor.create({
+                name: 'Julia Roberts',
+                birthDate: '10-28-1967',
+                nationality: 'American',
+            });
+
+            await db.Actor.create({
+                name: 'Jennifer Aniston',
+                birthDate: '02-11-1969',
+                nationality: 'American',
+            });
+
+            await db.Actor.create({
+                name: 'Sarah Jessica Parker',
+                birthDate: '25-03-1965',
+                nationality: 'American',
+            });
+
+            const context = { user: { id: 1, userRole: { name: 'user' } } };
+
+            const res = await Actors.resolve(null, {}, context);
+
+            expect(Array.isArray(res)).toBe(true);
+            expect(res).toHaveLength(3);
+            expect(res[0]).toHaveProperty('name');
+        });
+
     });
 
-    it('should list actors', async () => {
-        await db.Actor.create({
-            name: 'Julia Roberts',
-            birthDate: '10-28-1967',
-            nationality: 'American',
+    describe('Sad Path', () => {
+        it('should throw an error if the user is not authenticated', async () => {
+            const context = {}; 
+
+            await expect(Actors.resolve(null, {}, context))
+                .rejects
+                .toThrow();
         });
+    })
 
-        await db.Actor.create({
-            name: 'Jennifer Aniston',
-            birthDate: '02-11-1969',
-            nationality: 'American',
-        });
-
-        await db.Actor.create({
-            name: 'Sarah Jessica Parker',
-            birthDate: '25-03-1965',
-            nationality: 'American',
-        });
-
-        const context = { user: { id: 1, userRole: { name: 'user' } } };
-        const res = await Actors.resolve(null, {}, context);
-
-        expect(Array.isArray(res)).toBe(true);
-        expect(res.length).toBeGreaterThanOrEqual(3);
-    });
-
+    
 })
