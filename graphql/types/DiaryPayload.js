@@ -17,8 +17,8 @@ const DiaryPayload = new GraphQLObjectType({
             movies: {
                 type: new GraphQLList(MoviePayload),
                 resolve: async (parent, args, context) => {
-                    if (parent.movies){
-                        return parent.movies;
+                    if (parent.getMovies){
+                        return parent.getMovies();
                     }
 
                     const diaryId = parent.id;

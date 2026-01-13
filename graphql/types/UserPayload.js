@@ -8,7 +8,7 @@ const UserPayload = new GraphQLObjectType({
         email: { type: GraphQLString },
         role: { 
             type: GraphQLString,
-            resolve: (user) => user.userRole ? user.userRole.name : null
+            resolve: (user) => user.getUserRole ? user.getUserRole().name : null
         }
     })
 });

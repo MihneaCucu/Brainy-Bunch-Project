@@ -23,13 +23,15 @@ const CommentPayload = new GraphQLObjectType({
             user: {
                 type: UserPayload,
                 resolve: (parent) => {
-                    return parent.user;
+                    if(parent.getUser)
+                        return parent.getUser();
                 }
             },
             review: {
                 type: ReviewPayload,
                 resolve: (parent) => {
-                    return parent.review;
+                    if(parent.getReview)
+                        return parent.getReview();
                 }
             }
         };

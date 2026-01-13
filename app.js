@@ -1,5 +1,7 @@
 const express = require('express');
 require('dotenv').config();
+
+const depthLimit = require('graphql-depth-limit');
 const app = express();
 
 const port = process.env.PORT || 3000;
@@ -21,6 +23,7 @@ const schema = new GraphQLSchema({
 
 const graphQLHandler = createHandler({
     schema,
+    validationRules: [depthLimit(5)],
     context: (req) => {
         return {
             // the user data might be on 'req.userData' or 'req.raw.userData'

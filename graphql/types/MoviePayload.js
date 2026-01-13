@@ -25,30 +25,26 @@ const MoviePayload = new GraphQLObjectType({
             },
             director: {
                 type: DirectorPayload,
+                resolve: (parent) => {
+                    return parent.getDirector() || null;
+                }
             },
             reviews: {
                 type: new GraphQLList(ReviewPayload),
                 resolve: (parent) => {
-                    return parent.reviews || [];
-                }
-            },
-            diaryReview: {
-                type: ReviewPayload,
-                resolve: (parent) => {
-                    // DiaryPayload attaches a `review` property for diary entries
-                    return parent.review || null;
+                    return parent.getReviews() || [];
                 }
             },
             actors: {
                 type: new GraphQLList(ActorPayload),
                 resolve: (parent) => {
-                    return parent.actors || [];
+                    return parent.getActors() || [];
                 }
             },
             genres: {
                 type: new GraphQLList(GenrePayload),
                 resolve: (parent) => {
-                    return parent.genres || [];
+                    return parent.getGenres() || [];
                 }
             },
             watchedAt: {

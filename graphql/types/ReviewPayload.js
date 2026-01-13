@@ -27,19 +27,19 @@ const ReviewPayload = new GraphQLObjectType({
             movie: {
                 type: MoviePayload,
                 resolve: (parent) => {
-                    return parent.movie;
+                    return parent.getMovie() || null;
                 }
             },
             user: {
                 type: UserPayload,
                 resolve: (parent) => {
-                    return parent.user;
+                    return parent.getUser() || null;
                 }
             },
             comments: {
                 type: new GraphQLList(CommentPayload),
                 resolve: (parent) => {
-                    return parent.comments || [];
+                    return parent.getComments() || [];
                 }
             }
         };
