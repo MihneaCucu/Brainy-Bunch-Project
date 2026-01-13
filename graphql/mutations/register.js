@@ -20,12 +20,19 @@ const Register = {
             throw new Error("Email already exists");
         }
 
+        const role = await db.Role.findOne({
+            where: {name: 'user'}
+        })
+
+        if(!role){
+            throw new Error("Could not find user role");
+        }
 
         const newUser = await db.User.create({
             username: args.username,
             email: args.email,
             password: args.password,
-            roleId: 1,               // default_role = USER
+            roleId: role.id,               // default_role = USER
         });
 
 
