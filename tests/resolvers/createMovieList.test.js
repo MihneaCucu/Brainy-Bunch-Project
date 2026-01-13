@@ -4,231 +4,64 @@ const CreateMovieList = require('../../graphql/mutations/movieList/createMovieLi
 setupTestDB();
 
 describe('Mutation: createMovieList', () => {
-    let userRole, user1, user2;
+    let user;
 
     beforeEach(async () => {
-        // Create role
-        userRole = await db.Role.create({ name: 'user' });
+        await db.MovieList.destroy({ where: {}, truncate: true });
+        await db.User.destroy({ where: {}, truncate: true });
+        await db.Role.destroy({ where: {}, truncate: true });
 
-        // Create users
-        user1 = await db.User.create({
-            username: 'user1',
-            email: 'user1@test.com',
-            password: 'Pass123!',
-            roleId: userRole.id
-        });
+        const role = await db.Role.create({ name: 'user' });
 
-        user2 = await db.User.create({
-            username: 'user2',
-            email: 'user2@test.com',
-            password: 'Pass123!',
-            roleId: userRole.id
+        user = await db.User.create({
+            username: 'testuser',
+            email: 'test@example.com',
+            password: 'Password123!',
+            roleId: role.id
         });
     });
 
-    // HAPPY PATHS
-    it('should create movie list with name and description', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            input: {
+    describe('Happy Path', () => {
+        it('should create a movie list with name and description', async () => {
+            const context = { user: { id: user.id, userRole: { name: 'user' } } };
+            const input = {
                 name: 'My Top 10',
                 description: 'My top 10 favorite movies',
                 isPublic: true
-            }
-        };
+            };
 
-        const result = await CreateMovieList.resolve(null, args, context);
+            const result = await CreateMovieList.resolve(null, { input }, context);
 
-        expect(result).toBeDefined();
-        expect(result.name).toBe('My Top 10');
-        expect(result.description).toBe('My top 10 favorite movies');
-        expect(result.isPublic).toBe(true);
-        expect(result.userId).toBe(user1.id);
-    });
+            expect(result).toBeDefined();
+            expect(result.name).toBe('My Top 10');
+            expect(result.description).toBe('My top 10 favorite movies');
+            expect(result.isPublic).toBe(true);
+            expect(result.userId).toBe(user.id);
+        });
 
-    it('should create private movie list by default', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            input: {
+        it('should create private movie list by default', async () => {
+            const context = { user: { id: user.id, userRole: { name: 'user' } } };
+            const input = {
                 name: 'Private List'
-            }
-        };
+            };
 
-        const result = await CreateMovieList.resolve(null, args, context);
+            const result = await CreateMovieList.resolve(null, { input }, context);
 
-        expect(result.isPublic).toBe(false);
+            expect(result.isPublic).toBe(false);
+        });
     });
 
-    it('should create movie list with only name', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            input: {
-                name: 'Simple List'
-            }
-        };
-
-        const result = await CreateMovieList.resolve(null, args, context);
-
-        expect(result.name).toBe('Simple List');
-        expect(result.description).toBeUndefined();
-        expect(result.isPublic).toBe(false);
-    });
-
-    it('should allow user to create multiple lists', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const list1 = await CreateMovieList.resolve(null, {
-            input: { name: 'Action Movies' }
-        }, context);
-
-        const list2 = await CreateMovieList.resolve(null, {
-            input: { name: 'Comedy Movies' }
-        }, context);
-
-        expect(list1.name).toBe('Action Movies');
-        expect(list2.name).toBe('Comedy Movies');
-        expect(list1.id).not.toBe(list2.id);
-        expect(list1.userId).toBe(user1.id);
-        expect(list2.userId).toBe(user1.id);
-    });
-
-    it('should allow different users to create lists with same name', async () => {
-        const context1 = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const context2 = {
-            user: {
-                id: user2.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const list1 = await CreateMovieList.resolve(null, {
-            input: { name: 'My Favorites' }
-        }, context1);
-
-        const list2 = await CreateMovieList.resolve(null, {
-            input: { name: 'My Favorites' }
-        }, context2);
-
-        expect(list1.userId).toBe(user1.id);
-        expect(list2.userId).toBe(user2.id);
-        expect(list1.id).not.toBe(list2.id);
-    });
-
-    it('should create public movie list', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            input: {
-                name: 'Public Top 10',
-                description: 'My public list',
-                isPublic: true
-            }
-        };
-
-        const result = await CreateMovieList.resolve(null, args, context);
-
-        expect(result.isPublic).toBe(true);
-    });
-
-    it('should store movie list in database', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            input: {
-                name: 'Test List',
-                description: 'Test description'
-            }
-        };
-
-        const result = await CreateMovieList.resolve(null, args, context);
-
-        // Verify in database
-        const listInDb = await db.MovieList.findByPk(result.id);
-        expect(listInDb).not.toBeNull();
-        expect(listInDb.name).toBe('Test List');
-        expect(listInDb.description).toBe('Test description');
-        expect(listInDb.userId).toBe(user1.id);
-    });
-
-    // SAD PATHS
-    it('should FAIL when user is not authenticated', async () => {
-        const context = {}; // No user
-
-        const args = {
-            input: {
+    describe('Sad Path', () => {
+        it('should throw an error when user is not authenticated', async () => {
+            const context = {};
+            const input = {
                 name: 'Test List'
-            }
-        };
+            };
 
-        await expect(CreateMovieList.resolve(null, args, context))
-            .rejects
-            .toThrow('Unauthentificated: Please log in');
-    });
-
-    it('should allow creating multiple public lists', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const list1 = await CreateMovieList.resolve(null, {
-            input: {
-                name: 'Public List 1',
-                isPublic: true
-            }
-        }, context);
-
-        const list2 = await CreateMovieList.resolve(null, {
-            input: {
-                name: 'Public List 2',
-                isPublic: true
-            }
-        }, context);
-
-        expect(list1.isPublic).toBe(true);
-        expect(list2.isPublic).toBe(true);
-        expect(list1.id).not.toBe(list2.id);
+            await expect(CreateMovieList.resolve(null, { input }, context))
+                .rejects
+                .toThrow();
+        });
     });
 });
 

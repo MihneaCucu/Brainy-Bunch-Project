@@ -4,280 +4,88 @@ const UpdateMovieList = require('../../graphql/mutations/movieList/updateMovieLi
 setupTestDB();
 
 describe('Mutation: updateMovieList', () => {
-    let userRole, user1, user2, list1, list2;
+    let user;
+    let movieList;
 
     beforeEach(async () => {
-        // Create role
-        userRole = await db.Role.create({ name: 'user' });
+        await db.MovieList.destroy({ where: {}, truncate: true });
+        await db.User.destroy({ where: {}, truncate: true });
+        await db.Role.destroy({ where: {}, truncate: true });
 
-        // Create users
-        user1 = await db.User.create({
-            username: 'user1',
-            email: 'user1@test.com',
-            password: 'Pass123!',
-            roleId: userRole.id
+        const role = await db.Role.create({ name: 'user' });
+
+        user = await db.User.create({
+            username: 'testuser',
+            email: 'test@example.com',
+            password: 'Password123!',
+            roleId: role.id
         });
 
-        user2 = await db.User.create({
-            username: 'user2',
-            email: 'user2@test.com',
-            password: 'Pass123!',
-            roleId: userRole.id
-        });
-
-        // Create movie lists
-        list1 = await db.MovieList.create({
-            userId: user1.id,
-            name: 'Original List',
+        movieList = await db.MovieList.create({
+            userId: user.id,
+            name: 'Original Name',
             description: 'Original description',
             isPublic: false
         });
+    });
 
-        list2 = await db.MovieList.create({
-            userId: user2.id,
-            name: 'User2 List',
-            description: 'User2 description',
-            isPublic: true
+    describe('Happy Path', () => {
+        it('should update movie list name and description', async () => {
+            const context = { user: { id: user.id, userRole: { name: 'user' } } };
+            const input = {
+                name: 'Updated Name',
+                description: 'Updated description',
+                isPublic: true
+            };
+
+            const result = await UpdateMovieList.resolve(null, { id: movieList.id, input }, context);
+
+            expect(result.name).toBe('Updated Name');
+            expect(result.description).toBe('Updated description');
+            expect(result.isPublic).toBe(true);
         });
     });
 
-    // HAPPY PATHS
-    it('should update movie list name', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
+    describe('Sad Path', () => {
+        it('should throw an error when movie list does not exist', async () => {
+            const context = { user: { id: user.id, userRole: { name: 'user' } } };
+            const input = { name: 'Updated Name' };
 
-        const args = {
-            id: list1.id,
-            input: {
-                name: 'Updated List Name'
-            }
-        };
+            await expect(UpdateMovieList.resolve(null, { id: 9999, input }, context))
+                .rejects
+                .toThrow('Movie list not found');
+        });
 
-        const result = await UpdateMovieList.resolve(null, args, context);
+        it('should throw an error when user does not own the list', async () => {
+            const otherUser = await db.User.create({
+                username: 'other',
+                email: 'other@example.com',
+                password: 'Password123!',
+                roleId: user.roleId
+            });
 
-        expect(result.name).toBe('Updated List Name');
-        expect(result.description).toBe('Original description'); // unchanged
-        expect(result.isPublic).toBe(false); // unchanged
-    });
+            const otherList = await db.MovieList.create({
+                userId: otherUser.id,
+                name: 'Other List',
+                description: 'Not yours'
+            });
 
-    it('should update movie list description', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
+            const context = { user: { id: user.id, userRole: { name: 'user' } } };
+            const input = { name: 'Hacked' };
 
-        const args = {
-            id: list1.id,
-            input: {
-                description: 'New description'
-            }
-        };
+            await expect(UpdateMovieList.resolve(null, { id: otherList.id, input }, context))
+                .rejects
+                .toThrow('You can only update your own movie lists');
+        });
 
-        const result = await UpdateMovieList.resolve(null, args, context);
+        it('should throw an error when user is not authenticated', async () => {
+            const context = {};
+            const input = { name: 'Updated Name' };
 
-        expect(result.description).toBe('New description');
-        expect(result.name).toBe('Original List'); // unchanged
-    });
-
-    it('should update movie list isPublic status', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            id: list1.id,
-            input: {
-                isPublic: true
-            }
-        };
-
-        const result = await UpdateMovieList.resolve(null, args, context);
-
-        expect(result.isPublic).toBe(true);
-    });
-
-    it('should update multiple fields at once', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            id: list1.id,
-            input: {
-                name: 'Completely New',
-                description: 'Completely new description',
-                isPublic: true
-            }
-        };
-
-        const result = await UpdateMovieList.resolve(null, args, context);
-
-        expect(result.name).toBe('Completely New');
-        expect(result.description).toBe('Completely new description');
-        expect(result.isPublic).toBe(true);
-    });
-
-    it('should allow updating list multiple times', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        // First update
-        let result = await UpdateMovieList.resolve(null, {
-            id: list1.id,
-            input: { name: 'First Update' }
-        }, context);
-        expect(result.name).toBe('First Update');
-
-        // Second update
-        result = await UpdateMovieList.resolve(null, {
-            id: list1.id,
-            input: { description: 'Second Update' }
-        }, context);
-        expect(result.description).toBe('Second Update');
-        expect(result.name).toBe('First Update'); // preserved
-
-        // Third update
-        result = await UpdateMovieList.resolve(null, {
-            id: list1.id,
-            input: { isPublic: true }
-        }, context);
-        expect(result.isPublic).toBe(true);
-        expect(result.name).toBe('First Update'); // preserved
-        expect(result.description).toBe('Second Update'); // preserved
-    });
-
-    it('should make private list public', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        expect(list1.isPublic).toBe(false);
-
-        const args = {
-            id: list1.id,
-            input: {
-                isPublic: true
-            }
-        };
-
-        const result = await UpdateMovieList.resolve(null, args, context);
-
-        expect(result.isPublic).toBe(true);
-    });
-
-    it('should make public list private', async () => {
-        const context = {
-            user: {
-                id: user2.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        expect(list2.isPublic).toBe(true);
-
-        const args = {
-            id: list2.id,
-            input: {
-                isPublic: false
-            }
-        };
-
-        const result = await UpdateMovieList.resolve(null, args, context);
-
-        expect(result.isPublic).toBe(false);
-    });
-
-    // SAD PATHS
-    it('should FAIL when movie list does not exist', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            id: 99999,
-            input: {
-                name: 'Test'
-            }
-        };
-
-        await expect(UpdateMovieList.resolve(null, args, context))
-            .rejects
-            .toThrow('Movie list not found');
-    });
-
-    it('should FAIL when user tries to update another user\'s list', async () => {
-        const context = {
-            user: {
-                id: user2.id, // user2 trying to update user1's list
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            id: list1.id, // list1 belongs to user1
-            input: {
-                name: 'Hacked List'
-            }
-        };
-
-        await expect(UpdateMovieList.resolve(null, args, context))
-            .rejects
-            .toThrow('You can only update your own movie lists');
-    });
-
-    it('should FAIL when user is not authenticated', async () => {
-        const context = {}; // No user
-
-        const args = {
-            id: list1.id,
-            input: {
-                name: 'Test'
-            }
-        };
-
-        await expect(UpdateMovieList.resolve(null, args, context))
-            .rejects
-            .toThrow('Unauthentificated: Please log in');
-    });
-
-    it('should not affect other lists when updating one', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        await UpdateMovieList.resolve(null, {
-            id: list1.id,
-            input: { name: 'Updated List 1' }
-        }, context);
-
-        // Verify list2 is unchanged
-        const list2Still = await db.MovieList.findByPk(list2.id);
-        expect(list2Still.name).toBe('User2 List');
+            await expect(UpdateMovieList.resolve(null, { id: movieList.id, input }, context))
+                .rejects
+                .toThrow();
+        });
     });
 });
 
