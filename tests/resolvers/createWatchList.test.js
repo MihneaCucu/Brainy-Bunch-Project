@@ -19,44 +19,48 @@ describe('Mutation: CreateWatchList', () => {
 
     });
 
-    it('Should create a new Watch list when user', async () => {
-        const context = {
-            user: {
-                id: user.id,
-            }
-        };
+    describe('Happy Path', () => {
+        it('Should create a new Watch list when user', async () => {
+            const context = {
+                user: {
+                    id: user.id,
+                }
+            };
 
-        const args = {
-            input: {
-                name: 'My Watch List',
-                description: "description",
-            }
-        };
+            const args = {
+                input: {
+                    name: 'My Watch List',
+                    description: "description",
+                }
+            };
 
-        const res = await CreateWatchList.resolve(null, args, context);
+            const res = await CreateWatchList.resolve(null, args, context);
 
-        expect(res).toBeDefined();
-        expect(res.name).toBe('My Watch List');
-        expect(res.description).toBe('description');
-        expect(res.userId).toBe(user.id);
+            expect(res).toBeDefined();
+            expect(res.name).toBe('My Watch List');
+            expect(res.description).toBe('description');
+            expect(res.userId).toBe(user.id);
 
-        const watchDb = await db.Watchlist.findOne({ where: { name: 'My Watch List' } });
-        expect(watchDb).toBeDefined();
-        expect(watchDb.name).toBe('My Watch List');
-        expect(watchDb.description).toBe('description');
-        expect(watchDb.userId).toBe(user.id);
+            const watchDb = await db.Watchlist.findOne({ where: { name: 'My Watch List' } });
+            expect(watchDb).toBeDefined();
+            expect(watchDb.name).toBe('My Watch List');
+            expect(watchDb.description).toBe('description');
+            expect(watchDb.userId).toBe(user.id);
+        });
     });
 
-    it('Should throw error if user is NOT logged in ', async () => {
-        const context = {};
-        const args = {
-            input: {
-                name: 'My Watch List',
-                description: "description",
-            }
-        };
+    describe('Sad Path', () => {
+        it('Should throw error if user is NOT logged in ', async () => {
+            const context = {};
+            const args = {
+                input: {
+                    name: 'My Watch List',
+                    description: "description",
+                }
+            };
 
-        await expect(CreateWatchList.resolve(null, args, context)).rejects.toThrow();
+            await expect(CreateWatchList.resolve(null, args, context)).rejects.toThrow();
+        });
     });
 
 });

@@ -46,24 +46,29 @@ describe('Query: watchLists', () => {
         });
     });
 
-    it('it should return  the list from user 1', async () => {
-        const contex = {user: {id: user1.id, userRole: {name: 'admin'}}};
+    describe('Happy Path', () => {
+        it('it should return  the list from user 1', async () => {
+            const contex = {user: {id: user1.id, userRole: {name: 'admin'}}};
 
-        const args ={
-            page:1,
-            limit:8,
-        }
+            const args ={
+                page:1,
+                limit:8,
+            }
 
-        const res = await WatchLists.resolve(null, args, contex);
+            const res = await WatchLists.resolve(null, args, contex);
 
-        expect(res).toHaveLength(1);
-        expect(res[0].name).toBe('My list 1');
+            expect(res).toHaveLength(1);
+            expect(res[0].name).toBe('My list 1');
 
+        });
     });
 
-    it('it should throw error if a user tries to acces the lists ', async () => {
-        const contex = {user: {id: user1.id, userRole: {name: 'user'}}};
-        const args ={page: 1};
-        await expect(WatchLists.resolve(null, args, contex)).rejects.toThrow();
+    describe('Sad Path', () => {
+        it('it should throw error if a user tries to acces the lists ', async () => {
+            const contex = {user: {id: user1.id, userRole: {name: 'user'}}};
+            const args ={page: 1};
+            await expect(WatchLists.resolve(null, args, contex)).rejects.toThrow();
+        });
     });
+
 });

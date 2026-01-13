@@ -22,19 +22,19 @@ describe('Query: Actors list', () => {
         it('should return a list of actors when data exists', async () => {
             await db.Actor.create({
                 name: 'Julia Roberts',
-                birthDate: '10-28-1967',
+                birthDate: '1967-10-28',
                 nationality: 'American',
             });
 
             await db.Actor.create({
                 name: 'Jennifer Aniston',
-                birthDate: '02-11-1969',
+                birthDate: '1969-02-11',
                 nationality: 'American',
             });
 
             await db.Actor.create({
                 name: 'Sarah Jessica Parker',
-                birthDate: '25-03-1965',
+                birthDate: '1965-03-25',
                 nationality: 'American',
             });
 

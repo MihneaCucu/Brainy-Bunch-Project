@@ -37,25 +37,30 @@ describe('Mutation: deleteWatchList', () => {
         });
     });
 
-    it('Should delete a watch list', async () => {
-        const context = {user: {id: user.id}};
+    describe('Happy Path', () => {
+        it('Should delete a watch list', async () => {
+            const context = {user: {id: user.id}};
 
-        const args = { id:  watchList.id }
+            const args = { id:  watchList.id }
 
-        const res = await DeleteWatchList.resolve(null, args, context);
+            const res = await DeleteWatchList.resolve(null, args, context);
 
-        expect(res).toBe('Watch list deleted successfully');
+            expect(res).toBe('Watch list deleted successfully');
 
-        const updateDb = await db.Watchlist.findByPk(watchList.id);
-        expect(updateDb).toBeNull();
+            const updateDb = await db.Watchlist.findByPk(watchList.id);
+            expect(updateDb).toBeNull();
+        });
     });
 
-    it('Should throw error if watchlist not found', async () => {
-        const context = {user: {id: user.id}};
+    describe('Sad Path', () => {
+        it('Should throw error if watchlist not found', async () => {
+            const context = {user: {id: user.id}};
 
-        const args = { id:  9999999999 }
+            const args = { id:  9999999999 }
 
-        await expect(DeleteWatchList.resolve(null, args, context)).rejects.toThrow('Watch list not found');
+            await expect(DeleteWatchList.resolve(null, args, context)).rejects.toThrow('Watch list not found');
 
+        });
     });
+
 });
