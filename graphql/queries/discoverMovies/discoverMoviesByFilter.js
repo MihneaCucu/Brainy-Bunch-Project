@@ -1,16 +1,17 @@
-const {  GraphQLInt, GraphQLList, GraphQLString } = require('graphql');
+const { GraphQLInt, GraphQLList, GraphQLString } = require('graphql');
 const MoviePayload = require('../../types/MoviePayload');
 const db = require('../../../models');
 const { checkAuth } = require('../../../utils/auth');
+const { Op } = require('sequelize'); 
 
 const DiscoverMoviesByFilter = {
     type: new GraphQLList(MoviePayload),
     args: {
-        genreId: {
-            type: GraphQLInt,
+        genre: {
+            type: GraphQLString,
         },
-        actorId:{
-            type: GraphQLInt,
+        actor: {
+            type: GraphQLString,
         },
         year: {
             type: GraphQLInt,
@@ -32,20 +33,25 @@ const DiscoverMoviesByFilter = {
         const page = args.page || 1;
         const offset = (page - 1) * limit;
 
-        if (args.genreId) {
+        if (args.genre) {
             include.push({
                 model: db.Genre,
                 as: 'genres',
-                where: {id: args.genreId},
-                required: true,
+                where: { 
+                    name: { [Op.like]: `%${args.genre}%` }
+                }, 
+                required: true, // only get movies that HAVE this genre
             });
         }
 
-        if(args.actorId) {
+        if (args.actor) {
             include.push({
-                model:db.Actor,
+                model: db.Actor,
                 as: 'actors',
-                where: {id: args.actorId},
+                where: { 
+                    name: { [Op.like]: `%${args.actor}%` }
+                },
+                required: true, // only get movies that feature this actor
             })
         }
 

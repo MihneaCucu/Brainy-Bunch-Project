@@ -140,7 +140,7 @@ describe('Query: discoverMoviesByFilter', () => {
         });
 
         it('should filter movies by gernreId', async () => {
-            const args = {genreId: romance.id};
+            const args = {genre: 'Romance'};
 
             const res = await DiscoverMoviesByFilter.resolve(null, args, getContext());
 
@@ -152,7 +152,7 @@ describe('Query: discoverMoviesByFilter', () => {
         });
 
         it('should filter movies by actorIds', async () => {
-            const args = {actorId: jen.id};
+            const args = {actor: 'Jennifer Aniston'};
 
             const res = await DiscoverMoviesByFilter.resolve(null, args, getContext());
 
@@ -165,7 +165,7 @@ describe('Query: discoverMoviesByFilter', () => {
         });
 
         it('should return nothing', async () => {
-            const args = {actorId: 999999};
+            const args = {actor: 'Actor Inexistent'};
 
             const res = await DiscoverMoviesByFilter.resolve(null, args, getContext());
 
