@@ -52,41 +52,45 @@ describe('Query: watchList', () => {
 
     });
 
-    it('should return watchlist with movies if user is owner', async () => {
-        const contex = {user: {id: user1.id, userRole: {name: 'user'}}};
+    describe('Happy Path', () => {
+        it('should return watchlist with movies if user is owner', async () => {
+            const contex = {user: {id: user1.id, userRole: {name: 'user'}}};
 
-        const args ={
-            id: watchList.id,
-        }
+            const args ={
+                id: watchList.id,
+            }
 
-        const res = await WatchList.resolve(null, args, contex);
+            const res = await WatchList.resolve(null, args, contex);
 
-        expect(res.id).toBe(watchList.id);
-        expect(res.name).toBe('My list');
-        expect(res.movies).toBeDefined();
-        expect(res.movies.length).toBeGreaterThan(0);
-        expect(res.movies[0].title).toBe('Holiday');
+            expect(res.id).toBe(watchList.id);
+            expect(res.name).toBe('My list');
+            expect(res.movies).toBeDefined();
+            expect(res.movies.length).toBeGreaterThan(0);
+            expect(res.movies[0].title).toBe('Holiday');
+        });
     });
 
-    it('should throw error if one user try to view another user watch list', async ()=>{
-        const contex = {user: {id: user2.id, userRole: {name: 'user'}}};
+    describe('Sad Path', () => {
+        it('should throw error if one user try to view another user watch list', async ()=>{
+            const contex = {user: {id: user2.id, userRole: {name: 'user'}}};
 
-        const args ={
-            id: watchList.id,
-        }
+            const args ={
+                id: watchList.id,
+            }
 
-        await expect(WatchList.resolve(null, args, contex)).rejects.toThrow('You do not have permission to view this list');
-    });
+            await expect(WatchList.resolve(null, args, contex)).rejects.toThrow('You do not have permission to view this list');
+        });
 
-    it('should throw error if watch list not found', async ()=>{
-        const contex = {user: {id: user1.id}}
+        it('should throw error if watch list not found', async ()=>{
+            const contex = {user: {id: user1.id}}
 
-        const args ={
-            watchListId: 88888888898,
-            movieId: movie.id,
-        }
+            const args ={
+                watchListId: 88888888898,
+                movieId: movie.id,
+            }
 
-        await expect(WatchList.resolve(null, args, contex)).rejects.toThrow('Watch list not found');
+            await expect(WatchList.resolve(null, args, contex)).rejects.toThrow('Watch list not found');
+        });
     });
 
 });

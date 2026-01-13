@@ -52,194 +52,197 @@ describe('Mutation: updateReview', () => {
             updatedAt: new Date()
         });
     });
+        
+    describe('Happy Path', () => {
+        it('should update review score by owner', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
 
-    // HAPPY PATHS
-    it('should update review score by owner', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
+            const args = {
+                id: review1.id,
+                input : {
+                    score: 5
+                }
+            };
 
-        const args = {
-            id: review1.id,
-            input : {
-                score: 5
-            }
-        };
+            const result = await UpdateReview.resolve(null, args, context);
 
-        const result = await UpdateReview.resolve(null, args, context);
+            expect(result).toBeDefined();
+            expect(result.score).toBe(5);
+            expect(result.content).toBe('Original review content'); // unchanged
+        });
 
-        expect(result).toBeDefined();
-        expect(result.score).toBe(5);
-        expect(result.content).toBe('Original review content'); // unchanged
+        it('should update review content by owner', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
+
+            const args = {
+                id: review1.id,
+                input: {
+                    content: 'Updated review content'
+                }
+            };
+
+            const result = await UpdateReview.resolve(null, args, context);
+
+            expect(result.content).toBe('Updated review content');
+            expect(result.score).toBe(3); // unchanged
+        });
+
+        it('should update both score and content', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
+
+            const args = {
+                id: review1.id,
+                input : {
+                    score: 5,
+                    content: 'Completely updated review'
+                }
+            };
+
+            const result = await UpdateReview.resolve(null, args, context);
+
+            expect(result.score).toBe(5);
+            expect(result.content).toBe('Completely updated review');
+        });
+
+        it('should update the updatedAt timestamp', async () => {
+            const originalUpdatedAt = review1.updatedAt;
+
+            // Wait a bit to ensure timestamp difference
+            await new Promise(resolve => setTimeout(resolve, 10));
+
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
+
+            const args = {
+                id: review1.id,
+                input : {
+                    score: 5
+                }
+            };
+
+            const result = await UpdateReview.resolve(null, args, context);
+
+            expect(new Date(result.updatedAt).getTime()).toBeGreaterThan(
+                new Date(originalUpdatedAt).getTime()
+            );
+        });
+
+        it('should allow user to update their own review multiple times', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
+
+            // First update
+            let args = {
+                id: review1.id,
+                input: {
+                    score: 4
+                }
+            };
+            let result = await UpdateReview.resolve(null, args, context);
+            expect(result.score).toBe(4);
+
+            // Second update
+            args = {
+                id: review1.id,
+                input: {
+                    score: 5
+                }
+            };
+            result = await UpdateReview.resolve(null, args, context);
+            expect(result.score).toBe(5);
+
+            // Third update
+            args = {
+                id: review1.id,
+                input:{
+                    content: 'Final update'
+                }
+            };
+            result = await UpdateReview.resolve(null, args, context);
+            expect(result.content).toBe('Final update');
+            expect(result.score).toBe(5); // preserved from previous update
+        });
     });
 
-    it('should update review content by owner', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
+    describe('Sad Path', () => {
+        it('should FAIL when review does not exist', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
 
-        const args = {
-            id: review1.id,
-            input: {
-                content: 'Updated review content'
-            }
-        };
+            const args = {
+                id: 99999,
+                input : {
+                    score: 5
+                }
+            };
 
-        const result = await UpdateReview.resolve(null, args, context);
+            await expect(UpdateReview.resolve(null, args, context))
+                .rejects
+                .toThrow('Review not found');
+        });
 
-        expect(result.content).toBe('Updated review content');
-        expect(result.score).toBe(3); // unchanged
-    });
+        it('should FAIL when user is not the owner', async () => {
+            const context = {
+                user: {
+                    id: user2.id, // user2 trying to update user1's review
+                    userRole: { name: 'user' }
+                }
+            };
 
-    it('should update both score and content', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
+            const args = {
+                id: review1.id,
+                input : {
+                    score: 5
+                }
+            };
 
-        const args = {
-            id: review1.id,
-            input : {
-                score: 5,
-                content: 'Completely updated review'
-            }
-        };
+            await expect(UpdateReview.resolve(null, args, context))
+                .rejects
+                .toThrow('You are not authorized to update this review');
+        });
 
-        const result = await UpdateReview.resolve(null, args, context);
+        it('should FAIL when user is not authenticated', async () => {
+            const context = {}; // No user
 
-        expect(result.score).toBe(5);
-        expect(result.content).toBe('Completely updated review');
-    });
+            const args = {
+                id: review1.id,
+                input : {
+                    score: 5
+                }
+            };
 
-    it('should update the updatedAt timestamp', async () => {
-        const originalUpdatedAt = review1.updatedAt;
+            await expect(UpdateReview.resolve(null, args, context))
+                .rejects
+                .toThrow();
+        });
 
-        // Wait a bit to ensure timestamp difference
-        await new Promise(resolve => setTimeout(resolve, 10));
-
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            id: review1.id,
-            input : {
-                score: 5
-            }
-        };
-
-        const result = await UpdateReview.resolve(null, args, context);
-
-        expect(new Date(result.updatedAt).getTime()).toBeGreaterThan(
-            new Date(originalUpdatedAt).getTime()
-        );
-    });
-
-    // SAD PATHS
-    it('should FAIL when review does not exist', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            id: 99999,
-            input : {
-                score: 5
-            }
-        };
-
-        await expect(UpdateReview.resolve(null, args, context))
-            .rejects
-            .toThrow('Review not found');
-    });
-
-    it('should FAIL when user is not the owner', async () => {
-        const context = {
-            user: {
-                id: user2.id, // user2 trying to update user1's review
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            id: review1.id,
-            input : {
-                score: 5
-            }
-        };
-
-        await expect(UpdateReview.resolve(null, args, context))
-            .rejects
-            .toThrow('You are not authorized to update this review');
-    });
-
-    it('should FAIL when user is not authenticated', async () => {
-        const context = {}; // No user
-
-        const args = {
-            id: review1.id,
-            input : {
-                score: 5
-            }
-        };
-
-        await expect(UpdateReview.resolve(null, args, context))
-            .rejects
-            .toThrow();
-    });
-
-    it('should allow user to update their own review multiple times', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        // First update
-        let args = {
-            id: review1.id,
-            input: {
-                score: 4
-            }
-        };
-        let result = await UpdateReview.resolve(null, args, context);
-        expect(result.score).toBe(4);
-
-        // Second update
-        args = {
-            id: review1.id,
-            input: {
-                score: 5
-            }
-        };
-        result = await UpdateReview.resolve(null, args, context);
-        expect(result.score).toBe(5);
-
-        // Third update
-        args = {
-            id: review1.id,
-            input:{
-                content: 'Final update'
-            }
-        };
-        result = await UpdateReview.resolve(null, args, context);
-        expect(result.content).toBe('Final update');
-        expect(result.score).toBe(5); // preserved from previous update
     });
 });
 

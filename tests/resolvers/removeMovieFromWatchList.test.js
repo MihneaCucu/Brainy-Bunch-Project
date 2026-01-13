@@ -55,61 +55,66 @@ describe('Muation: removeMovieFromWatchList', () => {
 
     });
 
-    it('it should remove movie from watchlist', async () => {
-        const contex = {user: {id: user1.id}}
+    describe('Happy Path', () => {
+        it('it should remove movie from watchlist', async () => {
+            const contex = {user: {id: user1.id}}
 
-        const args ={
-            watchListId: watchList.id,
-            movieId: movie.id,
-        }
-
-
-        const beforedelete = await db.WatchlistMovie.findOne({
-            where: {
+            const args ={
                 watchListId: watchList.id,
                 movieId: movie.id,
             }
+
+
+            const beforedelete = await db.WatchlistMovie.findOne({
+                where: {
+                    watchListId: watchList.id,
+                    movieId: movie.id,
+                }
+            });
+
+            expect(beforedelete).not.toBeNull();
+
+            const res = await RemoveMovieFromWatchList.resolve(null, args, contex);
+
+            expect(res.id).toBe(watchList.id);
+
+            const afterDelete = await db.WatchlistMovie.findOne({
+                where: {
+                    watchListId: watchList.id,
+                    movieId: movie.id,
+                }
+            });
+
+            expect(afterDelete).toBeNull();
+
         });
 
-        expect(beforedelete).not.toBeNull();
+    });
 
-        const res = await RemoveMovieFromWatchList.resolve(null, args, contex);
+    describe('Sad Path', () => {
+        it('should throw error if movie not found in the watchlist', async ()=>{
+            await db.WatchlistMovie.destroy({ where: {}, truncate: true });
 
-        expect(res.id).toBe(watchList.id);
+            const contex = {user: {id: user1.id}}
 
-        const afterDelete = await db.WatchlistMovie.findOne({
-            where: {
+            const args ={
                 watchListId: watchList.id,
+                movieId: 22222222333
+            }
+
+            await expect(RemoveMovieFromWatchList.resolve(null, args, contex)).rejects.toThrow('Movie not found in this list');
+        });
+
+        it('should throw error if if watch list not found', async ()=>{
+            const contex = {user: {id: user2.id}}
+
+            const args ={
+                watchListId: 88888888898,
                 movieId: movie.id,
             }
+
+            await expect(AddMovieToWatchList.resolve(null, args, contex)).rejects.toThrow('Watch list not found');
         });
-
-        expect(afterDelete).toBeNull();
-
-    });
-
-    it('should throw error if movie not found in the watchlist', async ()=>{
-        await db.WatchlistMovie.destroy({ where: {}, truncate: true });
-
-        const contex = {user: {id: user1.id}}
-
-        const args ={
-            watchListId: watchList.id,
-            movieId: 22222222333
-        }
-
-        await expect(RemoveMovieFromWatchList.resolve(null, args, contex)).rejects.toThrow('Movie not found in this list');
-    });
-
-    it('should throw error if if watch list not found', async ()=>{
-        const contex = {user: {id: user2.id}}
-
-        const args ={
-            watchListId: 88888888898,
-            movieId: movie.id,
-        }
-
-        await expect(AddMovieToWatchList.resolve(null, args, contex)).rejects.toThrow('Watch list not found');
     });
 
 });
