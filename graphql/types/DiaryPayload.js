@@ -1,4 +1,4 @@
-const { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLInt, GraphQLList } = require('graphql');
+const { GraphQLObjectType, GraphQLID, GraphQLList } = require('graphql');
 const db = require('../../models');
 
 const DiaryPayload = new GraphQLObjectType({
@@ -16,10 +16,7 @@ const DiaryPayload = new GraphQLObjectType({
             },
             movies: {
                 type: new GraphQLList(MoviePayload),
-                resolve: async (parent, args, context) => {
-                    if (parent.getMovies){
-                        return parent.getMovies();
-                    }
+                resolve: async (parent) => {
 
                     const diaryId = parent.id;
                     const movieDiaryRows = await db.MovieDiary.findAll({
@@ -33,7 +30,14 @@ const DiaryPayload = new GraphQLObjectType({
                         return [];
                     }
 
-                    const movies = await db.Movie.findAll({ where: { id: movieIds } });
+                    const movies = await db.Movie.findAll({
+                        where: { id: movieIds },
+                        include: [
+                            { model: db.Director, as: 'director' },
+                            { model: db.Actor, as: 'actors' },
+                            { model: db.Genre, as: 'genres' }
+                        ]
+                    });
                     const movieMap = {};
                     movies.forEach(m => { movieMap[m.id] = m; });
 
@@ -59,11 +63,13 @@ const DiaryPayload = new GraphQLObjectType({
                         const movie = movieMap[row.movieId];
                         if (!movie) return null;
 
-                        const m = movie.toJSON();
-                        m.watchedAt = row.watchedAt;
-                        m.reviews = reviewsByMovie[row.movieId] || [];
-                        m.review = ownerReviewMap[row.movieId] || null;
-                        return m;
+                        const movieData = movie.get ? movie.get({ plain: true }) : movie.toJSON();
+
+                        movieData.watchedAt = row.watchedAt;
+                        movieData.reviews = reviewsByMovie[row.movieId] || [];
+                        movieData.review = ownerReviewMap[row.movieId] || null;
+
+                        return movieData;
                     }).filter(m => m !== null);
                 }
             }
