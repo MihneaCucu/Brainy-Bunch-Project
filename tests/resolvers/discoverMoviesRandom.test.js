@@ -90,23 +90,34 @@ describe('Query: discoverMoviesRandom', () => {
     const getContext = () => ({
         user: {
             id: user.id,
-            role: 'user'
+            userRole: { name: 'user'}
         }
     });
 
-    it('Should return 5 movies', async () => {
-        const args = {};
-        const res = await DiscoverMoviesRandom.resolve(null, args, getContext());
+    describe('Happy path',() => {
+        it('Should return 5 movies', async () => {
+            const args = {};
+            const res = await DiscoverMoviesRandom.resolve(null, args, getContext());
 
-        expect(res).toHaveLength(5);
+            expect(res).toHaveLength(5);
+        });
+
+        it('Should return an empty array', async () => {
+            await db.Movie.destroy({ where: {}, truncate: true });
+
+            const args = {};
+            const res = await DiscoverMoviesRandom.resolve(null, args, getContext());
+            expect(res).toHaveLength(0);
+            expect(res).toEqual([]);
+        });
     });
 
-    it('Should return an empty array', async () => {
-        await db.Movie.destroy({ where: {}, truncate: true });
+    describe('Sad path',() => {
+        it('Should throw error if user is not authenticated', async () => {
+            const context = {};
+            const args = {};
+            await expect(DiscoverMoviesRandom.resolve(null, args, context)).rejects.toThrow()
+        });
 
-        const args = {};
-        const res = await DiscoverMoviesRandom.resolve(null, args, getContext());
-        expect(res).toHaveLength(0);
-        expect(res).toEqual([]);
-    });
+    })
 });

@@ -1,7 +1,5 @@
 const { setupTestDB, db } = require('../helper');
 const DiscoverMoviesByFilter = require('../../graphql/queries/discoverMovies/discoverMoviesByFilter');
-let {args: romance} = require("../../graphql/queries/user/user");
-
 setupTestDB();
 
 describe('Query: discoverMoviesByFilter', () => {
@@ -123,55 +121,65 @@ describe('Query: discoverMoviesByFilter', () => {
     const getContext = () => ({
         user: {
             id: user.id,
-            role: 'user'
+            userRole: { name: 'user'}
         }
     });
     
 
-    it('should filter movies by year', async () => {
-        const args = {year: 2010};
+    describe('Happy path', () => {
+        it('should filter movies by year', async () => {
+            const args = {year: 2010};
 
-        const res = await DiscoverMoviesByFilter.resolve(null, args, getContext());
+            const res = await DiscoverMoviesByFilter.resolve(null, args, getContext());
 
-        expect(res).toHaveLength(2);
-        const titles = res.map(m => m.title);
-        expect(titles).toContain('Holiday');
-        expect(titles).toContain('Titanic');
+            expect(res).toHaveLength(2);
+            const titles = res.map(m => m.title);
+            expect(titles).toContain('Holiday');
+            expect(titles).toContain('Titanic');
 
+        });
+
+        it('should filter movies by gernreId', async () => {
+            const args = {genreId: romance.id};
+
+            const res = await DiscoverMoviesByFilter.resolve(null, args, getContext());
+
+            expect(res).toHaveLength(2);
+
+            const titles = res.map(m => m.title);
+            expect(titles).toContain('Holiday');
+            expect(titles).toContain('Nothing hill');
+        });
+
+        it('should filter movies by actorIds', async () => {
+            const args = {actorId: jen.id};
+
+            const res = await DiscoverMoviesByFilter.resolve(null, args, getContext());
+
+            expect(res).toHaveLength(3);
+
+            const titles = res.map(m => m.title);
+            expect(titles).toContain('Holiday');
+            expect(titles).toContain('Nothing hill');
+            expect(titles).toContain('Terminator');
+        });
+
+        it('should return nothing', async () => {
+            const args = {actorId: 999999};
+
+            const res = await DiscoverMoviesByFilter.resolve(null, args, getContext());
+
+            expect(res).toBeDefined();
+            expect(res).toHaveLength(0);
+            expect(Array.isArray(res)).toBe(true);
+        });
     });
 
-    it('should filter movies by gernreId', async () => {
-        const args = {genreId: romance.id};
-
-        const res = await DiscoverMoviesByFilter.resolve(null, args, getContext());
-
-        expect(res).toHaveLength(2);
-
-        const titles = res.map(m => m.title);
-        expect(titles).toContain('Holiday');
-        expect(titles).toContain('Nothing hill');
-    });
-
-    it('should filter movies by actorIds', async () => {
-        const args = {actorId: jen.id};
-
-        const res = await DiscoverMoviesByFilter.resolve(null, args, getContext());
-
-        expect(res).toHaveLength(3);
-
-        const titles = res.map(m => m.title);
-        expect(titles).toContain('Holiday');
-        expect(titles).toContain('Nothing hill');
-        expect(titles).toContain('Terminator');
-    });
-
-    it('should return nothing', async () => {
-        const args = {actorId: 999999};
-
-        const res = await DiscoverMoviesByFilter.resolve(null, args, getContext());
-
-        expect(res).toBeDefined();
-        expect(res).toHaveLength(0);
-        expect(Array.isArray(res)).toBe(true);
-    });
+    describe('Sad path', () => {
+        it('it should throw error if user is not authenticated', async () => {
+            const context = {}
+            const args = {year: 2010}
+            await expect(DiscoverMoviesByFilter.resolve(null, args, context)).rejects.toThrow();
+        })
+    })
 });
