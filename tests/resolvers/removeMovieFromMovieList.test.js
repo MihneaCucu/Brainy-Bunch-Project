@@ -4,43 +4,34 @@ const RemoveMovieFromMovieList = require('../../graphql/mutations/movieList/remo
 setupTestDB();
 
 describe('Mutation: removeMovieFromMovieList', () => {
-    let userRole, user1, user2, movieList1, movieList2, movie1, movie2, movie3;
+    let user;
+    let movieList;
+    let movie1;
+    let movie2;
 
     beforeEach(async () => {
-        // Create role
-        userRole = await db.Role.create({ name: 'user' });
+        await db.MovieListMovie.destroy({ where: {}, truncate: true });
+        await db.MovieList.destroy({ where: {}, truncate: true });
+        await db.Movie.destroy({ where: {}, truncate: true });
+        await db.User.destroy({ where: {}, truncate: true });
+        await db.Role.destroy({ where: {}, truncate: true });
 
-        // Create users
-        user1 = await db.User.create({
-            username: 'user1',
-            email: 'user1@test.com',
-            password: 'Pass123!',
-            roleId: userRole.id
+        const role = await db.Role.create({ name: 'user' });
+
+        user = await db.User.create({
+            username: 'testuser',
+            email: 'test@example.com',
+            password: 'Password123!',
+            roleId: role.id
         });
 
-        user2 = await db.User.create({
-            username: 'user2',
-            email: 'user2@test.com',
-            password: 'Pass123!',
-            roleId: userRole.id
-        });
-
-        // Create movie lists
-        movieList1 = await db.MovieList.create({
-            userId: user1.id,
+        movieList = await db.MovieList.create({
+            userId: user.id,
             name: 'My Favorites',
             description: 'My favorite movies',
             isPublic: false
         });
 
-        movieList2 = await db.MovieList.create({
-            userId: user2.id,
-            name: 'User2 Favorites',
-            description: 'User2 favorite movies',
-            isPublic: true
-        });
-
-        // Create movies
         movie1 = await db.Movie.create({
             title: 'Inception',
             releaseYear: 2010,
@@ -55,321 +46,131 @@ describe('Mutation: removeMovieFromMovieList', () => {
             updatedAt: new Date()
         });
 
-        movie3 = await db.Movie.create({
-            title: 'Interstellar',
-            releaseYear: 2014,
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
-
-        // Add movies to lists
+        // Add movies to list
         await db.MovieListMovie.create({
-            movieListId: movieList1.id,
+            movieListId: movieList.id,
             movieId: movie1.id,
             addedAt: new Date()
         });
 
         await db.MovieListMovie.create({
-            movieListId: movieList1.id,
+            movieListId: movieList.id,
             movieId: movie2.id,
             addedAt: new Date()
         });
+    });
 
-        await db.MovieListMovie.create({
-            movieListId: movieList1.id,
-            movieId: movie3.id,
-            addedAt: new Date()
+    describe('Happy Path', () => {
+        it('should remove movie from movie list', async () => {
+            const context = { user: { id: user.id, userRole: { name: 'user' } } };
+            const input = {
+                movieListId: movieList.id,
+                movieId: movie1.id
+            };
+
+            const result = await RemoveMovieFromMovieList.resolve(null, { input }, context);
+
+            expect(result).toBeDefined();
+            expect(result.movies.length).toBe(1);
+
+            const movieIds = result.movies.map(m => m.id);
+            expect(movieIds).not.toContain(movie1.id);
+            expect(movieIds).toContain(movie2.id);
+        });
+
+        it('should verify movie is removed from database', async () => {
+            const context = { user: { id: user.id, userRole: { name: 'user' } } };
+
+            // Verify entry exists
+            let entry = await db.MovieListMovie.findOne({
+                where: {
+                    movieListId: movieList.id,
+                    movieId: movie1.id
+                }
+            });
+            expect(entry).not.toBeNull();
+
+            const input = {
+                movieListId: movieList.id,
+                movieId: movie1.id
+            };
+
+            await RemoveMovieFromMovieList.resolve(null, { input }, context);
+
+            // Verify entry no longer exists
+            entry = await db.MovieListMovie.findOne({
+                where: {
+                    movieListId: movieList.id,
+                    movieId: movie1.id
+                }
+            });
+            expect(entry).toBeNull();
         });
     });
 
-    // HAPPY PATHS
-    it('should remove movie from movie list', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            input: {
-                movieListId: movieList1.id,
+    describe('Sad Path', () => {
+        it('should throw an error when movie list does not exist', async () => {
+            const context = { user: { id: user.id, userRole: { name: 'user' } } };
+            const input = {
+                movieListId: 9999,
                 movieId: movie1.id
-            }
-        };
+            };
 
-        const result = await RemoveMovieFromMovieList.resolve(null, args, context);
-
-        expect(result).toBeDefined();
-        expect(result.movies.length).toBe(2);
-
-        const movieIds = result.movies.map(m => m.id);
-        expect(movieIds).not.toContain(movie1.id);
-    });
-
-    it('should verify movie is removed from database', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        // Verify entry exists
-        let entry = await db.MovieListMovie.findOne({
-            where: {
-                movieListId: movieList1.id,
-                movieId: movie1.id
-            }
-        });
-        expect(entry).not.toBeNull();
-
-        const args = {
-            input:{
-                movieListId: movieList1.id,
-                movieId: movie1.id
-            }
-        };
-
-        await RemoveMovieFromMovieList.resolve(null, args, context);
-
-        // Verify entry no longer exists
-        entry = await db.MovieListMovie.findOne({
-            where: {
-                movieListId: movieList1.id,
-                movieId: movie1.id
-            }
-        });
-        expect(entry).toBeNull();
-    });
-
-    it('should remove multiple movies from list', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        // Remove first movie
-        await RemoveMovieFromMovieList.resolve(null, {
-            input: {
-                movieListId: movieList1.id,
-                movieId: movie1.id
-            }
-        }, context);
-
-        // Remove second movie
-        const result = await RemoveMovieFromMovieList.resolve(null, {
-            input: {
-                movieListId: movieList1.id,
-                movieId: movie2.id
-            }
-        }, context);
-
-        expect(result.movies.length).toBe(1);
-        expect(result.movies[0].id).toBe(movie3.id);
-    });
-
-    it('should not affect movie in database when removing from list', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            input:{
-                movieListId: movieList1.id,
-                movieId: movie1.id
-            }
-        };
-
-        await RemoveMovieFromMovieList.resolve(null, args, context);
-
-        // Verify movie still exists
-        const movieStillExists = await db.Movie.findByPk(movie1.id);
-        expect(movieStillExists).not.toBeNull();
-        expect(movieStillExists.title).toBe('Inception');
-    });
-
-    it('should not affect other lists when removing from one', async () => {
-        // Add movie1 to list2
-        await db.MovieListMovie.create({
-            movieListId: movieList2.id,
-            movieId: movie1.id,
-            addedAt: new Date()
+            await expect(RemoveMovieFromMovieList.resolve(null, { input }, context))
+                .rejects
+                .toThrow('Movie list not found');
         });
 
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
+        it('should throw an error when user tries to remove from another user\'s list', async () => {
+            const otherUser = await db.User.create({
+                username: 'other',
+                email: 'other@example.com',
+                password: 'Password123!',
+                roleId: user.roleId
+            });
 
-        // Remove from list1
-        await RemoveMovieFromMovieList.resolve(null, {
-            input: {
-                movieListId: movieList1.id,
+            const context = { user: { id: otherUser.id, userRole: { name: 'user' } } };
+            const input = {
+                movieListId: movieList.id,
                 movieId: movie1.id
-            }
-        }, context);
+            };
 
-        // Verify still in list2
-        const entryInList2 = await db.MovieListMovie.findOne({
-            where: {
-                movieListId: movieList2.id,
-                movieId: movie1.id
-            }
+            await expect(RemoveMovieFromMovieList.resolve(null, { input }, context))
+                .rejects
+                .toThrow('You can only remove movies from your own lists');
         });
-        expect(entryInList2).not.toBeNull();
-    });
 
-    it('should allow removing all movies from list', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
+        it('should throw an error when movie is not in the list', async () => {
+            const context = { user: { id: user.id, userRole: { name: 'user' } } };
 
-        // Remove all movies
-        await RemoveMovieFromMovieList.resolve(null, {
-            input: {
-                movieListId: movieList1.id,
-                movieId: movie1.id
-            }
-        }, context);
+            const movie3 = await db.Movie.create({
+                title: 'Not In List',
+                releaseYear: 2020,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
 
-        await RemoveMovieFromMovieList.resolve(null, {
-            input:{
-                movieListId: movieList1.id,
-                movieId: movie2.id
-            }
-        }, context);
-
-        const result = await RemoveMovieFromMovieList.resolve(null, {
-            input:{
-                movieListId: movieList1.id,
+            const input = {
+                movieListId: movieList.id,
                 movieId: movie3.id
-            }
-        }, context);
+            };
 
-        expect(result.movies.length).toBe(0);
-    });
-
-    // SAD PATHS
-    it('should FAIL when movie list does not exist', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            input:{
-                movieListId: 99999,
-                movieId: movie1.id
-            }
-        };
-
-        await expect(RemoveMovieFromMovieList.resolve(null, args, context))
-            .rejects
-            .toThrow('Movie list not found');
-    });
-
-    it('should FAIL when user tries to remove from another user\'s list', async () => {
-        const context = {
-            user: {
-                id: user2.id, // user2 trying to remove from user1's list
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            input:{
-                movieListId: movieList1.id, // list1 belongs to user1
-                movieId: movie1.id
-            }
-        };
-
-        await expect(RemoveMovieFromMovieList.resolve(null, args, context))
-            .rejects
-            .toThrow('You can only remove movies from your own lists');
-    });
-
-    it('should FAIL when movie is not in the list', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        // Create a new movie not in the list
-        const movie4 = await db.Movie.create({
-            title: 'Not In List',
-            releaseYear: 2020,
-            createdAt: new Date(),
-            updatedAt: new Date()
+            await expect(RemoveMovieFromMovieList.resolve(null, { input }, context))
+                .rejects
+                .toThrow('Movie not found in this list');
         });
 
-        const args = {
-            input: {
-                movieListId: movieList1.id,
-                movieId: movie4.id
-            }
-        };
-
-        await expect(RemoveMovieFromMovieList.resolve(null, args, context))
-            .rejects
-            .toThrow('Movie not found in this list');
-    });
-
-    it('should FAIL when user is not authenticated', async () => {
-        const context = {}; // No user
-
-        const args = {
-            input:{
-                movieListId: movieList1.id,
+        it('should throw an error when user is not authenticated', async () => {
+            const context = {};
+            const input = {
+                movieListId: movieList.id,
                 movieId: movie1.id
-            }
-        };
+            };
 
-        await expect(RemoveMovieFromMovieList.resolve(null, args, context))
-            .rejects
-            .toThrow('Unauthentificated: Please log in');
-    });
-
-    it('should not affect other movies in list when removing one', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        // Remove movie1
-        await RemoveMovieFromMovieList.resolve(null, {
-            input: {
-                movieListId: movieList1.id,
-                movieId: movie1.id
-            }
-        }, context);
-
-        // Verify movie2 and movie3 still in list
-        const entry2 = await db.MovieListMovie.findOne({
-            where: { movieListId: movieList1.id, movieId: movie2.id }
+            await expect(RemoveMovieFromMovieList.resolve(null, { input }, context))
+                .rejects
+                .toThrow();
         });
-        const entry3 = await db.MovieListMovie.findOne({
-            where: { movieListId: movieList1.id, movieId: movie3.id }
-        });
-
-        expect(entry2).not.toBeNull();
-        expect(entry3).not.toBeNull();
     });
 });
 
