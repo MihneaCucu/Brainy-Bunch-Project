@@ -17,26 +17,30 @@ describe('Query: Users (List)', () => {
         ]);
     });
 
-    it('should return ALL users if requested by an Admin', async () => {
-        const context = {
-            user: { userRole: { name: 'admin' } }
-        };
+   describe('Happy path', () => {
+       it('should return ALL users if requested by an Admin', async () => {
+           const context = {
+               user: { userRole: { name: 'admin' } }
+           };
 
-        const result = await Users.resolve(null, {}, context);
+           const result = await Users.resolve(null, {}, context);
 
-        expect(result).toHaveLength(3);
-        
-        expect(result[0].username).toBeDefined();
-        expect(result[0].userRole).toBeDefined();
-    });
+           expect(result).toHaveLength(3);
 
-    it('should FAIL if a standard User tries to list users', async () => {
-        const context = {
-            user: { userRole: { name: 'user' } }
-        };
+           expect(result[0].username).toBeDefined();
+           expect(result[0].userRole).toBeDefined();
+       });
+   })
 
-        await expect(Users.resolve(null, {}, context))
-            .rejects
-            .toThrow("Unauthorized: You need to be a admin to perform this action.");
-    });
+   describe('Sad path', () => {
+       it('should FAIL if a standard User tries to list users', async () => {
+           const context = {
+               user: { userRole: { name: 'user' } }
+           };
+
+           await expect(Users.resolve(null, {}, context))
+               .rejects
+               .toThrow("Unauthorized: You need to be a admin to perform this action.");
+       });
+   })
 });

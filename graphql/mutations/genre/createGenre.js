@@ -2,12 +2,13 @@ const { GraphQLString, GraphQLNonNull } = require("graphql");
 const GenrePayload = require("../../types/GenrePayload");
 const db = require("../../../models");
 const { checkRole } = require('../../../utils/auth');
+const CreateGenreInput = require("../../inputTypes/genre/CreateGenreInput");
 
 const CreateGenre = {
   type: GenrePayload,
   args: {
-    name: {
-      type: new GraphQLNonNull(GraphQLString),
+    input: {
+      type: new GraphQLNonNull(CreateGenreInput),
     },
   },
 
@@ -17,7 +18,7 @@ const CreateGenre = {
     const now = new Date();
 
     const genre = await db.Genre.create({
-      name: args.name,
+      name: args.input.name,
       createdAt: now,
       updatedAt: now,
     });

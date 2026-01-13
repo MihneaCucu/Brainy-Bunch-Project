@@ -24,63 +24,67 @@ describe('Mutation: UpdateUser', () => {
         });
     });
 
-    it('should allow an Admin to update another user', async () => {
-        const context = {
-            user: { id: adminUser.id, userRole: { name: 'admin' } } // Mocking req.user
-        };
+    describe('Happy path', () => {
+        it('should allow an Admin to update another user', async () => {
+            const context = {
+                user: { id: adminUser.id, userRole: { name: 'admin' } } // Mocking req.user
+            };
 
-        const args = {
-            id: targetUser.id,
-            username: 'updated_by_admin'
-        };
+            const args = {
+                id: targetUser.id,
+                username: 'updated_by_admin'
+            };
 
-        const result = await UpdateUser.resolve(null, args, context);
+            const result = await UpdateUser.resolve(null, args, context);
 
-        expect(result.username).toBe('updated_by_admin');
-        expect(result.email).toBe('target@test.com');   // Unchanged
-    });
+            expect(result.username).toBe('updated_by_admin');
+            expect(result.email).toBe('target@test.com');   // Unchanged
+        });
 
-    it('should allow a User to update themselves', async () => {
-        const context = {
-        user: { id: standardUser.id, userRole: { name: 'user' } }
-        };
+        it('should allow a User to update themselves', async () => {
+            const context = {
+                user: { id: standardUser.id, userRole: { name: 'user' } }
+            };
 
-        const args = {
-        id: standardUser.id, // Self ID
-        email: 'newemail@test.com'
-        };
+            const args = {
+                id: standardUser.id, // Self ID
+                email: 'newemail@test.com'
+            };
 
-        const result = await UpdateUser.resolve(null, args, context);
+            const result = await UpdateUser.resolve(null, args, context);
 
-        expect(result.email).toBe('newemail@test.com');
-    });
+            expect(result.email).toBe('newemail@test.com');
+        });
+    })
 
-    it('should FAIL if a standard User tries to update someone else', async () => {
-        const context = {
-            user: { id: standardUser.id, userRole: { name: 'user' } }
-        };
+    describe('Sad path', () => {
+        it('should FAIL if a standard User tries to update someone else', async () => {
+            const context = {
+                user: { id: standardUser.id, userRole: { name: 'user' } }
+            };
 
-        const args = {
-            id: targetUser.id, // Different ID
-            username: 'hacked'
-        };
+            const args = {
+                id: targetUser.id, // Different ID
+                username: 'hacked'
+            };
 
-        // Expect the resolver to throw the authorization error
-        await expect(UpdateUser.resolve(null, args, context))
-        .rejects
-        .toThrow("You are not authorized to edit this user.");
-    });
+            // Expect the resolver to throw the authorization error
+            await expect(UpdateUser.resolve(null, args, context))
+                .rejects
+                .toThrow("You are not authorized to edit this user.");
+        });
 
-    it('should throw error if User not found', async () => {
-        const context = {
-        user: { id: adminUser.id, userRole: { name: 'admin' } }
-        };
+        it('should throw error if User not found', async () => {
+            const context = {
+                user: { id: adminUser.id, userRole: { name: 'admin' } }
+            };
 
-        const args = { id: 99999, username: 'ghost' };
+            const args = { id: 99999, username: 'ghost' };
 
-        await expect(UpdateUser.resolve(null, args, context))
-        .rejects
-        .toThrow("User not found");
-    });
+            await expect(UpdateUser.resolve(null, args, context))
+                .rejects
+                .toThrow("User not found");
+        });
+    })
 
 });

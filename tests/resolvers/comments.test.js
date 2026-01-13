@@ -53,214 +53,217 @@ describe('Query: comments (List)', () => {
         });
     });
 
-    // HAPPY PATHS
-    it('should return empty array when no comments exist', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
+    describe('Happy path', () => {
+        it('should return empty array when no comments exist', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
 
-        const result = await Comments.resolve(null, {}, context);
+            const result = await Comments.resolve(null, {}, context);
 
-        expect(Array.isArray(result)).toBe(true);
-        expect(result.length).toBe(0);
+            expect(Array.isArray(result)).toBe(true);
+            expect(result.length).toBe(0);
+        });
+
+        it('should return all comments', async () => {
+            // Create comments
+            await db.Comment.create({
+                userId: user1.id,
+                reviewId: review1.id,
+                content: 'Comment 1',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+
+            await db.Comment.create({
+                userId: user2.id,
+                reviewId: review1.id,
+                content: 'Comment 2',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+
+            await db.Comment.create({
+                userId: user1.id,
+                reviewId: review2.id,
+                content: 'Comment 3',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
+
+            const result = await Comments.resolve(null, {}, context);
+
+            expect(Array.isArray(result)).toBe(true);
+            expect(result.length).toBe(3);
+        });
+
+        it('should include user and review in comments', async () => {
+            await db.Comment.create({
+                userId: user1.id,
+                reviewId: review1.id,
+                content: 'Test comment',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
+
+            const result = await Comments.resolve(null, {}, context);
+
+            expect(result.length).toBe(1);
+            expect(result[0].user).toBeDefined();
+            expect(result[0].user.username).toBe('user1');
+            expect(result[0].review).toBeDefined();
+            expect(result[0].review.content).toBe('Great movie!');
+        });
+
+        it('should return comments with correct data', async () => {
+            await db.Comment.create({
+                userId: user1.id,
+                reviewId: review1.id,
+                content: 'This is a test comment',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
+
+            const result = await Comments.resolve(null, {}, context);
+
+            expect(result[0].content).toBe('This is a test comment');
+            expect(result[0].userId).toBe(user1.id);
+            expect(result[0].reviewId).toBe(review1.id);
+        });
+
+        it('should return multiple comments on same review', async () => {
+            // Multiple comments on review1
+            await db.Comment.create({
+                userId: user1.id,
+                reviewId: review1.id,
+                content: 'Comment from user1',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+
+            await db.Comment.create({
+                userId: user2.id,
+                reviewId: review1.id,
+                content: 'Comment from user2',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
+
+            const result = await Comments.resolve(null, {}, context);
+
+            expect(result.length).toBe(2);
+
+            const review1Comments = result.filter(c => c.reviewId === review1.id);
+            expect(review1Comments.length).toBe(2);
+        });
+
+        it('should return comments from different users', async () => {
+            await db.Comment.create({
+                userId: user1.id,
+                reviewId: review1.id,
+                content: 'Comment from user1',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+
+            await db.Comment.create({
+                userId: user2.id,
+                reviewId: review2.id,
+                content: 'Comment from user2',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
+
+            const result = await Comments.resolve(null, {}, context);
+
+            expect(result.length).toBe(2);
+
+            const userIds = result.map(c => c.userId);
+            expect(userIds).toContain(user1.id);
+            expect(userIds).toContain(user2.id);
+        });
+
+        it('should return comments on different reviews', async () => {
+            await db.Comment.create({
+                userId: user1.id,
+                reviewId: review1.id,
+                content: 'Comment on review1',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+
+            await db.Comment.create({
+                userId: user1.id,
+                reviewId: review2.id,
+                content: 'Comment on review2',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
+
+            const result = await Comments.resolve(null, {}, context);
+
+            expect(result.length).toBe(2);
+
+            const reviewIds = result.map(c => c.reviewId);
+            expect(reviewIds).toContain(review1.id);
+            expect(reviewIds).toContain(review2.id);
+        });
+
     });
 
-    it('should return all comments', async () => {
-        // Create comments
-        await db.Comment.create({
-            userId: user1.id,
-            reviewId: review1.id,
-            content: 'Comment 1',
-            createdAt: new Date(),
-            updatedAt: new Date()
+    describe('Sad path', () => {
+        it('should FAIL when user is not authenticated', async () => {
+            const context = {}; // No user
+
+            await expect(Comments.resolve(null, {}, context))
+                .rejects
+                .toThrow();
         });
-
-        await db.Comment.create({
-            userId: user2.id,
-            reviewId: review1.id,
-            content: 'Comment 2',
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
-
-        await db.Comment.create({
-            userId: user1.id,
-            reviewId: review2.id,
-            content: 'Comment 3',
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
-
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const result = await Comments.resolve(null, {}, context);
-
-        expect(Array.isArray(result)).toBe(true);
-        expect(result.length).toBe(3);
-    });
-
-    it('should include user and review in comments', async () => {
-        await db.Comment.create({
-            userId: user1.id,
-            reviewId: review1.id,
-            content: 'Test comment',
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
-
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const result = await Comments.resolve(null, {}, context);
-
-        expect(result.length).toBe(1);
-        expect(result[0].user).toBeDefined();
-        expect(result[0].user.username).toBe('user1');
-        expect(result[0].review).toBeDefined();
-        expect(result[0].review.content).toBe('Great movie!');
-    });
-
-    it('should return comments with correct data', async () => {
-        await db.Comment.create({
-            userId: user1.id,
-            reviewId: review1.id,
-            content: 'This is a test comment',
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
-
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const result = await Comments.resolve(null, {}, context);
-
-        expect(result[0].content).toBe('This is a test comment');
-        expect(result[0].userId).toBe(user1.id);
-        expect(result[0].reviewId).toBe(review1.id);
-    });
-
-    it('should return multiple comments on same review', async () => {
-        // Multiple comments on review1
-        await db.Comment.create({
-            userId: user1.id,
-            reviewId: review1.id,
-            content: 'Comment from user1',
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
-
-        await db.Comment.create({
-            userId: user2.id,
-            reviewId: review1.id,
-            content: 'Comment from user2',
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
-
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const result = await Comments.resolve(null, {}, context);
-
-        expect(result.length).toBe(2);
-
-        const review1Comments = result.filter(c => c.reviewId === review1.id);
-        expect(review1Comments.length).toBe(2);
-    });
-
-    it('should return comments from different users', async () => {
-        await db.Comment.create({
-            userId: user1.id,
-            reviewId: review1.id,
-            content: 'Comment from user1',
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
-
-        await db.Comment.create({
-            userId: user2.id,
-            reviewId: review2.id,
-            content: 'Comment from user2',
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
-
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const result = await Comments.resolve(null, {}, context);
-
-        expect(result.length).toBe(2);
-
-        const userIds = result.map(c => c.userId);
-        expect(userIds).toContain(user1.id);
-        expect(userIds).toContain(user2.id);
-    });
-
-    it('should return comments on different reviews', async () => {
-        await db.Comment.create({
-            userId: user1.id,
-            reviewId: review1.id,
-            content: 'Comment on review1',
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
-
-        await db.Comment.create({
-            userId: user1.id,
-            reviewId: review2.id,
-            content: 'Comment on review2',
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
-
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const result = await Comments.resolve(null, {}, context);
-
-        expect(result.length).toBe(2);
-
-        const reviewIds = result.map(c => c.reviewId);
-        expect(reviewIds).toContain(review1.id);
-        expect(reviewIds).toContain(review2.id);
-    });
-
-    // SAD PATH
-    it('should FAIL when user is not authenticated', async () => {
-        const context = {}; // No user
-
-        await expect(Comments.resolve(null, {}, context))
-            .rejects
-            .toThrow();
     });
 });
 

@@ -19,52 +19,56 @@ describe('Mutation: UpdateUserRole', () => {
         });
     });
 
-    it('should allow Admin to promote a user', async () => {
-        const context = {
-            user: { id: adminUser.id, userRole: { name: 'admin' } }
-        };
+    describe('Happy path', () => {
+        it('should allow Admin to promote a user', async () => {
+            const context = {
+                user: { id: adminUser.id, userRole: { name: 'admin' } }
+            };
 
-        const args = {
-            userId: standardUser.id,
-            newRoleId: adminRole.id // Promoting 'user' to 'admin'
-        };
+            const args = {
+                userId: standardUser.id,
+                newRoleId: adminRole.id // Promoting 'user' to 'admin'
+            };
 
-        const result = await UpdateUserRole.resolve(null, args, context);
+            const result = await UpdateUserRole.resolve(null, args, context);
 
-        expect(result.id).toBe(standardUser.id);
-        
+            expect(result.id).toBe(standardUser.id);
 
-        const updatedUser = await db.User.findByPk(standardUser.id);
-        expect(updatedUser.roleId).toBe(adminRole.id);
-    });
 
-    it('should FAILs if the user to update is not found', async () => {
-        const context = {
-            user: { id: adminUser.id, userRole: { name: 'admin' } }
-        };
+            const updatedUser = await db.User.findByPk(standardUser.id);
+            expect(updatedUser.roleId).toBe(adminRole.id);
+        });
+    })
 
-        const args = {
-            userId: 99999,
-            newRoleId: userRole.id
-        };
+    describe('Sad path', () => {
+        it('should FAILs if the user to update is not found', async () => {
+            const context = {
+                user: { id: adminUser.id, userRole: { name: 'admin' } }
+            };
 
-        await expect(UpdateUserRole.resolve(null, args, context))
-            .rejects
-            .toThrow("User not found");
-    });
+            const args = {
+                userId: 99999,
+                newRoleId: userRole.id
+            };
 
-    it('should FAIL if a non-admin tries to update roles', async () => {
-        const context = {
-            user: { id: standardUser.id, userRole: { name: 'user' } }
-        };
+            await expect(UpdateUserRole.resolve(null, args, context))
+                .rejects
+                .toThrow("User not found");
+        });
 
-        const args = {
-            userId: standardUser.id,
-            newRoleId: adminRole.id // User trying to promote themselves
-        };
+        it('should FAIL if a non-admin tries to update roles', async () => {
+            const context = {
+                user: { id: standardUser.id, userRole: { name: 'user' } }
+            };
 
-        await expect(UpdateUserRole.resolve(null, args, context))
-            .rejects
-            .toThrow('Unauthorized: You need to be a admin to perform this action.'); 
-    });
+            const args = {
+                userId: standardUser.id,
+                newRoleId: adminRole.id // User trying to promote themselves
+            };
+
+            await expect(UpdateUserRole.resolve(null, args, context))
+                .rejects
+                .toThrow('Unauthorized: You need to be a admin to perform this action.');
+        });
+    })
 });

@@ -12,19 +12,23 @@ describe('Query: Genre (Single)', () => {
     genre = await db.Genre.create({ name: 'Horror' });
   });
 
-  it('should return a genre when exists', async () => {
-    const context = { user: { id: 1, userRole: { name: 'user' } } };
+  describe('Happy path', () => {
+    it('should return a genre when exists', async () => {
+      const context = { user: { id: 1, userRole: { name: 'user' } } };
 
-    const res = await Genre.resolve(null, { id: genre.id }, context);
+      const res = await Genre.resolve(null, { id: genre.id }, context);
 
-    expect(res).toBeDefined();
-    expect(res.id).toBe(genre.id);
-    expect(res.name).toBe('Horror');
+      expect(res).toBeDefined();
+      expect(res.id).toBe(genre.id);
+      expect(res.name).toBe('Horror');
+    });
   });
 
-  it('should throw when genre not found', async () => {
-    const context = { user: { id: 1, userRole: { name: 'user' } } };
-    
-    await expect(Genre.resolve(null, { id: 99999 }, context)).rejects.toThrow();
+  describe('Sad path', () => {
+    it('should throw when genre not found', async () => {
+      const context = { user: { id: 1, userRole: { name: 'user' } } };
+
+      await expect(Genre.resolve(null, { id: 99999 }, context)).rejects.toThrow();
+    });
   });
 });

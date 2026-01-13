@@ -78,205 +78,207 @@ describe('Mutation: deleteComment', () => {
         });
     });
 
-    // HAPPY PATHS
-    it('should allow user to delete their own comment', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
+    describe('Happy path', () => {
+        it('should allow user to delete their own comment', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
 
-        const args = {
-            id: comment1.id
-        };
+            const args = {
+                id: comment1.id
+            };
 
-        const result = await DeleteComment.resolve(null, args, context);
+            const result = await DeleteComment.resolve(null, args, context);
 
-        expect(result).toBe('Comment deleted successfully');
+            expect(result).toBe('Comment deleted successfully');
 
-        // Verify comment is deleted
-        const deletedComment = await db.Comment.findByPk(comment1.id);
-        expect(deletedComment).toBeNull();
+            // Verify comment is deleted
+            const deletedComment = await db.Comment.findByPk(comment1.id);
+            expect(deletedComment).toBeNull();
+        });
+
+        it('should allow moderator to delete any comment', async () => {
+            const context = {
+                user: {
+                    id: moderator.id,
+                    userRole: { name: 'moderator' }
+                }
+            };
+
+            const args = {
+                id: comment1.id // comment1 belongs to user1, not moderator
+            };
+
+            const result = await DeleteComment.resolve(null, args, context);
+
+            expect(result).toBe('Comment deleted successfully');
+
+            // Verify comment is deleted
+            const deletedComment = await db.Comment.findByPk(comment1.id);
+            expect(deletedComment).toBeNull();
+        });
+
+        it('should allow admin to delete any comment', async () => {
+            const context = {
+                user: {
+                    id: admin.id,
+                    userRole: { name: 'admin' }
+                }
+            };
+
+            const args = {
+                id: comment1.id // comment1 belongs to user1, not admin
+            };
+
+            const result = await DeleteComment.resolve(null, args, context);
+
+            expect(result).toBe('Comment deleted successfully');
+
+            // Verify comment is deleted
+            const deletedComment = await db.Comment.findByPk(comment1.id);
+            expect(deletedComment).toBeNull();
+        });
+
+        it('should verify comment is removed from database after deletion', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
+
+            // Verify comment exists before deletion
+            let commentExists = await db.Comment.findByPk(comment1.id);
+            expect(commentExists).not.toBeNull();
+
+            const args = {
+                id: comment1.id
+            };
+
+            await DeleteComment.resolve(null, args, context);
+
+            // Verify comment no longer exists
+            commentExists = await db.Comment.findByPk(comment1.id);
+            expect(commentExists).toBeNull();
+        });
+
+        it('should not affect other comments when deleting one', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
+
+            const args = {
+                id: comment1.id
+            };
+
+            await DeleteComment.resolve(null, args, context);
+
+            // Verify comment2 still exists
+            const comment2StillExists = await db.Comment.findByPk(comment2.id);
+            expect(comment2StillExists).not.toBeNull();
+            expect(comment2StillExists.content).toBe('Comment from user2');
+        });
     });
 
-    it('should allow moderator to delete any comment', async () => {
-        const context = {
-            user: {
-                id: moderator.id,
-                userRole: { name: 'moderator' }
-            }
-        };
+    describe ('Sad path', () => {
+        it('should FAIL when comment does not exist', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
 
-        const args = {
-            id: comment1.id // comment1 belongs to user1, not moderator
-        };
+            const args = {
+                id: 99999
+            };
 
-        const result = await DeleteComment.resolve(null, args, context);
+            await expect(DeleteComment.resolve(null, args, context))
+                .rejects
+                .toThrow('Comment not found');
+        });
 
-        expect(result).toBe('Comment deleted successfully');
+        it('should FAIL when regular user tries to delete another user\'s comment', async () => {
+            const context = {
+                user: {
+                    id: user2.id, // user2 trying to delete user1's comment
+                    userRole: { name: 'user' }
+                }
+            };
 
-        // Verify comment is deleted
-        const deletedComment = await db.Comment.findByPk(comment1.id);
-        expect(deletedComment).toBeNull();
-    });
+            const args = {
+                id: comment1.id // comment1 belongs to user1
+            };
 
-    it('should allow admin to delete any comment', async () => {
-        const context = {
-            user: {
-                id: admin.id,
-                userRole: { name: 'admin' }
-            }
-        };
+            await expect(DeleteComment.resolve(null, args, context))
+                .rejects
+                .toThrow('Not authorized to delete this comment');
 
-        const args = {
-            id: comment1.id // comment1 belongs to user1, not admin
-        };
+            // Verify comment still exists
+            const commentStillExists = await db.Comment.findByPk(comment1.id);
+            expect(commentStillExists).not.toBeNull();
+        });
 
-        const result = await DeleteComment.resolve(null, args, context);
+        it('should FAIL when user is not authenticated', async () => {
+            const context = {}; // No user
 
-        expect(result).toBe('Comment deleted successfully');
+            const args = {
+                id: comment1.id
+            };
 
-        // Verify comment is deleted
-        const deletedComment = await db.Comment.findByPk(comment1.id);
-        expect(deletedComment).toBeNull();
-    });
+            await expect(DeleteComment.resolve(null, args, context))
+                .rejects
+                .toThrow();
+        });
 
-    it('should verify comment is removed from database after deletion', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
+        it('should not affect review when comment is deleted', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
 
-        // Verify comment exists before deletion
-        let commentExists = await db.Comment.findByPk(comment1.id);
-        expect(commentExists).not.toBeNull();
+            const args = {
+                id: comment1.id
+            };
 
-        const args = {
-            id: comment1.id
-        };
+            await DeleteComment.resolve(null, args, context);
 
-        await DeleteComment.resolve(null, args, context);
+            // Verify review still exists
+            const reviewStillExists = await db.Review.findByPk(review.id);
+            expect(reviewStillExists).not.toBeNull();
+            expect(reviewStillExists.content).toBe('Great movie!');
+        });
 
-        // Verify comment no longer exists
-        commentExists = await db.Comment.findByPk(comment1.id);
-        expect(commentExists).toBeNull();
-    });
+        it('should allow deleting multiple comments sequentially', async () => {
+            const context = {
+                user: {
+                    id: admin.id,
+                    userRole: { name: 'admin' }
+                }
+            };
 
-    it('should not affect other comments when deleting one', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
+            // Delete first comment
+            await DeleteComment.resolve(null, { id: comment1.id }, context);
 
-        const args = {
-            id: comment1.id
-        };
+            // Verify first is deleted
+            let deleted1 = await db.Comment.findByPk(comment1.id);
+            expect(deleted1).toBeNull();
 
-        await DeleteComment.resolve(null, args, context);
+            // Delete second comment
+            await DeleteComment.resolve(null, { id: comment2.id }, context);
 
-        // Verify comment2 still exists
-        const comment2StillExists = await db.Comment.findByPk(comment2.id);
-        expect(comment2StillExists).not.toBeNull();
-        expect(comment2StillExists.content).toBe('Comment from user2');
-    });
-
-    // SAD PATHS
-    it('should FAIL when comment does not exist', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            id: 99999
-        };
-
-        await expect(DeleteComment.resolve(null, args, context))
-            .rejects
-            .toThrow('Comment not found');
-    });
-
-    it('should FAIL when regular user tries to delete another user\'s comment', async () => {
-        const context = {
-            user: {
-                id: user2.id, // user2 trying to delete user1's comment
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            id: comment1.id // comment1 belongs to user1
-        };
-
-        await expect(DeleteComment.resolve(null, args, context))
-            .rejects
-            .toThrow('Not authorized to delete this comment');
-
-        // Verify comment still exists
-        const commentStillExists = await db.Comment.findByPk(comment1.id);
-        expect(commentStillExists).not.toBeNull();
-    });
-
-    it('should FAIL when user is not authenticated', async () => {
-        const context = {}; // No user
-
-        const args = {
-            id: comment1.id
-        };
-
-        await expect(DeleteComment.resolve(null, args, context))
-            .rejects
-            .toThrow();
-    });
-
-    it('should not affect review when comment is deleted', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            id: comment1.id
-        };
-
-        await DeleteComment.resolve(null, args, context);
-
-        // Verify review still exists
-        const reviewStillExists = await db.Review.findByPk(review.id);
-        expect(reviewStillExists).not.toBeNull();
-        expect(reviewStillExists.content).toBe('Great movie!');
-    });
-
-    it('should allow deleting multiple comments sequentially', async () => {
-        const context = {
-            user: {
-                id: admin.id,
-                userRole: { name: 'admin' }
-            }
-        };
-
-        // Delete first comment
-        await DeleteComment.resolve(null, { id: comment1.id }, context);
-
-        // Verify first is deleted
-        let deleted1 = await db.Comment.findByPk(comment1.id);
-        expect(deleted1).toBeNull();
-
-        // Delete second comment
-        await DeleteComment.resolve(null, { id: comment2.id }, context);
-
-        // Verify second is deleted
-        let deleted2 = await db.Comment.findByPk(comment2.id);
-        expect(deleted2).toBeNull();
+            // Verify second is deleted
+            let deleted2 = await db.Comment.findByPk(comment2.id);
+            expect(deleted2).toBeNull();
+        });
     });
 });
 

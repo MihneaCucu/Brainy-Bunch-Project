@@ -61,209 +61,214 @@ describe('Query: comment (Single)', () => {
         });
     });
 
-    // HAPPY PATHS
-    it('should return comment by id', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
 
-        const args = {
-            id: comment1.id
-        };
+    describe('Happy path', () => {
+        it('should return comment by id', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
 
-        const result = await Comment.resolve(null, args, context);
+            const args = {
+                id: comment1.id
+            };
 
-        expect(result).toBeDefined();
-        expect(result.id).toBe(comment1.id);
-        expect(result.content).toBe('First comment');
-        expect(result.userId).toBe(user1.id);
-        expect(result.reviewId).toBe(review.id);
+            const result = await Comment.resolve(null, args, context);
+
+            expect(result).toBeDefined();
+            expect(result.id).toBe(comment1.id);
+            expect(result.content).toBe('First comment');
+            expect(result.userId).toBe(user1.id);
+            expect(result.reviewId).toBe(review.id);
+        });
+
+        it('should return comment with user information', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
+
+            const args = {
+                id: comment1.id
+            };
+
+            const result = await Comment.resolve(null, args, context);
+
+            expect(result.user).toBeDefined();
+            expect(result.user.id).toBe(user1.id);
+            expect(result.user.username).toBe('user1');
+        });
+
+        it('should return comment with review information', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
+
+            const args = {
+                id: comment1.id
+            };
+
+            const result = await Comment.resolve(null, args, context);
+
+            expect(result.review).toBeDefined();
+            expect(result.review.id).toBe(review.id);
+            expect(result.review.content).toBe('Great movie!');
+            expect(result.review.score).toBe(4);
+        });
+
+        it('should return different comments based on different ids', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
+
+            // Get first comment
+            const result1 = await Comment.resolve(null, { id: comment1.id }, context);
+            expect(result1.id).toBe(comment1.id);
+            expect(result1.content).toBe('First comment');
+
+            // Get second comment
+            const result2 = await Comment.resolve(null, { id: comment2.id }, context);
+            expect(result2.id).toBe(comment2.id);
+            expect(result2.content).toBe('Second comment');
+
+            // Verify they are different
+            expect(result1.id).not.toBe(result2.id);
+        });
+
+        it('should return comment with all relationships', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
+
+            const args = {
+                id: comment1.id
+            };
+
+            const result = await Comment.resolve(null, args, context);
+
+            expect(result.user).toBeDefined();
+            expect(result.user.username).toBe('user1');
+            expect(result.review).toBeDefined();
+            expect(result.review.userId).toBe(user1.id);
+        });
+
+        it('should return comment created by different user than review owner', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
+
+            const args = {
+                id: comment2.id // comment2 is by user2 on user1's review
+            };
+
+            const result = await Comment.resolve(null, args, context);
+
+            expect(result.userId).toBe(user2.id); // comment by user2
+            expect(result.review.userId).toBe(user1.id); // review by user1
+        });
+
+        it('should return comment with timestamps', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
+
+            const args = {
+                id: comment1.id
+            };
+
+            const result = await Comment.resolve(null, args, context);
+
+            expect(result.createdAt).toBeDefined();
+            expect(result.updatedAt).toBeDefined();
+        });
+
     });
 
-    it('should return comment with user information', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
 
-        const args = {
-            id: comment1.id
-        };
+    describe('Sad path', () => {
+        it('should FAIL when comment does not exist', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
 
-        const result = await Comment.resolve(null, args, context);
+            const args = {
+                id: 99999
+            };
 
-        expect(result.user).toBeDefined();
-        expect(result.user.id).toBe(user1.id);
-        expect(result.user.username).toBe('user1');
-    });
+            await expect(Comment.resolve(null, args, context))
+                .rejects
+                .toThrow('Not found');
+        });
 
-    it('should return comment with review information', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
+        it('should FAIL when user is not authenticated', async () => {
+            const context = {}; // No user
 
-        const args = {
-            id: comment1.id
-        };
+            const args = {
+                id: comment1.id
+            };
 
-        const result = await Comment.resolve(null, args, context);
+            await expect(Comment.resolve(null, args, context))
+                .rejects
+                .toThrow();
+        });
 
-        expect(result.review).toBeDefined();
-        expect(result.review.id).toBe(review.id);
-        expect(result.review.content).toBe('Great movie!');
-        expect(result.review.score).toBe(4);
-    });
+        it('should FAIL when id is null', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
 
-    it('should return different comments based on different ids', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
+            const args = {
+                id: null
+            };
 
-        // Get first comment
-        const result1 = await Comment.resolve(null, { id: comment1.id }, context);
-        expect(result1.id).toBe(comment1.id);
-        expect(result1.content).toBe('First comment');
+            await expect(Comment.resolve(null, args, context))
+                .rejects
+                .toThrow();
+        });
 
-        // Get second comment
-        const result2 = await Comment.resolve(null, { id: comment2.id }, context);
-        expect(result2.id).toBe(comment2.id);
-        expect(result2.content).toBe('Second comment');
+        it('should allow any authenticated user to view any comment', async () => {
+            const context = {
+                user: {
+                    id: user2.id, // user2 viewing user1's comment
+                    userRole: { name: 'user' }
+                }
+            };
 
-        // Verify they are different
-        expect(result1.id).not.toBe(result2.id);
-    });
+            const args = {
+                id: comment1.id // comment1 belongs to user1
+            };
 
-    it('should return comment with all relationships', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
+            const result = await Comment.resolve(null, args, context);
 
-        const args = {
-            id: comment1.id
-        };
-
-        const result = await Comment.resolve(null, args, context);
-
-        expect(result.user).toBeDefined();
-        expect(result.user.username).toBe('user1');
-        expect(result.review).toBeDefined();
-        expect(result.review.userId).toBe(user1.id);
-    });
-
-    it('should return comment created by different user than review owner', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            id: comment2.id // comment2 is by user2 on user1's review
-        };
-
-        const result = await Comment.resolve(null, args, context);
-
-        expect(result.userId).toBe(user2.id); // comment by user2
-        expect(result.review.userId).toBe(user1.id); // review by user1
-    });
-
-    it('should return comment with timestamps', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            id: comment1.id
-        };
-
-        const result = await Comment.resolve(null, args, context);
-
-        expect(result.createdAt).toBeDefined();
-        expect(result.updatedAt).toBeDefined();
-    });
-
-    // SAD PATHS
-    it('should FAIL when comment does not exist', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            id: 99999
-        };
-
-        await expect(Comment.resolve(null, args, context))
-            .rejects
-            .toThrow('Not found');
-    });
-
-    it('should FAIL when user is not authenticated', async () => {
-        const context = {}; // No user
-
-        const args = {
-            id: comment1.id
-        };
-
-        await expect(Comment.resolve(null, args, context))
-            .rejects
-            .toThrow();
-    });
-
-    it('should FAIL when id is null', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            id: null
-        };
-
-        await expect(Comment.resolve(null, args, context))
-            .rejects
-            .toThrow();
-    });
-
-    it('should allow any authenticated user to view any comment', async () => {
-        const context = {
-            user: {
-                id: user2.id, // user2 viewing user1's comment
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            id: comment1.id // comment1 belongs to user1
-        };
-
-        const result = await Comment.resolve(null, args, context);
-
-        expect(result).toBeDefined();
-        expect(result.id).toBe(comment1.id);
-        expect(result.userId).toBe(user1.id); // Not user2
+            expect(result).toBeDefined();
+            expect(result.id).toBe(comment1.id);
+            expect(result.userId).toBe(user1.id); // Not user2
+        });
     });
 });
 

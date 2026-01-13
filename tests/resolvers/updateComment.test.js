@@ -61,234 +61,236 @@ describe('Mutation: updateComment', () => {
         });
     });
 
-    // HAPPY PATHS
-    it('should update comment content by owner', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
+    describe ('Happy path', () => {
+        it('should update comment content by owner', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
 
-        const args = {
-            id: comment1.id,
-            input: {
-                content: 'Updated comment content'
-            }
-        };
+            const args = {
+                id: comment1.id,
+                input: {
+                    content: 'Updated comment content'
+                }
+            };
 
-        const result = await UpdateComment.resolve(null, args, context);
+            const result = await UpdateComment.resolve(null, args, context);
 
-        expect(result).toBeDefined();
-        expect(result.content).toBe('Updated comment content');
-        expect(result.id).toBe(comment1.id);
+            expect(result).toBeDefined();
+            expect(result.content).toBe('Updated comment content');
+            expect(result.id).toBe(comment1.id);
+        });
+
+        it('should return comment with user and review included', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
+
+            const args = {
+                id: comment1.id,
+                input:{
+                    content: 'Updated content'
+                }
+            };
+
+            const result = await UpdateComment.resolve(null, args, context);
+
+            expect(result.user).toBeDefined();
+            expect(result.user.id).toBe(user1.id);
+            expect(result.review).toBeDefined();
+            expect(result.review.id).toBe(review.id);
+        });
+
+        it('should update the updatedAt timestamp', async () => {
+            const originalUpdatedAt = comment1.updatedAt;
+
+            // Wait a bit to ensure timestamp difference
+            await new Promise(resolve => setTimeout(resolve, 10));
+
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
+
+            const args = {
+                id: comment1.id,
+                input:{
+                    content: 'New content'
+                }
+            };
+
+            const result = await UpdateComment.resolve(null, args, context);
+
+            expect(new Date(result.updatedAt).getTime()).toBeGreaterThan(
+                new Date(originalUpdatedAt).getTime()
+            );
+        });
+
+        it('should allow user to update their comment multiple times', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
+
+            // First update
+            let result = await UpdateComment.resolve(null, {
+                id: comment1.id,
+                input:{
+                    content: 'First update'
+                }
+            }, context);
+            expect(result.content).toBe('First update');
+
+            // Second update
+            result = await UpdateComment.resolve(null, {
+                id: comment1.id,
+                input:{
+                    content: 'Second update'
+                }
+            }, context);
+            expect(result.content).toBe('Second update');
+
+            // Third update
+            result = await UpdateComment.resolve(null, {
+                id: comment1.id,
+                input:{
+                    content: 'Final update'
+                }
+            }, context);
+            expect(result.content).toBe('Final update');
+        });
     });
 
-    it('should return comment with user and review included', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
+    describe('Sad path', () => {
+        it('should FAIL when comment does not exist', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
 
-        const args = {
-            id: comment1.id,
-            input:{
-                content: 'Updated content'
-            }
-        };
+            const args = {
+                id: 99999,
+                input: {
+                    content: 'Update non-existent comment'
+                }
+            };
 
-        const result = await UpdateComment.resolve(null, args, context);
+            await expect(UpdateComment.resolve(null, args, context))
+                .rejects
+                .toThrow('Comment not found');
+        });
 
-        expect(result.user).toBeDefined();
-        expect(result.user.id).toBe(user1.id);
-        expect(result.review).toBeDefined();
-        expect(result.review.id).toBe(review.id);
-    });
+        it('should FAIL when user is not the owner', async () => {
+            const context = {
+                user: {
+                    id: user2.id, // user2 trying to update user1's comment
+                    userRole: { name: 'user' }
+                }
+            };
 
-    it('should update the updatedAt timestamp', async () => {
-        const originalUpdatedAt = comment1.updatedAt;
+            const args = {
+                id: comment1.id, // comment1 belongs to user1
+                input: {
+                    content: 'Unauthorized update'
+                }
+            };
 
-        // Wait a bit to ensure timestamp difference
-        await new Promise(resolve => setTimeout(resolve, 10));
+            await expect(UpdateComment.resolve(null, args, context))
+                .rejects
+                .toThrow('You are not authorized to update this comment');
+        });
 
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
+        it('should FAIL when content is empty', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
 
-        const args = {
-            id: comment1.id,
-            input:{
-                content: 'New content'
-            }
-        };
+            const args = {
+                id: comment1.id,
+                input:{
+                    content: '   '
+                }
+            };
 
-        const result = await UpdateComment.resolve(null, args, context);
+            await expect(UpdateComment.resolve(null, args, context))
+                .rejects
+                .toThrow('Content cannot be empty');
+        });
 
-        expect(new Date(result.updatedAt).getTime()).toBeGreaterThan(
-            new Date(originalUpdatedAt).getTime()
-        );
-    });
+        it('should FAIL when user is not authenticated', async () => {
+            const context = {}; // No user
 
-    it('should allow user to update their comment multiple times', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
+            const args = {
+                id: comment1.id,
+                input:{
+                    content: 'Update'
+                }
+            };
 
-        // First update
-        let result = await UpdateComment.resolve(null, {
-            id: comment1.id,
-            input:{
-                content: 'First update'
-            }
-        }, context);
-        expect(result.content).toBe('First update');
+            await expect(UpdateComment.resolve(null, args, context))
+                .rejects
+                .toThrow();
+        });
 
-        // Second update
-        result = await UpdateComment.resolve(null, {
-            id: comment1.id,
-            input:{
-                content: 'Second update'
-            }
-        }, context);
-        expect(result.content).toBe('Second update');
+        it('should not affect other comments when updating one', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
 
-        // Third update
-        result = await UpdateComment.resolve(null, {
-            id: comment1.id,
-            input:{
-                content: 'Final update'
-            }
-        }, context);
-        expect(result.content).toBe('Final update');
-    });
+            const args = {
+                id: comment1.id,
+                input:{
+                    content: 'Updated comment1'
+                }
+            };
 
-    // SAD PATHS
-    it('should FAIL when comment does not exist', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
+            await UpdateComment.resolve(null, args, context);
 
-        const args = {
-            id: 99999,
-            input: {
-                content: 'Update non-existent comment'
-            }
-        };
+            // Verify comment2 is unchanged
+            const comment2StillSame = await db.Comment.findByPk(comment2.id);
+            expect(comment2StillSame.content).toBe('Original comment from user2');
+        });
 
-        await expect(UpdateComment.resolve(null, args, context))
-            .rejects
-            .toThrow('Comment not found');
-    });
+        it('should preserve comment metadata when updating', async () => {
+            const context = {
+                user: {
+                    id: user1.id,
+                    userRole: { name: 'user' }
+                }
+            };
 
-    it('should FAIL when user is not the owner', async () => {
-        const context = {
-            user: {
-                id: user2.id, // user2 trying to update user1's comment
-                userRole: { name: 'user' }
-            }
-        };
+            const args = {
+                id: comment1.id,
+                input:{
+                    content: 'New content'
+                }
+            };
 
-        const args = {
-            id: comment1.id, // comment1 belongs to user1
-            input: {
-                content: 'Unauthorized update'
-            }
-        };
+            const result = await UpdateComment.resolve(null, args, context);
 
-        await expect(UpdateComment.resolve(null, args, context))
-            .rejects
-            .toThrow('You are not authorized to update this comment');
-    });
-
-    it('should FAIL when content is empty', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            id: comment1.id,
-            input:{
-                content: '   '
-            }
-        };
-
-        await expect(UpdateComment.resolve(null, args, context))
-            .rejects
-            .toThrow('Content cannot be empty');
-    });
-
-    it('should FAIL when user is not authenticated', async () => {
-        const context = {}; // No user
-
-        const args = {
-            id: comment1.id,
-            input:{
-                content: 'Update'
-            }
-        };
-
-        await expect(UpdateComment.resolve(null, args, context))
-            .rejects
-            .toThrow();
-    });
-
-    it('should not affect other comments when updating one', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            id: comment1.id,
-            input:{
-                content: 'Updated comment1'
-            }
-        };
-
-        await UpdateComment.resolve(null, args, context);
-
-        // Verify comment2 is unchanged
-        const comment2StillSame = await db.Comment.findByPk(comment2.id);
-        expect(comment2StillSame.content).toBe('Original comment from user2');
-    });
-
-    it('should preserve comment metadata when updating', async () => {
-        const context = {
-            user: {
-                id: user1.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            id: comment1.id,
-            input:{
-                content: 'New content'
-            }
-        };
-
-        const result = await UpdateComment.resolve(null, args, context);
-
-        expect(result.id).toBe(comment1.id);
-        expect(result.userId).toBe(user1.id);
-        expect(result.reviewId).toBe(review.id);
-        expect(result.content).toBe('New content'); // only content changed
+            expect(result.id).toBe(comment1.id);
+            expect(result.userId).toBe(user1.id);
+            expect(result.reviewId).toBe(review.id);
+            expect(result.content).toBe('New content'); // only content changed
+        });
     });
 });
 
