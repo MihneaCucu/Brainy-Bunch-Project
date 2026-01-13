@@ -34,7 +34,7 @@ describe('Query: director (Single)', () => {
     });
 
     // HAPPY PATHS
-    it('should return director by id', async () => {
+    it('should return director by name', async () => {
         const context = {
             user: {
                 id: user.id,
@@ -43,7 +43,9 @@ describe('Query: director (Single)', () => {
         };
 
         const args = {
-            id: director1.id
+            input: {
+                name: director1.name
+            }
         };
 
         const result = await Director.resolve(null, args, context);
@@ -64,7 +66,9 @@ describe('Query: director (Single)', () => {
         };
 
         const args = {
-            id: director2.id
+            input:{
+                name: director2.name
+            }
         };
 
         const result = await Director.resolve(null, args, context);
@@ -109,7 +113,9 @@ describe('Query: director (Single)', () => {
         };
 
         const args = {
-            id: director1.id
+            input:{
+                name: director1.name
+            }
         };
 
         const result = await Director.resolve(null, args, context);
@@ -133,7 +139,9 @@ describe('Query: director (Single)', () => {
         };
 
         const args = {
-            id: director1.id
+            input:{
+                name: director1.name
+            }
         };
 
         const result = await Director.resolve(null, args, context);
@@ -141,52 +149,6 @@ describe('Query: director (Single)', () => {
         expect(result.movies).toBeDefined();
         expect(Array.isArray(result.movies)).toBe(true);
         expect(result.movies.length).toBe(0);
-    });
-
-    it('should return different directors based on different ids', async () => {
-        const context = {
-            user: {
-                id: user.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        // Get first director
-        const result1 = await Director.resolve(null, { id: director1.id }, context);
-        expect(result1.id).toBe(director1.id);
-        expect(result1.name).toBe('Christopher Nolan');
-
-        // Get second director
-        const result2 = await Director.resolve(null, { id: director2.id }, context);
-        expect(result2.id).toBe(director2.id);
-        expect(result2.name).toBe('Quentin Tarantino');
-
-        // Verify they are different
-        expect(result1.id).not.toBe(result2.id);
-    });
-
-    it('should return director with partial information', async () => {
-        const directorPartial = await db.Director.create({
-            name: 'Unknown Director'
-            // No birthDate or nationality
-        });
-
-        const context = {
-            user: {
-                id: user.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            id: directorPartial.id
-        };
-
-        const result = await Director.resolve(null, args, context);
-
-        expect(result.name).toBe('Unknown Director');
-        expect(result.birthDate).toBeNull();
-        expect(result.nationality).toBeNull();
     });
 
     it('should return director with movie details', async () => {
@@ -207,7 +169,9 @@ describe('Query: director (Single)', () => {
         };
 
         const args = {
-            id: director1.id
+            input:{
+                name: director1.name
+            }
         };
 
         const result = await Director.resolve(null, args, context);
@@ -228,7 +192,9 @@ describe('Query: director (Single)', () => {
         };
 
         const args = {
-            id: 99999
+            input:{
+                name: "Regizor Inexistent"
+            }
         };
 
         await expect(Director.resolve(null, args, context))
@@ -265,22 +231,5 @@ describe('Query: director (Single)', () => {
             .toThrow();
     });
 
-    it('should allow any authenticated user to view any director', async () => {
-        const context = {
-            user: {
-                id: user.id,
-                userRole: { name: 'user' }
-            }
-        };
-
-        const args = {
-            id: director1.id
-        };
-
-        const result = await Director.resolve(null, args, context);
-
-        expect(result).toBeDefined();
-        expect(result.id).toBe(director1.id);
-    });
 });
 

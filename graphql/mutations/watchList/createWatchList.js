@@ -12,14 +12,14 @@ const createWatchList = {
            type: new GraphQLNonNull(CreateWatchListInput),
        }
     },
-    resolve: async (parent, args, context) => {
+    resolve: async (_, args, context) => {
         checkAuth(context);
 
         const watchlist = db.Watchlist.create({
             name: args.input.name,
             description: args.input.description,
             // se leaga la userul conectat
-            userId: user.id,
+            userId: context.user.id,
         });
         return watchlist;
     }

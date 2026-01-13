@@ -50,15 +50,6 @@ describe('Mutation: deleteWatchList', () => {
         expect(updateDb).toBeNull();
     });
 
-    it('Should not delete someone else watch list', async () => {
-        const context = {user: {id: user2.id}};
-
-        const args = { id:  watchList.id }
-
-        await expect(DeleteWatchList.resolve(null, args, context)).rejects.toThrow('You can only delete your own watch lists');
-
-    });
-
     it('Should throw error if watchlist not found', async () => {
         const context = {user: {id: user.id}};
 

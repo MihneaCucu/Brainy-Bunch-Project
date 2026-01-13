@@ -1,19 +1,20 @@
-const { GraphQLString, GraphQLError } = require('graphql');
+const { GraphQLString, GraphQLError, GraphQLNonNull } = require('graphql');
 const DirectorPayload = require('../../types/DirectorPayload');
+const CreateDirectorInput = require('../../inputTypes/director/CreateDirectorInput');
 const db = require('../../../models');
 const { checkAuth } = require('../../../utils/auth');
 
 const Director = {
     type: DirectorPayload,
     args: {
-        name: {
-            type: GraphQLString,
+        input: {
+            type: new GraphQLNonNull(CreateDirectorInput),
         },
     },
     resolve: async (_, args, context) => {
         checkAuth(context);
         
-        const { name } = args;
+        const name = args.input.name;
 
         const director = await db.Director.findOne({
             where: { name },

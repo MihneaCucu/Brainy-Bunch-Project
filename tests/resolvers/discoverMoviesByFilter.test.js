@@ -9,12 +9,21 @@ describe('Query: discoverMoviesByFilter', () => {
     let sara, jen, jul;
     let director;
     let movieRom2010, movieRom2012, movieDrama2010, movieAction2012;
+    let user;
 
     beforeEach(async () => {
         await db.Movie.destroy({ where: {}, truncate: true });
         await db.Actor.destroy({ where: {}, truncate: true });
         await db.Genre.destroy({ where: {}, truncate: true });
         await db.Director.destroy({ where: {}, truncate: true });
+
+        const role = await db.Role.create({ name: 'user' });
+        user = await db.User.create({
+            username: 'testuser',
+            email: 'test@test.com',
+            password: 'password123',
+            roleId: role.id
+        });
 
         drama = await db.Genre.create({ name: 'Drama' });
         action = await db.Genre.create({ name: 'Action' });
@@ -111,10 +120,18 @@ describe('Query: discoverMoviesByFilter', () => {
 
     });
 
+    const getContext = () => ({
+        user: {
+            id: user.id,
+            role: 'user'
+        }
+    });
+    
+
     it('should filter movies by year', async () => {
         const args = {year: 2010};
 
-        const res = await DiscoverMoviesByFilter.resolve(null, args, {});
+        const res = await DiscoverMoviesByFilter.resolve(null, args, getContext());
 
         expect(res).toHaveLength(2);
         const titles = res.map(m => m.title);
@@ -126,7 +143,7 @@ describe('Query: discoverMoviesByFilter', () => {
     it('should filter movies by gernreId', async () => {
         const args = {genreId: romance.id};
 
-        const res = await DiscoverMoviesByFilter.resolve(null, args, {});
+        const res = await DiscoverMoviesByFilter.resolve(null, args, getContext());
 
         expect(res).toHaveLength(2);
 
@@ -138,7 +155,7 @@ describe('Query: discoverMoviesByFilter', () => {
     it('should filter movies by actorIds', async () => {
         const args = {actorId: jen.id};
 
-        const res = await DiscoverMoviesByFilter.resolve(null, args, {});
+        const res = await DiscoverMoviesByFilter.resolve(null, args, getContext());
 
         expect(res).toHaveLength(3);
 
@@ -151,7 +168,7 @@ describe('Query: discoverMoviesByFilter', () => {
     it('should return nothing', async () => {
         const args = {actorId: 999999};
 
-        const res = await DiscoverMoviesByFilter.resolve(null, args, {});
+        const res = await DiscoverMoviesByFilter.resolve(null, args, getContext());
 
         expect(res).toBeDefined();
         expect(res).toHaveLength(0);

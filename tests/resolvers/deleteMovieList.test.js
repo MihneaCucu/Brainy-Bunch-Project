@@ -214,7 +214,7 @@ describe('Mutation: deleteMovieList', () => {
 
         await expect(DeleteMovieList.resolve(null, args, context))
             .rejects
-            .toThrow('You must be logged in to delete a movie list');
+            .toThrow('Unauthentificated: Please log in');
     });
 
     it('should allow user to delete multiple lists', async () => {

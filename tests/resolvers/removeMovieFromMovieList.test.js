@@ -92,8 +92,10 @@ describe('Mutation: removeMovieFromMovieList', () => {
         };
 
         const args = {
-            movieListId: movieList1.id,
-            movieId: movie1.id
+            input: {
+                movieListId: movieList1.id,
+                movieId: movie1.id
+            }
         };
 
         const result = await RemoveMovieFromMovieList.resolve(null, args, context);
@@ -123,8 +125,10 @@ describe('Mutation: removeMovieFromMovieList', () => {
         expect(entry).not.toBeNull();
 
         const args = {
-            movieListId: movieList1.id,
-            movieId: movie1.id
+            input:{
+                movieListId: movieList1.id,
+                movieId: movie1.id
+            }
         };
 
         await RemoveMovieFromMovieList.resolve(null, args, context);
@@ -149,14 +153,18 @@ describe('Mutation: removeMovieFromMovieList', () => {
 
         // Remove first movie
         await RemoveMovieFromMovieList.resolve(null, {
-            movieListId: movieList1.id,
-            movieId: movie1.id
+            input: {
+                movieListId: movieList1.id,
+                movieId: movie1.id
+            }
         }, context);
 
         // Remove second movie
         const result = await RemoveMovieFromMovieList.resolve(null, {
-            movieListId: movieList1.id,
-            movieId: movie2.id
+            input: {
+                movieListId: movieList1.id,
+                movieId: movie2.id
+            }
         }, context);
 
         expect(result.movies.length).toBe(1);
@@ -172,8 +180,10 @@ describe('Mutation: removeMovieFromMovieList', () => {
         };
 
         const args = {
-            movieListId: movieList1.id,
-            movieId: movie1.id
+            input:{
+                movieListId: movieList1.id,
+                movieId: movie1.id
+            }
         };
 
         await RemoveMovieFromMovieList.resolve(null, args, context);
@@ -201,8 +211,10 @@ describe('Mutation: removeMovieFromMovieList', () => {
 
         // Remove from list1
         await RemoveMovieFromMovieList.resolve(null, {
-            movieListId: movieList1.id,
-            movieId: movie1.id
+            input: {
+                movieListId: movieList1.id,
+                movieId: movie1.id
+            }
         }, context);
 
         // Verify still in list2
@@ -225,18 +237,24 @@ describe('Mutation: removeMovieFromMovieList', () => {
 
         // Remove all movies
         await RemoveMovieFromMovieList.resolve(null, {
-            movieListId: movieList1.id,
-            movieId: movie1.id
+            input: {
+                movieListId: movieList1.id,
+                movieId: movie1.id
+            }
         }, context);
 
         await RemoveMovieFromMovieList.resolve(null, {
-            movieListId: movieList1.id,
-            movieId: movie2.id
+            input:{
+                movieListId: movieList1.id,
+                movieId: movie2.id
+            }
         }, context);
 
         const result = await RemoveMovieFromMovieList.resolve(null, {
-            movieListId: movieList1.id,
-            movieId: movie3.id
+            input:{
+                movieListId: movieList1.id,
+                movieId: movie3.id
+            }
         }, context);
 
         expect(result.movies.length).toBe(0);
@@ -252,8 +270,10 @@ describe('Mutation: removeMovieFromMovieList', () => {
         };
 
         const args = {
-            movieListId: 99999,
-            movieId: movie1.id
+            input:{
+                movieListId: 99999,
+                movieId: movie1.id
+            }
         };
 
         await expect(RemoveMovieFromMovieList.resolve(null, args, context))
@@ -270,8 +290,10 @@ describe('Mutation: removeMovieFromMovieList', () => {
         };
 
         const args = {
-            movieListId: movieList1.id, // list1 belongs to user1
-            movieId: movie1.id
+            input:{
+                movieListId: movieList1.id, // list1 belongs to user1
+                movieId: movie1.id
+            }
         };
 
         await expect(RemoveMovieFromMovieList.resolve(null, args, context))
@@ -296,8 +318,10 @@ describe('Mutation: removeMovieFromMovieList', () => {
         });
 
         const args = {
-            movieListId: movieList1.id,
-            movieId: movie4.id
+            input: {
+                movieListId: movieList1.id,
+                movieId: movie4.id
+            }
         };
 
         await expect(RemoveMovieFromMovieList.resolve(null, args, context))
@@ -309,13 +333,15 @@ describe('Mutation: removeMovieFromMovieList', () => {
         const context = {}; // No user
 
         const args = {
-            movieListId: movieList1.id,
-            movieId: movie1.id
+            input:{
+                movieListId: movieList1.id,
+                movieId: movie1.id
+            }
         };
 
         await expect(RemoveMovieFromMovieList.resolve(null, args, context))
             .rejects
-            .toThrow('You must be logged in to remove movies from a list');
+            .toThrow('Unauthentificated: Please log in');
     });
 
     it('should not affect other movies in list when removing one', async () => {
@@ -328,8 +354,10 @@ describe('Mutation: removeMovieFromMovieList', () => {
 
         // Remove movie1
         await RemoveMovieFromMovieList.resolve(null, {
-            movieListId: movieList1.id,
-            movieId: movie1.id
+            input: {
+                movieListId: movieList1.id,
+                movieId: movie1.id
+            }
         }, context);
 
         // Verify movie2 and movie3 still in list

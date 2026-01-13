@@ -51,9 +51,11 @@ describe('Mutation: createReview', () => {
         };
 
         const args = {
-            movieId: movie1.id,
-            score: 4,
-            content: 'Great movie! Loved the cinematography.'
+            input: {
+                movieId: movie1.id,
+                score: 4,
+                content: 'Great movie! Loved the cinematography.'
+            }
         };
 
         const result = await CreateReview.resolve(null, args, context);
@@ -74,9 +76,11 @@ describe('Mutation: createReview', () => {
         };
 
         const args = {
-            movieId: movie1.id,
-            score: 1,
-            content: 'Terrible movie'
+            input: {
+                movieId: movie1.id,
+                score: 1,
+                content: 'Terrible movie'
+            }
         };
 
         const result = await CreateReview.resolve(null, args, context);
@@ -93,9 +97,11 @@ describe('Mutation: createReview', () => {
         };
 
         const args = {
-            movieId: movie1.id,
-            score: 5,
-            content: 'Masterpiece!'
+            input: {
+                movieId: movie1.id,
+                score: 5,
+                content: 'Masterpiece!'
+            }
         };
 
         const result = await CreateReview.resolve(null, args, context);
@@ -113,9 +119,11 @@ describe('Mutation: createReview', () => {
         };
 
         const args = {
-            movieId: movie1.id,
-            score: 0,
-            content: 'Invalid score'
+            input: {
+                movieId: movie1.id,
+                score: 0,
+                content: 'Invalid score'
+            }
         };
 
         await expect(CreateReview.resolve(null, args, context))
@@ -132,9 +140,11 @@ describe('Mutation: createReview', () => {
         };
 
         const args = {
-            movieId: movie1.id,
-            score: 15,
-            content: 'Invalid score'
+            input: {
+                movieId: movie1.id,
+                score: 15,
+                content: 'Invalid score'
+            }
         };
 
         await expect(CreateReview.resolve(null, args, context))
@@ -151,9 +161,11 @@ describe('Mutation: createReview', () => {
         };
 
         const args = {
-            movieId: movie1.id,
-            score: 4,
-            content: '   '
+            input: {
+                movieId: movie1.id,
+                score: 4,
+                content: '   '
+            }
         };
 
         await expect(CreateReview.resolve(null, args, context))
@@ -170,9 +182,11 @@ describe('Mutation: createReview', () => {
         };
 
         const args = {
-            movieId: 99999,
-            score: 4,
-            content: 'Review for non-existent movie'
+            input: {
+                movieId: 99999,
+                score: 4,
+                content: 'Review for non-existent movie'
+            }
         };
 
         await expect(CreateReview.resolve(null, args, context))
@@ -189,9 +203,11 @@ describe('Mutation: createReview', () => {
         };
 
         const args = {
-            movieId: movie1.id,
-            score: 4,
-            content: 'First review'
+            input: {
+                movieId: movie1.id,
+                score: 4,
+                content: 'First review'
+            }
         };
 
         // Create first review
@@ -199,9 +215,11 @@ describe('Mutation: createReview', () => {
 
         // Try to create second review for same movie
         const args2 = {
-            movieId: movie1.id,
-            score: 5,
-            content: 'Second review - should fail'
+            input: {
+                movieId: movie1.id,
+                score: 5,
+                content: 'Second review - should fail'
+            }
         };
 
         await expect(CreateReview.resolve(null, args2, context))
@@ -213,9 +231,11 @@ describe('Mutation: createReview', () => {
         const context = {}; // No user
 
         const args = {
-            movieId: movie1.id,
-            score: 4,
-            content: 'Unauthenticated review'
+            input: {
+                movieId: movie1.id,
+                score: 4,
+                content: 'Unauthenticated review'
+            }
         };
 
         await expect(CreateReview.resolve(null, args, context))
@@ -239,9 +259,11 @@ describe('Mutation: createReview', () => {
         };
 
         const args = {
-            movieId: movie1.id,
-            score: 4,
-            content: 'Review from user 1'
+            input: {
+                movieId: movie1.id,
+                score: 4,
+                content: 'Review from user 1'
+            }
         };
 
         // User 1 reviews
@@ -249,7 +271,7 @@ describe('Mutation: createReview', () => {
         expect(review1.userId).toBe(user1.id);
 
         // User 2 reviews same movie
-        args.content = 'Review from user 2';
+        args.input.content = 'Review from user 2';
         const review2 = await CreateReview.resolve(null, args, context2);
         expect(review2.userId).toBe(user2.id);
 
@@ -266,9 +288,11 @@ describe('Mutation: createReview', () => {
         };
 
         const args = {
-            movieId: movie1.id,
-            score: 4,
-            content: 'Great movie!'
+            input: {
+                movieId: movie1.id,
+                score: 4,
+                content: 'Great movie!'
+            }
         };
 
         // Create review
@@ -313,9 +337,11 @@ describe('Mutation: createReview', () => {
 
         // Now create review
         const args = {
-            movieId: movie1.id,
-            score: 4,
-            content: 'Great movie!'
+            input: {
+                movieId: movie1.id,
+                score: 4,
+                content: 'Great movie!'
+            }
         };
 
         await CreateReview.resolve(null, args, context);

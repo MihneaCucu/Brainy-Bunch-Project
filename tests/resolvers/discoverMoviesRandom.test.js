@@ -1,14 +1,23 @@
 const { setupTestDB, db } = require('../helper');
 const DiscoverMoviesRandom = require('../../graphql/queries/discoverMovies/discoverMoviesRandom');
-const {args} = require("../../graphql/mutations/movie/createMovie");
 
 setupTestDB();
 describe('Query: discoverMoviesRandom', () => {
+    let director;
+    let user;
 
     const movies = [];
     beforeEach(async () => {
         await db.Movie.destroy({ where: {}, truncate: true });
         await db.Director.destroy({ where: {}, truncate: true });
+
+        const role = await db.Role.create({ name: 'user' });
+        user = await db.User.create({
+            username: 'testuser',
+            email: 'test@test.com',
+            password: 'password123',
+            roleId: role.id
+        });
 
         director = await db.Director.create({ name: 'Director' });
 
@@ -78,9 +87,16 @@ describe('Query: discoverMoviesRandom', () => {
 
     });
 
+    const getContext = () => ({
+        user: {
+            id: user.id,
+            role: 'user'
+        }
+    });
+
     it('Should return 5 movies', async () => {
         const args = {};
-        const res = await DiscoverMoviesRandom.resolve(null, args);
+        const res = await DiscoverMoviesRandom.resolve(null, args, getContext());
 
         expect(res).toHaveLength(5);
     });
@@ -89,7 +105,7 @@ describe('Query: discoverMoviesRandom', () => {
         await db.Movie.destroy({ where: {}, truncate: true });
 
         const args = {};
-        const res = await DiscoverMoviesRandom.resolve(null, args);
+        const res = await DiscoverMoviesRandom.resolve(null, args, getContext());
         expect(res).toHaveLength(0);
         expect(res).toEqual([]);
     });
