@@ -19,6 +19,12 @@ const DirectorType = new GraphQLObjectType({
             },
             movies: {
                 type: new GraphQLList(MoviePayload),
+                resolve:async (parent) => {
+                    if (parent.getMovies){
+                        return await parent.getMovies();
+                    }
+                    return parent.movies || [];
+                 }
             },
         };
     }
