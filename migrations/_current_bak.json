@@ -38,6 +38,91 @@
             },
             "indexes": []
         },
+        "Comments": {
+            "tableName": "Comments",
+            "schema": {
+                "id": {
+                    "allowNull": false,
+                    "primaryKey": true,
+                    "autoIncrement": true,
+                    "field": "id",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "userId": {
+                    "allowNull": false,
+                    "field": "userId",
+                    "references": {
+                        "model": "Users",
+                        "key": "id"
+                    },
+                    "onDelete": "NO ACTION",
+                    "onUpdate": "CASCADE",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "reviewId": {
+                    "allowNull": false,
+                    "field": "reviewId",
+                    "references": {
+                        "model": "Reviews",
+                        "key": "id"
+                    },
+                    "onDelete": "NO ACTION",
+                    "onUpdate": "CASCADE",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "content": {
+                    "allowNull": false,
+                    "field": "content",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                }
+            },
+            "indexes": []
+        },
+        "Diaries": {
+            "tableName": "Diaries",
+            "schema": {
+                "id": {
+                    "allowNull": false,
+                    "primaryKey": true,
+                    "autoIncrement": true,
+                    "field": "id",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "userId": {
+                    "allowNull": false,
+                    "unique": true,
+                    "references": {
+                        "model": "Users",
+                        "key": "id"
+                    },
+                    "onDelete": "CASCADE",
+                    "onUpdate": "CASCADE",
+                    "field": "userId",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                }
+            },
+            "indexes": []
+        },
         "Directors": {
             "tableName": "Directors",
             "schema": {
@@ -50,6 +135,7 @@
                 },
                 "name": {
                     "allowNull": false,
+                    "unique": true,
                     "field": "name",
                     "seqType": "Sequelize.STRING"
                 },
@@ -117,6 +203,7 @@
                 },
                 "title": {
                     "allowNull": false,
+                    "unique": true,
                     "field": "title",
                     "seqType": "Sequelize.STRING"
                 },
@@ -182,6 +269,62 @@
                     "field": "actorId",
                     "unique": "MovieActors_movieId_actorId_unique",
                     "seqType": "Sequelize.INTEGER"
+                }
+            },
+            "indexes": []
+        },
+        "MovieDiaries": {
+            "tableName": "MovieDiaries",
+            "schema": {
+                "movieId": {
+                    "primaryKey": true,
+                    "allowNull": false,
+                    "references": {
+                        "model": "Movies",
+                        "key": "id"
+                    },
+                    "onDelete": "CASCADE",
+                    "onUpdate": "CASCADE",
+                    "field": "movieId",
+                    "unique": "MovieDiaries_movieId_diaryId_unique",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "diaryId": {
+                    "primaryKey": true,
+                    "allowNull": false,
+                    "references": {
+                        "model": "Diaries",
+                        "key": "id"
+                    },
+                    "onDelete": "CASCADE",
+                    "onUpdate": "CASCADE",
+                    "field": "diaryId",
+                    "unique": "MovieDiaries_movieId_diaryId_unique",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "watchedAt": {
+                    "allowNull": false,
+                    "defaultValue": {
+                        "internal": true,
+                        "value": "Sequelize.NOW"
+                    },
+                    "field": "watchedAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "note": {
+                    "allowNull": true,
+                    "field": "note",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
                 }
             },
             "indexes": []
@@ -316,71 +459,6 @@
             },
             "indexes": []
         },
-        "Ratings": {
-            "tableName": "Ratings",
-            "schema": {
-                "id": {
-                    "allowNull": false,
-                    "primaryKey": true,
-                    "autoIncrement": true,
-                    "field": "id",
-                    "seqType": "Sequelize.INTEGER"
-                },
-                "score": {
-                    "allowNull": false,
-                    "field": "score",
-                    "seqType": "Sequelize.INTEGER"
-                },
-                "userId": {
-                    "field": "userId",
-                    "allowNull": true,
-                    "references": {
-                        "model": "Users",
-                        "key": "id"
-                    },
-                    "onDelete": "NO ACTION",
-                    "onUpdate": "CASCADE",
-                    "seqType": "Sequelize.INTEGER"
-                },
-                "movieId": {
-                    "field": "movieId",
-                    "allowNull": true,
-                    "references": {
-                        "model": "Movies",
-                        "key": "id"
-                    },
-                    "onDelete": "CASCADE",
-                    "onUpdate": "CASCADE",
-                    "seqType": "Sequelize.INTEGER"
-                },
-                "createdAt": {
-                    "allowNull": false,
-                    "field": "createdAt",
-                    "seqType": "Sequelize.DATE"
-                },
-                "updatedAt": {
-                    "allowNull": false,
-                    "field": "updatedAt",
-                    "seqType": "Sequelize.DATE"
-                }
-            },
-            "indexes": {
-                "d51842cea1b2cc5c9caaf352164dbf57f5baf292": {
-                    "unique": true,
-                    "fields": [
-                        "userId",
-                        "movieId"
-                    ],
-                    "name": "ratings_user_id_movie_id",
-                    "options": {
-                        "indexName": "ratings_user_id_movie_id",
-                        "name": "ratings_user_id_movie_id",
-                        "indicesType": "UNIQUE",
-                        "type": "UNIQUE"
-                    }
-                }
-            }
-        },
         "Reviews": {
             "tableName": "Reviews",
             "schema": {
@@ -413,15 +491,10 @@
                     "onUpdate": "CASCADE",
                     "seqType": "Sequelize.INTEGER"
                 },
-                "rating": {
+                "score": {
                     "allowNull": false,
-                    "field": "rating",
-                    "seqType": "Sequelize.DECIMAL(3, 1)"
-                },
-                "title": {
-                    "allowNull": true,
-                    "field": "title",
-                    "seqType": "Sequelize.STRING"
+                    "field": "score",
+                    "seqType": "Sequelize.INTEGER"
                 },
                 "content": {
                     "allowNull": false,
@@ -606,8 +679,8 @@
             "indexes": []
         }
     },
-    "path": "D:\\Facultate Anul 3\\NodeJs\\Brainy-Bunch-Project\\migrations\\_current.json",
-    "backupPath": "D:\\Facultate Anul 3\\NodeJs\\Brainy-Bunch-Project\\migrations\\_current_bak.json",
+    "path": "E:\\Code\\repos\\Brainy-Bunch-Project\\migrations\\_current.json",
+    "backupPath": "E:\\Code\\repos\\Brainy-Bunch-Project\\migrations\\_current_bak.json",
     "exists": false,
     "revision": 1
 }

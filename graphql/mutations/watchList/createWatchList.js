@@ -15,6 +15,15 @@ const createWatchList = {
     resolve: async (_, args, context) => {
         checkAuth(context);
 
+        const existsWatchList = await db.Watchlist.findOne({
+            where: {userId: context.user.id},
+        });
+
+        if (existsWatchList) {
+            throw new Error(`WatchLists already exists for userId: ${context.user.id}`);
+
+        }
+
         const watchlist = db.Watchlist.create({
             name: args.input.name,
             description: args.input.description,
