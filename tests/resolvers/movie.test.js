@@ -3,22 +3,51 @@ const MovieQuery = require('../../graphql/queries/movie/movie');
 
 setupTestDB();
 
-describe('Query: Movie (Single)', () => {
+describe('Query: Movie by title', () => {
+    let movie;
+    let director;
+
     beforeEach(async () => {
         await db.Movie.destroy({ where: {}, truncate: true });
+        await db.Director.destroy({ where: {}, truncate: true });
+
+        director = await db.Director.create({
+            name: 'Christopher Nolan',
+            birthDate: '1970-07-30',
+            nationality: 'British-American'
+        });
+
+        movie = await db.Movie.create({
+            title: 'Inception',
+            releaseYear: 2010,
+            directorId: director.id,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
     });
 
-    it('should return the movie if it exists', async () => {
-        const movie = await db.Movie.create({ title: 'Test', releaseYear: 2025, createdAt: new Date(), updatedAt: new Date() });
-        const context = { user: { id: 1, userRole: { name: 'user' } } };
+    describe('Happy Path', () => {
+        it('should return a movie when title exists', async () => {
+            const context = { user: { id: 1, userRole: { name: 'user' } } };
 
-        const res = await MovieQuery.resolve(null, { title: movie.title }, context);
-        expect(res).toBeDefined();
-        expect(res.title).toBe('Test');
+            const args = { title: 'Inception' };
+
+            const res = await MovieQuery.resolve(null, args, context);
+
+            expect(res).toBeDefined();
+            expect(res.id).toBe(movie.id);
+            expect(res.title).toBe('Inception');
+            expect(res.releaseYear).toBe(2010);
+        });
     });
 
-    it('should FAIL when movie not found', async () => {
-        const context = { user: { id: 1, userRole: { name: 'user' } } };
-        await expect(MovieQuery.resolve(null, { id: 9999 }, context)).rejects.toThrow();
+    describe('Sad Path', () => {
+        it('should throw when title not found', async () => {
+            const context = { user: { id: 1, userRole: { name: 'user' } } };
+
+            await expect(MovieQuery.resolve(null, { title: 'NonExistentMovie' }, context))
+                .rejects
+                .toThrow();
+        });
     });
 });
