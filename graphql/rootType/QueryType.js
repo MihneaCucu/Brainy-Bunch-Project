@@ -32,6 +32,7 @@ const Actors     = require('../queries/actor/actors');
 
 const WatchList = require('../queries/watchList/watchList');
 const WatchLists = require('../queries/watchList/watchLists');
+const MyWatchList = require('../queries/watchList/myWatchList');
 
 const DiscoverMoviesByFilter = require('../queries/discoverMovies/discoverMoviesByFilter');
 const DiscoverMoviesRandom = require('../queries/discoverMovies/discoverMoviesRandom');
@@ -60,6 +61,7 @@ const QueryType = new GraphQLObjectType({
         actors: Actors,
         watchList: WatchList,
         watchLists: WatchLists,
+        myWatchList: MyWatchList,
         discoverMoviesByFilter: DiscoverMoviesByFilter,
         discoverMoviesRandom: DiscoverMoviesRandom,
     },
