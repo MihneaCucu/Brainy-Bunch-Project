@@ -45,6 +45,22 @@ const MarkMovieWatched = {
             });
         }
 
+        const userWatchlists = await db.Watchlist.findAll({
+            where: { userId: context.user.id },
+            include: [{
+                model: db.Movie,
+                as: 'movies',
+                where: { id: args.movieId },
+                required: true // Inner Join
+            }]
+        });
+
+        if (userWatchlists.length > 0) {
+            await Promise.all(userWatchlists.map(watchlist => {
+                return watchlist.removeMovie(args.movieId);
+            }));
+        }
+
         return await db.Diary.findByPk(diary.id);
     }
 };

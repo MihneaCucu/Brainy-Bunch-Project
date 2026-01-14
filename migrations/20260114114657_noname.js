@@ -25,7 +25,7 @@ const Sequelize = require("sequelize");
 const info = {
   revision: 1,
   name: "noname",
-  created: "2025-12-21T16:29:00.672Z",
+  created: "2026-01-14T11:46:57.713Z",
   comment: "",
 };
 
@@ -433,7 +433,6 @@ const migrationCommands = (transaction) => [
           defaultValue: Sequelize.NOW,
           allowNull: false,
         },
-        note: { type: Sequelize.TEXT, field: "note", allowNull: true },
         createdAt: {
           type: Sequelize.DATE,
           field: "createdAt",
@@ -591,6 +590,7 @@ const migrationCommands = (transaction) => [
           onDelete: "CASCADE",
           references: { model: "Users", key: "id" },
           field: "userId",
+          unique: true,
           allowNull: false,
         },
         name: { type: Sequelize.STRING, field: "name", allowNull: false },

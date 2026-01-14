@@ -50,33 +50,51 @@ const CreateReview = {
             updatedAt: now,
         });
 
-        // Add movie to user's diary (mark as watched)
-        // Get or create diary for user
-        let diary = await db.Diary.findOne({
-            where: { userId: context.user.id }
-        });
+    try {
+        let diary = await db.Diary.findOne({ where: { userId: context.user.id } });
+        if (!diary) diary = await db.Diary.create({ userId: context.user.id });
 
-        if (!diary) {
-            diary = await db.Diary.create({
-                userId: context.user.id
-            });
-        }
-
-        // Check if movie is already in diary
         const existingEntry = await db.MovieDiary.findOne({
-            where: {
-                movieId: input.movieId,
-                diaryId: diary.id
-            }
+            where: { movieId: input.movieId, diaryId: diary.id }
         });
 
-        // Add movie to diary if not already there
         if (!existingEntry) {
+            
             await db.MovieDiary.create({
                 movieId: input.movieId,
                 diaryId: diary.id,
-                watchedAt: now
+                watchedAt: new Date()
             });
+            
+        } else {
+            console.log("SKIPPING: Entry already exists in MovieDiaries");
+        }
+    } catch (error) {
+        console.error("========================================");
+        console.error("CRITICAL DATABASE ERROR:");
+        console.error("Error Name:", error.name);
+        console.error("Error Message:", error.message);
+        if (error.original) {
+            console.error("SQL Error:", error.original.message); // SQLite specific error
+        }
+        console.error("========================================");
+    }
+
+        const userWatchlists = await db.Watchlist.findAll({
+            where: { userId: context.user.id },
+            include: [{
+                model: db.Movie,
+                as: 'movies',
+                where: { id: input.movieId },
+                required: true
+            }]
+        });
+
+        if (userWatchlists.length > 0) {
+            console.log(`Removing Movie ${input.movieId} from ${userWatchlists.length} Watchlist(s)...`);
+            await Promise.all(userWatchlists.map(watchlist => {
+                return watchlist.removeMovie(input.movieId);
+            }));
         }
 
         return await db.Review.findByPk(review.id, {

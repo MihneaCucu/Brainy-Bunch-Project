@@ -19,9 +19,6 @@ const Watchlists = {
         const offset = (page - 1) * limit;
 
         return await db.Watchlist.findAll({
-            where: {
-                userId: context.user.id,
-            },
             include: [
                 { model: db.Movie, as: 'movies' },
                 { model: db.User, as: 'user' }
