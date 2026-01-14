@@ -5,9 +5,8 @@ setupTestDB();
 
 describe('Query: watchLists', () => {
 
-    let userRole, user1, user2;
-    let watchList, watchList2, watchList3, watchList4, watchList5, watchList6, watchList7, watchList8;
-    let  watchListforUser2;
+    let userRole, adminRole, user1, user2, admin;
+    let watchList, watchListforUser2;
 
     beforeEach(async () => {
         await db.WatchlistMovie.destroy({ where: {}, truncate: true });
@@ -17,6 +16,7 @@ describe('Query: watchLists', () => {
         await db.Director.destroy({ where: {}, truncate: true });
 
         userRole = await db.Role.create({ name: 'user' });
+        adminRole = await db.Role.create({ name: 'admin' });
 
         user1 = await db.User.create({
             username: 'user1',
@@ -32,6 +32,13 @@ describe('Query: watchLists', () => {
             roleId: userRole.id
         });
 
+        admin = await db.User.create({
+            username: 'admin',
+            email: 'admin@test.com',
+            password: 'Admin123!',
+            roleId: adminRole.id
+        });
+
         watchList = await db.Watchlist.create({
             name: 'My list 1',
             description: 'best movies',
@@ -43,6 +50,39 @@ describe('Query: watchLists', () => {
             name: 'List for user 2',
             description: 'best movies',
             userId: user2.id,
+        });
+    });
+
+    describe('Happy Path', () => {
+        it('should return all watchlists for an admin user', async () => {
+            const context = { user: { id: admin.id, userRole: { name: 'admin' } } };
+            const args = { page: 1, limit: 5 };
+
+            const result = await WatchLists.resolve(null, args, context);
+
+            expect(result).toBeDefined();
+            expect(Array.isArray(result)).toBe(true);
+            expect(result.length).toBe(2);
+            expect(result[0].name).toBe('My list 1');
+            expect(result[1].name).toBe('List for user 2');
+        });
+
+        it('should handle pagination correctly', async () => {
+            const context = { user: { id: admin.id, userRole: { name: 'admin' } } };
+
+            const args = { page: 1, limit: 1 };
+            const result = await WatchLists.resolve(null, args, context);
+
+            expect(result).toBeDefined();
+            expect(result.length).toBe(1);
+            expect(result[0].name).toBe('My list 1');
+
+            const args2 = { page: 2, limit: 1 };
+            const result2 = await WatchLists.resolve(null, args2, context);
+
+            expect(result2).toBeDefined();
+            expect(result2.length).toBe(1);
+            expect(result2[0].name).toBe('List for user 2');
         });
     });
 
