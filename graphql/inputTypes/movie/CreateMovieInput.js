@@ -7,7 +7,7 @@ const CreateMovieInput = new GraphQLInputObjectType({
         description: { type: GraphQLString },
         releaseYear: { type: new GraphQLNonNull(GraphQLInt) },
         directorId: { type: GraphQLInt },
-        genreId: { type: GraphQLInt },
+        genreIds: { type: new GraphQLList(GraphQLInt) },
         actorIds: { type: new GraphQLList(GraphQLInt) }
     }
 });

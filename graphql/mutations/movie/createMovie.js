@@ -20,11 +20,13 @@ const CreateMovie = {
       directorId: input.directorId,
     });
 
-    if (input.genreId) {
-      await db.MovieGenre.create({
+
+    if(input.genreIds && input.genreIds.length > 0){
+      const data = input.genreIds.map((genreId) => ({
         movieId: movie.id,
-        genreId: input.genreId,
-      });
+        genreId: genreId,
+      }));
+      await db.MovieGenre.bulkCreate(data);
     }
 
     if (input.actorIds && input.actorIds.length > 0) {
